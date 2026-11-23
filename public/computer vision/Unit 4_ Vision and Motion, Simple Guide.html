@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Unit 4: Vision and Motion, Simple Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--tx:#1f2430;--mut:#5b6475;--bd:#e3e6ee;--c1:#2563eb;--c2:#059669;--c3:#d97706;--c4:#7c3aed;--c5:#db2777;--ex:#fff8e1;--exb:#f59e0b;--fm:#eef2ff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10131a;--card:#181c26;--tx:#e8eaf0;--mut:#9aa3b5;--bd:#2a3040;--c1:#60a5fa;--c2:#34d399;--c3:#fbbf24;--c4:#a78bfa;--c5:#f472b6;--ex:#2b2410;--exb:#b7791f;--fm:#222846}}
+:root[data-theme="dark"]{--bg:#10131a;--card:#181c26;--tx:#e8eaf0;--mut:#9aa3b5;--bd:#2a3040;--c1:#60a5fa;--c2:#34d399;--c3:#fbbf24;--c4:#a78bfa;--c5:#f472b6;--ex:#2b2410;--exb:#b7791f;--fm:#222846}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+body{margin:0;background:var(--bg);color:var(--tx);font:17px/1.65 Nunito,system-ui,sans-serif}
+main{max-width:860px;margin:auto;padding:16px}
+h1,h2,h3{font-family:Poppins,system-ui,sans-serif;line-height:1.25}
+header{background:linear-gradient(135deg,var(--c1),var(--c4));color:#fff;border-radius:18px;padding:26px;margin-bottom:18px}
+header h1{margin:0 0 6px;font-size:28px}header p{margin:4px 0}
+.map{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px 18px;margin-bottom:18px}
+.map a{display:inline-block;margin:3px 6px 3px 0;padding:2px 10px;border-radius:99px;border:1px solid var(--a);color:var(--a);text-decoration:none;font-size:14px;font-weight:700}
+section{background:var(--card);border:1px solid var(--bd);border-left:7px solid var(--a);border-radius:14px;padding:6px 20px 16px;margin:16px 0}
+section h2{color:var(--a);font-size:21px;margin:14px 0 6px}
+h3{font-size:16px;margin:14px 0 2px}
+.s1{--a:var(--c1)}.s2{--a:var(--c2)}.s3{--a:var(--c3)}.s4{--a:var(--c4)}.s5{--a:var(--c5)}
+.ex{background:var(--ex);border-left:4px solid var(--exb);border-radius:8px;padding:8px 12px;margin:10px 0}
+.ex b:first-child{color:var(--exb)}
+.fm{background:var(--fm);border-radius:8px;padding:6px 12px;margin:10px 0;font-family:ui-monospace,Menlo,monospace;font-size:15px;overflow-x:auto;white-space:nowrap}
+.def{border-bottom:2px dotted var(--a);font-weight:700}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:1px 9px;border-radius:99px;background:var(--a);color:#fff;margin-right:4px}
+.sc{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:15px;min-width:480px}th,td{border:1px solid var(--bd);padding:6px 9px;text-align:left}th{background:var(--fm)}
+svg{max-width:100%;height:auto;display:block;margin:10px auto}svg text{fill:var(--tx);font:13px Nunito,sans-serif}
+.k{stroke:var(--tx);fill:none}.a{stroke:var(--a);fill:none;stroke-width:2}.f{fill:var(--a)}
+ul{padding-left:22px;margin:6px 0}li{margin:2px 0}
+</style></head><body><main>
+<header><h1>Unit 4: Vision and Motion</h1><p>A first-time-reader guide to 3D vision and motion analysis in Computer Vision.</p><p>Each topic gives: simple meaning, everyday example, key formula, and where it is used.</p></header>
+
+<div class="map"><b>Jump to a topic</b><br>
+<a class="s1" style="--a:var(--c1)" href="#intro">Big picture</a><a style="--a:var(--c1)" href="#methods">3D methods</a><a style="--a:var(--c1)" href="#proj">Projection</a><a style="--a:var(--c1)" href="#sfs">Shading</a><a style="--a:var(--c1)" href="#ps">Photometric</a><a style="--a:var(--c1)" href="#sft">Texture</a><a style="--a:var(--c1)" href="#sff">Focus</a><a style="--a:var(--c1)" href="#arf">Range finding</a>
+<a style="--a:var(--c2)" href="#rep">Point/Voxel</a><a style="--a:var(--c2)" href="#rec">3D recognition</a>
+<a style="--a:var(--c3)" href="#mot">Motion</a><a style="--a:var(--c3)" href="#tri">Triangulation</a><a style="--a:var(--c3)" href="#ba">Bundle adj.</a><a style="--a:var(--c3)" href="#ta">Translation</a><a style="--a:var(--c4)" href="#pm">Parametric</a><a style="--a:var(--c4)" href="#sp">Spline</a><a style="--a:var(--c5)" href="#of">Optical flow</a><a style="--a:var(--c5)" href="#lm">Layered</a><a style="--a:var(--c1)" href="#rev">Revision</a></div>
+
+<section class="s1" id="intro"><h2>1. The big picture</h2>
+<p>A camera photo is <b>2D</b>: it loses <span class="def">depth</span> (how far things are). <b>3D vision</b> is the set of tricks a computer uses to get depth back. <b>Motion analysis</b> studies how things change between video frames. Together they power self-driving cars, robots, AR, and medical scans.</p>
+<div class="ex"><b>Example: </b>Humans judge distance with two eyes (<i>binocular vision</i>). The brain compares two slightly different views. Computers need maths to do the same.</div>
+<p><span class="tag">Passive</span> uses only normal light (stereo, shading, texture, focus). <span class="tag">Active</span> sends its own light or signal (laser, structured light).</p></section>
+
+<section class="s1" id="methods"><h2>2. Methods for 3D vision (overview)</h2>
+<h3>Stereo vision (passive)</h3>
+<p>Two cameras a small distance apart (the <span class="def">baseline</span>, B) photograph the same scene. An object shifts between the two images; that shift is the <span class="def">disparity</span>. <b>Near objects shift a lot, far objects shift a little.</b></p>
+<div class="fm">Z = (f × B) / disparity &nbsp;&nbsp; disparity = x1 − x2</div>
+<svg viewBox="0 0 420 170" role="img" aria-label="Stereo cameras seeing one point"><line class="k" x1="90" y1="150" x2="210" y2="25"/><line class="k" x1="330" y1="150" x2="210" y2="25"/><circle class="f" cx="210" cy="25" r="7"/><rect class="f" x="80" y="148" width="20" height="12"/><rect class="f" x="320" y="148" width="20" height="12"/><line class="a" x1="100" y1="168" x2="320" y2="168"/><text x="218" y="22">Point P (depth Z)</text><text x="50" y="140">Left cam</text><text x="342" y="140">Right cam</text><text x="175" y="162">baseline B</text></svg>
+<div class="ex"><b>Example: </b>Hold a finger close, close one eye then the other: it jumps a lot (big disparity). A far tree barely moves (small disparity).</div>
+<p>The other methods are explained in their own sections below. Quick table:</p>
+<div class="sc"><table><tr><th>Method</th><th>Type</th><th>Input</th><th>Depth clue</th><th>Used in</th></tr>
+<tr><td>Stereo</td><td>Passive</td><td>2 images</td><td>Disparity</td><td>Robots, 3D photos</td></tr>
+<tr><td>Shape from shading</td><td>Passive</td><td>1 image</td><td>Brightness</td><td>Faces, smooth objects</td></tr>
+<tr><td>Photometric stereo</td><td>Passive</td><td>Several lighting images</td><td>Brightness change</td><td>Coins, inspection</td></tr>
+<tr><td>Shape from texture</td><td>Passive</td><td>1 image</td><td>Pattern distortion</td><td>Terrain, roads</td></tr>
+<tr><td>Shape from focus</td><td>Passive</td><td>Focus stack</td><td>Sharpness</td><td>Microscopes</td></tr>
+<tr><td>Structured light</td><td>Active</td><td>Projected pattern</td><td>Pattern bending</td><td>Kinect, scanners</td></tr>
+<tr><td>Laser / ToF</td><td>Active</td><td>Laser pulse</td><td>Return time</td><td>LiDAR</td></tr></table></div></section>
+
+<section class="s1" id="proj"><h2>3. Projection schemes</h2>
+<p><span class="def">Projection</span> = turning a 3D point (X, Y, Z) into a 2D image point (x, y). If we understand it, we can reverse it to find real 3D positions (needed for calibration, reconstruction, measurement, navigation).</p>
+<div class="sc"><table><tr><th>Type</th><th>Idea</th><th>Formula</th><th>Use</th></tr>
+<tr><td><b>Orthographic</b></td><td>Parallel rays. True size, depth lost.</td><td>x = X, y = Y</td><td>Engineering drawings</td></tr>
+<tr><td><b>Perspective</b></td><td>Rays meet at one point (pinhole). Far = smaller.</td><td>x = f·X/Z, y = f·Y/Z</td><td>Cameras, AR/VR</td></tr>
+<tr><td><b>Weak perspective</b></td><td>All points at about the same depth, so one scale s.</td><td>x = s·X, y = s·Y</td><td>Faces, flat objects</td></tr>
+<tr><td><b>Stereo</b></td><td>Two views give disparity.</td><td>Z = b·f / (x1 − x2)</td><td>Depth sensing</td></tr></table></div>
+<svg viewBox="0 0 420 150" role="img" aria-label="Pinhole perspective projection"><line class="k" x1="30" y1="130" x2="390" y2="130"/><line class="k" x1="250" y1="20" x2="250" y2="130"/><circle class="f" cx="250" cy="75" r="4"/><rect class="f" x="40" y="45" width="14" height="60" opacity=".4"/><line class="a" x1="47" y1="45" x2="250" y2="75"/><line class="a" x1="47" y1="105" x2="250" y2="75"/><text x="205" y="68">Centre of projection</text><text x="30" y="40">Object</text><text x="262" y="40">Image plane</text></svg>
+<p><b>Vanishing point:</b> real parallel lines (like railway tracks) appear to meet in the image. Vanishing points on the ground line up to form the <span class="def">horizon line</span>; they reveal whether a road is flat or sloped.</p>
+<p><b>Lenses:</b> a convex lens really forms an <i>inverted</i> image behind the lens. For easy maths we draw a non-inverted <i>virtual</i> image in front. The optical centre of the lens is the centre of projection.</p></section>
+
+<section class="s1" id="sfs"><h2>4. Shape from shading</h2>
+<p><b>Idea:</b> from <u>one</u> image, bright areas face the light, dark areas face away, shadows get no light. Brightness pattern tells us the surface tilt.</p>
+<div class="ex"><b>Example: </b>A ball under a lamp: front is bright, sides dim, back dark. That smooth change shows the ball is curved, with no depth sensor needed.</div>
+<p>Brightness depends on: light angle, how reflective the surface is, and the viewing direction. We assume a <span class="def">Lambertian surface</span> (matte, reflects equally in all directions):</p>
+<div class="fm">I = E × cos(i) &nbsp; (E = light energy, i = angle between light and surface normal)</div>
+<p>i = 0° means facing the light (brightest); i = 90° means sideways (dark).</p>
+<p><b>Steps:</b> grey image, assume light direction and Lambertian, measure each pixel brightness, compute surface normals, integrate normals to get 3D shape.</p>
+<p><b>Use:</b> faces, hills, smooth objects.</p></section>
+
+<section class="s1" id="ps"><h2>5. Photometric stereo</h2>
+<p><b>Idea:</b> keep the camera fixed, <u>change the light direction</u>, take several images (3 or more). Comparing the brightness of the same pixel gives the surface normal N.</p>
+<div class="fm">I = ρ × (L · N) &nbsp; ρ = reflectivity (albedo), L = light direction, N = surface normal</div>
+<div class="ex"><b>Example: </b>Photograph a coin lit from left, right, top. Each side goes dark or bright in turn, so the computer works out every bump and engraving.</div>
+<p><b>p-q graph:</b> p and q are the surface slopes in x and y. Each light gives a contour of possible (p, q); where all contours cross is the true orientation.</p>
+<ul><li><b>Good:</b> one camera, very fine detail.</li><li><b>Limits:</b> needs controlled light, matte surfaces, known light directions; shadows and shine cause errors.</li><li><b>Use:</b> sculptures, dent detection, skin texture, face reconstruction.</li></ul></section>
+
+<section class="s1" id="sft"><h2>6. Shape from texture</h2>
+<p><b>Idea:</b> repeating patterns (tiles, bricks, grass) look <b>bigger and spaced out when near, smaller and denser when far</b>.</p>
+<div class="ex"><b>Example: </b>Look at a brick wall at an angle: near bricks look big, far bricks small and squeezed. Your brain concludes the wall is slanted.</div>
+<ul><li><b>Size:</b> near = larger. <b>Density:</b> far = more elements per area.</li><li><b>Foreshortening:</b> patterns look squeezed depending on tilt. <b>Orientation</b> of the pattern shows rotation.</li></ul>
+<p>Needs visible, even texture; gives <i>relative</i> (not exact) depth. Use: terrain maps, road slope, robot ground detection, AR floors.</p></section>
+
+<section class="s1" id="sff"><h2>7. Shape from focus (and defocus)</h2>
+<p><b>Idea:</b> a lens is sharp at only one distance. Take a <span class="def">focus stack</span> (same scene, different focus settings). For each pixel, the image where it is sharpest tells its distance.</p>
+<p><b>Steps:</b> (1) capture stack, (2) compute a focus measure per pixel (variance, Laplacian, gradient), (3) pick the sharpest image, (4) build the depth map.</p>
+<div class="ex"><b>Example: </b>Focus on a statue: front sharp first, then middle, then back. Note where each part is sharpest to get its distance.</div>
+<p>Good: single camera, no special light. Limits: needs many images, fails on transparent or textureless surfaces, scene must stay still. Use: microscopes, quality control.</p></section>
+
+<section class="s1" id="arf"><h2>8. Active range finding</h2>
+<p>The sensor sends out its own signal (laser, infrared, sound) and measures the echo.</p>
+<div class="fm">Distance = (speed of signal × time) / 2 &nbsp; (÷2 because it goes there and back)</div>
+<ul><li><b>Time-of-Flight (ToF):</b> time a pulse's return. LiDAR, ultrasonic sensors.</li><li><b>Triangulation:</b> a laser spot is seen by a camera; its angle gives distance. Short range, very precise.</li><li><b>Structured light:</b> project lines/grids/dots; their bending shows 3D shape (Kinect).</li></ul>
+<div class="ex"><b>Example: </b>A bat shouts and times the echo. Same idea with light.</div>
+<p>Good: works in dark and on plain surfaces, accurate, real-time. Limits: bright ambient light interferes, costs more.</p></section>
+
+<section class="s2" id="rep"><h2>9. Surface representations: point-based vs volumetric</h2>
+<h3>Point-based (point cloud)</h3>
+<p>The shape is stored as thousands or millions of 3D points (x, y, z), sometimes with colour. No surfaces or connections are stored. Made by LiDAR, stereo, depth cameras, photogrammetry.</p>
+<p><b>+</b> simple, detailed, fast to scan. <b>−</b> no surface (needs meshing), large, noisy.</p>
+<h3>Volumetric (voxels)</h3>
+<p>Space is cut into tiny cubes called <span class="def">voxels</span> (3D pixels) that describe the inside as well as the outside.</p>
+<ul><li><b>Occupancy grid:</b> each voxel is 1 (inside) or 0 (outside).</li><li><b>Signed Distance Function (SDF):</b> each voxel stores distance to the surface; negative = inside, positive = outside, 0 = on the surface.</li><li><b>Octree:</b> divides space only where needed, so empty areas save memory.</li></ul>
+<svg viewBox="0 0 420 130" role="img" aria-label="Point cloud versus voxel grid"><g class="f"><circle cx="40" cy="70" r="3"/><circle cx="60" cy="45" r="3"/><circle cx="85" cy="30" r="3"/><circle cx="115" cy="28" r="3"/><circle cx="140" cy="45" r="3"/><circle cx="158" cy="70" r="3"/><circle cx="140" cy="95" r="3"/><circle cx="115" cy="108" r="3"/><circle cx="85" cy="108" r="3"/><circle cx="60" cy="95" r="3"/></g><text x="55" y="126">Point cloud</text><g class="k"><rect x="250" y="25" width="30" height="30"/><rect x="280" y="25" width="30" height="30"/><rect x="310" y="25" width="30" height="30"/><rect x="250" y="55" width="30" height="30"/><rect x="280" y="55" width="30" height="30"/><rect x="310" y="55" width="30" height="30"/><rect x="250" y="85" width="30" height="30"/><rect x="280" y="85" width="30" height="30"/><rect x="310" y="85" width="30" height="30"/></g><rect class="f" x="280" y="55" width="30" height="30" opacity=".6"/><rect class="f" x="280" y="25" width="30" height="30" opacity=".6"/><text x="265" y="126">Voxel grid</text></svg>
+<div class="ex"><b>Memory example: </b>100×100×100 voxels at 1 byte = 1 MB. Double the resolution to 200³ and it is 8 MB. Memory grows with n³, so detail is expensive.</div>
+<div class="sc"><table><tr><th></th><th>Point cloud</th><th>Voxels</th></tr><tr><td>Element</td><td>Points (x,y,z)</td><td>Cubes</td></tr><tr><td>Captures</td><td>Surface only</td><td>Inside + surface</td></tr><tr><td>Memory</td><td>Low</td><td>High</td></tr><tr><td>Used in</td><td>Scanning, mapping</td><td>CT/MRI, 3D printing, simulation</td></tr></table></div></section>
+
+<section class="s2" id="rec"><h2>10. 3D object recognition</h2>
+<p>Identify <i>what</i> an object is and <i>where</i> it is (its <span class="def">pose</span> = position + orientation) from depth maps, stereo images or point clouds.</p>
+<svg viewBox="0 0 440 60" role="img" aria-label="Recognition pipeline"><g class="a"><rect x="5" y="15" width="90" height="30" rx="6"/><rect x="115" y="15" width="100" height="30" rx="6"/><rect x="235" y="15" width="90" height="30" rx="6"/><rect x="345" y="15" width="90" height="30" rx="6"/></g><g class="k"><path d="M97 30h16M217 30h16M327 30h16"/></g><text x="22" y="35">Detect</text><text x="125" y="35">Features</text><text x="253" y="35">Match</text><text x="358" y="35">Recognise</text></svg>
+<h3>Four approaches</h3>
+<ul><li><b>Model-based:</b> match against stored 3D models (gear, bolt, cup).</li><li><b>Feature-based:</b> use edges, corners, planes; works even if partly hidden.</li><li><b>View-based:</b> store several 2D views (top, side, front) and compare.</li><li><b>Deep learning:</b> 3D neural networks learn from data (LiDAR cars, trees, people).</li></ul>
+<p><b>Six steps:</b> acquire data, preprocess (remove noise, separate object), extract features, match, estimate pose, verify.</p>
+<p><b>Techniques:</b> geometric hashing (fast hash-table matching), 3D Hough transform (voting), <b>ICP</b> (Iterative Closest Point: repeatedly shift/rotate points until they align with the model), 3D CNNs.</p>
+<p><b>Challenges:</b> occlusion, noise, heavy computation, lighting/scale/rotation changes. <b>Use:</b> robot picking, self-driving, medical, AR, 3D face recognition.</p></section>
+
+<section class="s3" id="mot"><h2>11. Introduction to motion</h2>
+<p><span class="def">Motion</span> = change in position over time across video frames. It reveals direction, speed, even 3D structure.</p>
+<ul><li><b>Object motion:</b> object moves, camera fixed (ball on floor).</li><li><b>Camera motion:</b> camera moves, object fixed (drone over a building).</li><li><b>Combined:</b> both move (filming a car from another car).</li></ul>
+<p><b>Represented by:</b> a <b>displacement vector (dx, dy)</b> per point, or <b>optical flow</b> (a field of such vectors).</p>
+<p><b>Estimated by:</b> feature tracking (follow corners), optical flow, block matching (track image blocks), 3D motion from stereo.</p>
+<div class="ex"><b>Example: </b>A point goes from (100,200) to (115,195) in 0.04 s. Displacement = (15, −5) px; velocity = (375, −125) px/s.</div>
+<p><b>Challenges:</b> motion blur, occlusion, lighting changes, complex motion. <b>Uses:</b> tracking, video stabilisation, gesture recognition, surveillance, AR, sports analysis.</p></section>
+
+<section class="s3" id="tri"><h2>12. Triangulation</h2>
+<p>Find a 3D point as the <b>crossing of two lines of sight</b>, one from each camera through the point in its image.</p>
+<div class="fm">Z = (f × B) / (x1 − x2) &nbsp; larger disparity = closer</div>
+<p><b>You must know:</b> camera positions (extrinsic), calibration such as focal length (intrinsic), and matching points in both images.</p>
+<div class="ex"><b>Example: </b>f = 800 px, B = 0.25 m. Object A disparity 40 → Z = 5 m. Object B disparity 8 → Z = 25 m. Doubling depth halves the disparity.</div>
+<p>Good: simple geometry, only two views. Limits: calibration errors, hard to match points, noise/occlusion. Uses: 3D reconstruction, robots, AR.</p></section>
+
+<section class="s3" id="ba"><h2>13. Bundle adjustment</h2>
+<p>The final polish of a 3D reconstruction. It tweaks <b>both</b> the 3D points and the camera parameters (position, orientation, focal length) so everything agrees. Each camera sees a <i>bundle</i> of light rays; we adjust them so rays meet properly.</p>
+<p><span class="def">Reprojection error</span> = where a point actually appears in the image minus where the model predicts it.</p>
+<div class="fm">Minimise Σ (observed − projected)² &nbsp; (non-linear least squares, e.g. Levenberg-Marquardt)</div>
+<p><b>Steps:</b> start with rough estimates, project 3D points into each image, compute errors, adjust points and cameras, repeat.</p>
+<div class="ex"><b>Analogy: </b>Fine-tuning a 3D puzzle: nudge pieces until all fit. Observed (320,240) vs projected (323,237): error (−3,3), size ≈ 4.24 px.</div>
+<p>Good: very accurate. Limits: heavy computing, needs good starting guess. Used in Structure from Motion, SLAM, photogrammetry.</p></section>
+
+<section class="s3" id="ta"><h2>14. Translational alignment</h2>
+<p>Line up two images (or 3D scans) by <b>only sliding</b> them: no rotation, no resizing. Translation vector T = (tx, ty, tz).</p>
+<div class="fm">I1(x, y) = I2(x − tx, y − ty)</div>
+<div class="ex"><b>Example: </b>Feature at (50,80) in image 1 and (65,72) in image 2 → T = (−15, +8) slides image 2 onto image 1.</div>
+<p><b>Methods:</b> cross-correlation, phase correlation (Fourier), feature matching, ICP (for 3D). <b>Uses:</b> image registration, panorama stitching, motion size, SLAM. Fast and simple but fails with rotation, scaling or distortion.</p></section>
+
+<section class="s4" id="pm"><h2>15. Parametric motion</h2>
+<p>Describe the motion of a whole region with <b>a few numbers (parameters)</b> instead of every pixel separately.</p>
+<div class="fm">[x′ y′] = A·[x y] + [tx ty] &nbsp; (A: rotation, scale, shear; t: shift)</div>
+<div class="sc"><table><tr><th>Model</th><th>Does</th><th>Parameters</th></tr><tr><td>Translation</td><td>Slide only</td><td>2 (tx, ty)</td></tr><tr><td>Euclidean</td><td>Rotate + slide</td><td>3 (θ, tx, ty)</td></tr><tr><td>Similarity</td><td>+ scale</td><td>4 (θ, s, tx, ty)</td></tr><tr><td>Affine</td><td>+ shear</td><td>6</td></tr><tr><td>Projective (homography)</td><td>Perspective change</td><td>8</td></tr></table></div>
+<div class="ex"><b>Example: </b>Euclidean, θ = 30°, t = (5,−3), point (4,0): x′ = 4·0.866 + 5 = 8.46, y′ = 4·0.5 − 3 = −1.</div>
+<p>Parameters are found by minimising E = Σ[I2(x′,y′) − I1(x,y)]². Good for rigid things (cars, boxes), stabilisation, tracking. Cannot handle non-rigid motion (walking people, waving cloth).</p></section>
+
+<section class="s4" id="sp"><h2>16. Spline-based motion</h2>
+<p>A <span class="def">spline</span> is a smooth curve joined from simple polynomial pieces, like a flexible ruler bent through key points. Give a few <b>control points</b> and the spline fills in smooth motion.</p>
+<div class="fm">p(t) = Σ Bi(t) · Pi &nbsp; (Pi control points, Bi basis functions)</div>
+<svg viewBox="0 0 400 120" role="img" aria-label="Smooth spline through control points"><path class="a" d="M30 100 C 90 20, 140 20, 200 70 S 320 110, 370 30"/><g class="f"><circle cx="30" cy="100" r="5"/><circle cx="130" cy="38" r="5"/><circle cx="240" cy="88" r="5"/><circle cx="370" cy="30" r="5"/></g><text x="30" y="116">control points P0..P3</text></svg>
+<p>Types: linear (straight), quadratic (degree 2), cubic (degree 3, most used). Example: linear spline from (0,0) to (6,4): at t = 0.5 → (3,2).</p>
+<p>Good: smooth, compact. Limits: choosing control points, poor at sudden jerks. Uses: animation, tracking, camera paths.</p></section>
+
+<section class="s5" id="of"><h2>17. Optical flow</h2>
+<p>For <b>every pixel</b>, how far and which way it moved between two frames: a vector (u, v). u = x-movement, v = y-movement.</p>
+<svg viewBox="0 0 400 100" role="img" aria-label="Optical flow arrows"><g class="a" stroke-width="2.5"><path d="M40 30h60M40 55h60M40 80h60M180 30h60M180 55h60M180 80h60"/></g><g class="f"><path d="M100 24l10 6-10 6zM100 49l10 6-10 6zM100 74l10 6-10 6zM240 24l10 6-10 6zM240 49l10 6-10 6zM240 74l10 6-10 6z"/></g><text x="290" y="58">flow = (u, v)</text></svg>
+<div class="ex"><b>Example: </b>A ball moves 5 px right between frames: flow = (u, v) = (5, 0).</div>
+<h3>Brightness constancy</h3><p>A moving pixel keeps the same brightness: I(x,y,t) = I(x+u, y+v, t+1). This gives the <b>constraint equation</b>:</p>
+<div class="fm">Ix·u + Iy·v + It = 0</div>
+<p><b>Aperture problem:</b> one equation, two unknowns (u, v). Through a tiny window you only see motion perpendicular to an edge, so extra assumptions are needed.</p>
+<ul><li><b>Lucas-Kanade (local):</b> assumes constant motion in a small neighbourhood; solves from nearby pixels. Good for small, smooth motion.</li><li><b>Horn-Schunck (global):</b> assumes smooth flow across the whole image; gives a dense flow for every pixel.</li></ul>
+<p><b>Image differencing:</b> subtract two frames to see what changed. It shows <i>that</i> something moved but not exactly which way, so optical flow is needed.</p>
+<p>Good: pixel-level motion, velocity. Limits: noise, fast/large motion, occlusion, lighting changes. Uses: tracking, compression, gestures, robot navigation.</p></section>
+
+<section class="s5" id="lm"><h2>18. Layered motion</h2>
+<p>Real scenes have many things moving differently. Split the picture into <b>layers</b>, each with its own simple motion model.</p>
+<svg viewBox="0 0 400 110" role="img" aria-label="Three motion layers"><g class="k"><rect x="20" y="60" width="360" height="40" rx="4"/><rect x="60" y="35" width="360" height="40" rx="4" transform="translate(-30 0)" opacity=".7"/><rect x="100" y="10" width="200" height="40" rx="4"/></g><text x="28" y="85">Background (still)</text><text x="45" y="60">Car (right)</text><text x="125" y="35">Pedestrian (left)</text></svg>
+<div class="fm">I(x,y,t) = Σ Ml(x,y,t) · Il(x,y,t) &nbsp; (M = mask, I = layer appearance)</div>
+<p><b>Steps:</b> split into layers, estimate each layer's motion, warp each layer, combine.</p>
+<div class="ex"><b>Example: </b>Car layer moves (10,0): pixel (50,50) goes to (60,50). Two layers with masks 0.7, 0.3 and intensities 100, 200 give 0.7·100 + 0.3·200 = 130.</div>
+<p>Good: handles occlusion, background removal, segmentation, compression. Limits: heavy computing, fails if layers look/move alike.</p></section>
+
+<section class="s1" id="rev"><h2>Quick revision</h2>
+<ul><li><b>Depth tricks:</b> stereo (disparity), shading (I = E·cos i), photometric (I = ρ L·N), texture, focus, range finding (d = vt/2).</li><li><b>Projection:</b> orthographic (no depth), perspective (x = fX/Z), weak perspective (scale s).</li><li><b>Storage:</b> point cloud (points) vs voxels (occupancy, SDF, octree).</li><li><b>Motion:</b> triangulation → bundle adjustment → alignment → parametric → spline → optical flow → layers.</li></ul>
+<p style="color:var(--mut);font-size:14px">Note: the 80+ numerical solved problems in your PDF are not repeated here; I included one worked example per topic.</p></section>
+</main><script>
+if (window.self === window.top) {
+  var b = document.createElement('a');
+  b.href = '../index.html';
+  b.className = 'hub-floating-btn';
+  b.innerHTML = '← Back to Study Portal';
+  b.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;background:#0969da;color:#ffffff;font-family:system-ui,-apple-system,sans-serif;font-size:13px;font-weight:700;padding:10px 18px;border-radius:99px;box-shadow:0 4px 14px rgba(0,0,0,0.35);text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s ease;cursor:pointer;';
+  b.onmouseenter = function(){ b.style.transform='translateY(-2px)'; b.style.boxShadow='0 6px 20px rgba(9,105,218,0.5)'; };
+  b.onmouseleave = function(){ b.style.transform='none'; b.style.boxShadow='0 4px 14px rgba(0,0,0,0.35)'; };
+  document.body.appendChild(b);
+}
+</script>
+</body></html>

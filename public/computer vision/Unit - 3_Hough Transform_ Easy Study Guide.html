@@ -1,0 +1,190 @@
+﻿<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hough Transform: Easy Study Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--tx:#1d2433;--mu:#5b6478;--bd:#e2e6f0;--c1:#2563eb;--c2:#059669;--c3:#d97706;--c4:#db2777;--c5:#7c3aed;--tip:#fff7e0;--ok:#e8f8f0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10131c;--card:#1a1f2d;--tx:#e8ebf4;--mu:#a3acc2;--bd:#2c3347;--c1:#6ea0ff;--c2:#38d39f;--c3:#fbbf4a;--c4:#f472b6;--c5:#a78bfa;--tip:#2b2614;--ok:#13291f}}
+:root[data-theme="dark"]{--bg:#10131c;--card:#1a1f2d;--tx:#e8ebf4;--mu:#a3acc2;--bd:#2c3347;--c1:#6ea0ff;--c2:#38d39f;--c3:#fbbf4a;--c4:#f472b6;--c5:#a78bfa;--tip:#2b2614;--ok:#13291f}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--tx);font:17px/1.7 'Nunito',system-ui,sans-serif}
+.w{max-width:860px;margin:auto;padding:20px 16px 60px}
+h1,h2,h3{font-family:'Poppins',sans-serif;line-height:1.3}
+h1{font-size:2rem;margin:.2em 0}h2{font-size:1.4rem;margin:0 0 .4em}h3{font-size:1.05rem;margin:1.1em 0 .3em}
+.hero{background:linear-gradient(135deg,var(--c1),var(--c5));color:#fff;border-radius:18px;padding:26px}.hero p{margin:.3em 0;opacity:.95}
+nav{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0}nav a{font:600 .8rem 'Poppins';padding:5px 10px;border-radius:99px;background:var(--card);border:1px solid var(--bd);color:var(--tx);text-decoration:none}
+section{background:var(--card);border:1px solid var(--bd);border-left:6px solid var(--a);border-radius:14px;padding:18px 20px;margin:18px 0}
+section h2{color:var(--a)}.s1{--a:var(--c1)}.s2{--a:var(--c2)}.s3{--a:var(--c3)}.s4{--a:var(--c4)}.s5{--a:var(--c5)}
+.tag{display:inline-block;font:600 .72rem 'Poppins';background:var(--a);color:#fff;border-radius:6px;padding:2px 8px;margin-bottom:6px}
+.tip,.ex{border-radius:10px;padding:10px 14px;margin:12px 0}.tip{background:var(--tip);border:1px dashed var(--c3)}.ex{background:var(--ok);border:1px solid var(--c2)}
+.tip:before{content:"💡 Remember: ";font-weight:700}.ex:before{content:"📘 Example: ";font-weight:700}
+code,.f{font-family:ui-monospace,Menlo,monospace;background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:1px 6px;font-size:.92em}
+.f{display:block;text-align:center;font-size:1.05rem;padding:10px;margin:10px 0;overflow-x:auto}
+.tb{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.9rem;margin:8px 0}th,td{border:1px solid var(--bd);padding:6px 9px;text-align:left}th{background:var(--a);color:#fff}
+svg{max-width:100%;height:auto;display:block;margin:10px auto;background:var(--bg);border-radius:10px}svg text{fill:var(--tx);font:13px 'Nunito',sans-serif}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}.g>div{border:1px solid var(--bd);border-radius:10px;padding:8px 12px}
+ul,ol{padding-left:22px}li{margin:3px 0}b.k{color:var(--a)}
+</style></head><body><div class="w">
+<div class="hero"><h1>Hough Transform: Easy Study Guide</h1><p>Unit 3, Computer Vision (21CSE454T). Every concept from your notes in simple words, with examples and diagrams. Read top to bottom once.</p></div>
+<nav><a href="#a">1 Big idea</a><a href="#b">2 Maths</a><a href="#c">3 Steps</a><a href="#d">4 Foot-of-normal</a><a href="#e">5 Noise</a><a href="#f">6 RANSAC</a><a href="#g">7 Circles</a><a href="#h">8 Ellipses</a><a href="#i">9 Iris/Holes</a><a href="#j">10 GHT</a><a href="#k">11 Pose</a><a href="#l">12 Probabilistic</a><a href="#m">13 Scalability</a><a href="#n">14 Modern use</a></nav>
+
+<section class="s1" id="a"><span class="tag">Session 1</span><h2>1. The Big Idea: Voting for Lines</h2>
+<p>A <b class="k">Hough Transform (HT)</b> finds simple shapes (mostly straight lines) in an image, even if the picture is noisy or the line is broken. It was invented by Paul Hough (1962) and improved by Duda and Hart (1972).</p>
+<p><b class="k">Simple story:</b> Imagine 10 friends standing in a row, and some strangers scattered around. Every person draws <i>all possible lines</i> through themselves. The one line that <i>everyone in the row</i> drew is the real line. Strangers draw lines nobody else shares, so those lines get ignored. That is "voting".</p>
+<h3>Point to line duality</h3>
+<p>A point can be described by its coordinates <i>or</i> by the set of all lines passing through it. If points are on one line, exactly one line is common to all their sets. That "multiple hit" reveals the line. This is why HT ignores noise points and even unwanted shapes like circles.</p>
+<svg viewBox="0 0 640 230" role="img" aria-label="Image space and parameter space"><text x="90" y="20" font-weight="700">Image space</text><text x="400" y="20" font-weight="700">Parameter space (m, b)</text>
+<rect x="20" y="30" width="250" height="180" fill="none" stroke="#888"/><line x1="40" y1="190" x2="250" y2="50" stroke="#2563eb" stroke-width="3"/>
+<circle cx="90" cy="157" r="6" fill="#db2777"/><circle cx="150" cy="117" r="6" fill="#db2777"/><circle cx="210" cy="77" r="6" fill="#db2777"/><circle cx="200" cy="170" r="4" fill="#888"/><circle cx="70" cy="70" r="4" fill="#888"/>
+<text x="95" y="150">P1</text><text x="155" y="110">P2</text><text x="215" y="70">P3</text><text x="30" y="225">Points on one line</text>
+<path d="M290 120h60" stroke="#888" marker-end="url(#ar)"/><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0L6 3L0 6z" fill="#888"/></marker></defs>
+<rect x="370" y="30" width="250" height="180" fill="none" stroke="#888"/><line x1="390" y1="60" x2="600" y2="170" stroke="#db2777" stroke-width="2"/><line x1="390" y1="90" x2="600" y2="140" stroke="#db2777" stroke-width="2"/><line x1="390" y1="130" x2="600" y2="100" stroke="#db2777" stroke-width="2"/>
+<circle cx="495" cy="115" r="8" fill="none" stroke="#059669" stroke-width="3"/><text x="440" y="200">All 3 lines cross at ONE point = answer</text></svg>
+<div class="tip">Image space: a point is a point. Parameter (Hough) space: a point becomes a curve, and a line becomes a single point.</div>
+<h3>Pros and cons of HT</h3>
+<div class="g"><div><b>Good:</b> works with noise, gaps, partly hidden lines; detects many lines at once; needs no prior knowledge of position.</div><div><b>Bad:</b> slow on big images; uses lots of memory; needs careful tuning of bin size and threshold; sensitive to quantisation errors; hard to extend to complex shapes.</div></div></section>
+
+<section class="s2" id="b"><span class="tag">Session 1</span><h2>2. The Maths: Two Ways to Write a Line</h2>
+<h3>Way 1: slope-intercept</h3><span class="f">y = m·x + c</span>
+<p><code>m</code> = slope, <code>c</code> = where it crosses the y-axis. For a fixed point (x₀, y₀): <code>c = −x₀·m + y₀</code>, which is itself a line in (m, c) space. Two points on the same line give two lines that cross at (m*, c*).</p>
+<p><b>Problem:</b> a vertical line (x = 5) has infinite slope, so the parameter space is unbounded and cannot be stored in a grid.</p>
+<h3>Way 2: normal (polar) form, by Duda and Hart</h3><span class="f">ρ = x·cos θ + y·sin θ</span>
+<ul><li><b>ρ (rho)</b>: shortest (perpendicular) distance from origin to the line.</li><li><b>θ (theta)</b>: angle of that perpendicular, measured from the x-axis.</li></ul>
+<svg viewBox="0 0 400 220"><line x1="40" y1="190" x2="380" y2="190" stroke="#888"/><line x1="40" y1="190" x2="40" y2="10" stroke="#888"/><text x="370" y="208">x</text><text x="22" y="18">y</text>
+<line x1="150" y1="20" x2="300" y2="190" stroke="#2563eb" stroke-width="3"/><line x1="40" y1="190" x2="262" y2="148" stroke="#db2777" stroke-dasharray="5"/>
+<text x="140" y="155" fill="#db2777">ρ</text><path d="M80 190a40 40 0 0 0 -5 -8" stroke="#d97706" fill="none"/><text x="85" y="182">θ</text><text x="260" y="95">the line</text></svg>
+<p><b>Bounds:</b> ρ goes from −D to +D (D = image diagonal); θ from 0° to 180° (or −90° to +90°). Everything is finite, so it fits in a grid.</p>
+<h3>Duality table</h3><div class="tb"><table><tr><th>Image space</th><th>Hough space</th></tr><tr><td>One point</td><td>A sine-wave curve</td></tr><tr><td>A straight line</td><td>A single point</td></tr><tr><td>Many collinear points</td><td>Many curves meeting at one point</td></tr><tr><td>Noisy scattered points</td><td>Scattered curves, no clear peak</td></tr></table></div></section>
+
+<section class="s3" id="c"><span class="tag">Session 1</span><h2>3. The Algorithm Step by Step</h2>
+<ol><li><b>Edge detection.</b> Use Canny or Sobel to make a binary image (edge pixel = 1, rest = 0).</li>
+<li><b>Parameterise.</b> Use ρ = x cosθ + y sinθ.</li>
+<li><b>Accumulator array.</b> A 2D table (grid): one axis is ρ bins, the other is θ bins. Each cell counts the edge pixels supporting that line. It is also called Hough space or voting array.</li>
+<li><b>Voting.</b> For every edge pixel, for every θ (0° to 180°), compute ρ and add 1 to that cell.</li>
+<li><b>Find peaks.</b> Cells with high counts are real lines (use a threshold or local maxima).</li>
+<li><b>Map back.</b> Turn each peak (ρ, θ) into a line drawn on the image.</li></ol>
+<div class="ex">Pixel (2,3) at θ = 45°: ρ = 2·0.707 + 3·0.707 = <b>3.54</b>. Do this for all θ and you get one curve. Do it for every edge pixel and look for where curves pile up.</div>
+<h3>Worked problem (10×10 matrix with a diagonal)</h3>
+<p>The 1s form a diagonal staircase, so all its pixels lie on one line. Every one of them votes for the same (ρ, θ) cell, which becomes the clear winner.</p>
+<div class="tip">Exam tip: your notes say the peak is at θ=45° with 3 votes. That is only a simplified demo. For a line going up-right at 45° the normal actually points at 135° (or −45°), and with 8 edge pixels the peak would get 8 votes. Check with your teacher which version they want.</div>
+<h3>Variants</h3><div class="g"><div><b>Standard HT:</b> all pixels vote for all angles. Robust but slow.</div><div><b>Probabilistic HT:</b> votes using random samples of edge points. Faster, good for real time.</div><div><b>Generalized HT:</b> detects any shape using a template (see section 10).</div></div>
+<h3>Accuracy vs resolution (discretisation)</h3>
+<p>Bins are like boxes of a fixed size: finer boxes = more accurate but more memory and time; coarser = faster but less precise.</p></section>
+
+<section class="s4" id="d"><span class="tag">Session 2</span><h2>4. Foot-of-Normal Method and Line Localisation</h2>
+<p>The <b class="k">foot of the normal</b> is the point (x₀, y₀) where a perpendicular dropped from the origin touches the line. It uses the same equation ρ = x cosθ + y sinθ and has the same benefit: it handles vertical and horizontal lines with finite numbers.</p>
+<p><b>The clever part:</b> each edge pixel also has a <i>gradient</i> (gx, gy) which points across the edge, i.e. along the normal. So the angle θ is already known from the gradient, and the pixel casts <b>one vote</b> (its foot of normal) instead of a whole curve. This is faster and gives a sharper peak. With a slightly wobbly line, the votes make a small cluster near the true foot.</p>
+<h3>Longitudinal line localisation</h3>
+<p>Finding long, straight, prominent lines (such as lane markings). Steps: edge detection (Canny), Hough voting, strong peaks mean long lines, extract peaks, then post-process by filtering orientation (near vertical/horizontal), length or position.</p>
+<p><b>Uses:</b> lane detection in self-driving cars, finding anatomy in X-rays/CT, spotting pipes and rails in factories.</p></section>
+
+<section class="s5" id="e"><span class="tag">Session 2</span><h2>5. Noise and Discretisation: What Hurts Accuracy</h2>
+<div class="tb"><table><tr><th>Noise type</th><th>What it is</th><th>Effect</th></tr>
+<tr><td>Random (salt-and-pepper)</td><td>Stray edge pixels</td><td>Raises background votes, lowers signal-to-noise ratio (SNR); weak lines missed, false lines found</td></tr>
+<tr><td>Structured</td><td>Patterns like compression or ringing</td><td>Ghost peaks that look like real lines</td></tr>
+<tr><td>Edge localisation error</td><td>Edge is found a little off (ε)</td><td>ρ error = εx·cosθ + εy·sinθ; peak gets wider and shifted</td></tr>
+<tr><td>Missing points (gaps)</td><td>Occlusion, weak contrast</td><td>Lower peak; may fall below threshold (false negative)</td></tr></table></div>
+<p><b>Threshold dilemma:</b> false detection if noise votes ≥ T; missed line if true votes &lt; T. No single T is perfect for all images.</p>
+<h3>Discretisation</h3>
+<ul><li>ρ bin width: <code>Δρ = 2D / N_ρ</code>, rounding error ≤ Δρ/2. D = √(W²+H²).</li><li>θ bin width: <code>Δθ = 180° / N_θ</code>. Since dρ/dθ = −x sinθ + y cosθ, points far from the origin shift a lot for a small θ step, so accuracy depends on direction.</li><li><b>Peak splitting:</b> bins too coarse, so one line's votes spread over several cells (many candidates for one line).</li><li><b>Peak merging:</b> bins too fine/close, so two nearby lines look like one.</li></ul>
+<div class="ex">512×512 image: D ≈ 724 px. Standard choice: 1° steps (N_θ=180) and Δρ = 1 pixel, giving an accumulator of about 2D × 180 cells. Very coarse (72×90 bins, Δρ≈20 px) gives poor results; very fine (2896×1440) is slow with diminishing returns.</div></section>
+
+<section class="s1" id="f"><span class="tag">Session 3</span><h2>6. Line Fitting: Least Squares and RANSAC</h2>
+<h3>Final line fitting</h3>
+<p>HT gives infinite lines (ρ, θ). To get real segments: collect edge pixels that voted for the peak, take min and max coordinates as endpoints, optionally refine with <b>least squares</b>, then draw.</p>
+<p><b>Least squares</b> finds the line that minimises the sum of squared distances to all points. <b>Limitation:</b> it is sensitive to outliers. One far-away point drags the whole line towards it.</p>
+<h3>RANSAC (Random Sample Consensus)</h3>
+<p>Fit a model to data with many outliers. <b>Inliers</b> = points that agree with the model, <b>outliers</b> = points that don't.</p>
+<ol><li>Pick 2 random points (minimum for a line).</li><li>Make the line y = ax + b.</li><li>For all points compute distance <code>d = |ax − y + b| / √(a²+1)</code>.</li><li>Inlier if d &lt; threshold t. Count inliers (the "support").</li><li>Keep the model with the most inliers. Repeat N times.</li><li>Optionally refit using all inliers with least squares.</li></ol>
+<div class="ex"><b>Problem 1:</b> pick (2,4),(6,12), so slope = 8/4 = 2, b = 0, line y = 2x. Points on it have d = 0. (5,25) gives |10−25|/√5 ≈ 6.7 and (7,3) gives |14−3|/√5 ≈ 4.9, both outliers. 10 inliers, best line y = 2x.</div>
+<div class="ex"><b>Problem 2</b> (t = 1.5, need d = 5 inliers, N = 10 trials; true line y = 2x+1): <b>Trial 1</b> picks P2(2,5) and P8(2,10), a vertical line x=2, only 2 points close, rejected. <b>Trial 2</b> picks P1(1,3.1), P5(5,11): slope 1.975, intercept 1.125, so y = 1.975x + 1.125. Distances: P1–P7 are all under 0.5 (inliers), P8 = 2.20, P9 = 4.06, P10 = 6.07 (outliers). Support = 7 ≥ 5, so accepted as best.</div>
+<div class="tip">A bad sample (containing an outlier) simply gives low support and is thrown away. That is why RANSAC survives outliers.</div></section>
+
+<section class="s2" id="g"><span class="tag">Session 4</span><h2>7. Circle Detection (Circular Hough Transform)</h2>
+<span class="f">(x − a)² + (y − b)² = r²</span>
+<p>A circle needs <b>3 parameters</b> (centre a, b and radius r), so the Hough space is 3D.</p>
+<ol><li>Detect edges (Canny).</li><li>For each edge pixel (x,y) and each radius r in range, possible centres are <code>a = x − r cosθ, b = y − r sinθ</code> for θ = 0° to 360°. Vote at (a,b,r).</li><li>Peaks give centre and radius.</li></ol>
+<svg viewBox="0 0 360 170"><circle cx="110" cy="85" r="55" fill="none" stroke="#2563eb" stroke-width="3"/><circle cx="110" cy="85" r="4" fill="#059669"/><circle cx="165" cy="85" r="5" fill="#db2777"/><circle cx="71" cy="46" r="5" fill="#db2777"/><circle cx="110" cy="140" r="5" fill="#db2777"/>
+<text x="95" y="75" fill="#059669">centre</text><text x="190" y="60">Each edge pixel votes for every</text><text x="190" y="80">possible centre at distance r.</text><text x="190" y="100">The true centre gets the most votes.</text></svg>
+<h3>Why centre location is inaccurate</h3>
+<ul><li>Natural edge width adds error.</li><li>Noise moves the edge position and the estimated edge direction.</li><li>Object itself may be distorted (need a robust average).</li><li>Poor illumination makes it look distorted.</li><li>The edge orientation operator has its own inaccuracy.</li></ul>
+<p><b>Fixes:</b> subpixel refinement (OpenCV HoughCircles returns whole numbers), finer bins (costs time), two-stage or phase-coding methods (still struggle with concentric or hidden circles).</p>
+<h3>Speeding it up</h3>
+<ul><li><b>Sampling:</b> scan only every n-th line (factor α).</li><li><b>Simpler edge detector:</b> two-pixel differencing instead of Sobel (fewer multiplications and square roots).</li><li><b>Chord bisection:</b> on each scan line find where the object starts and ends, take the midpoint, and vote in a 1D space (x for horizontal scans, y for vertical). Peaks give the centre. It needs at least 3/4 of the circumference present.</li></ul>
+<p>Original time <code>T₀ = N²s + S·t₀</code>. Chord method <code>T = 2(N²q + Q·t)</code>. Gain <code>G = (N²s + S·t₀) / (2α(N²q + Q·t))</code>. About 3× from sampling and 3× from simpler edges gives up to ~25× faster (α down to 0.1). If a fraction β of data is lost, γ = 1 − β is left and accuracy drops to √γ of the best. Edge threshold matters: too low gives false edges, too high loses sensitivity.</p>
+<p><b>Fast centre-finding:</b> (1) horizontal scans, midpoints in x-space; (2) vertical scans, y-space; (3) find peaks; (4) test the candidate centres.</p></section>
+
+<section class="s3" id="h"><span class="tag">Session 5</span><h2>8. Ellipse Detection</h2>
+<p>An ellipse needs <b>5 parameters</b>: centre (xc, yc), major axis a, minor axis b, orientation θ. A direct HT would need a 5D space, which is huge, so clever shortcuts are used.</p>
+<h3>Diameter bisection (Tsuji and Matsumoto, 1978)</h3>
+<p>Find pairs of edge points whose edge directions are opposite (antiparallel). They could be ends of a diameter, so their <b>midpoint is a candidate centre</b>. Vote for midpoints; peaks are centres.</p>
+<p><b>Good:</b> simple. <b>Bad:</b> m points give m(m−1)/2 pairs (slow); also finds rectangles, circles and other symmetric shapes; sensitive to clutter; needs much of the boundary visible.</p>
+<p><b>Verification:</b> for a true ellipse, <code>1/OP² + 1/OQ² = 1/R²</code> (OP, OQ perpendicular semidiameters, R constant). Make a histogram of R; a clear peak confirms an ellipse.</p>
+<h3>Chord-tangent (Yuen et al., 1988)</h3>
+<p>For two edge points P1, P2: draw tangents meeting at T; M is the chord midpoint. The centre lies on line TM, beyond M (segment MK). Vote only along that segment. <b>Better</b> with occlusion and perspective; <b>slower</b> as it votes along lines.</p>
+<svg viewBox="0 0 360 170"><ellipse cx="190" cy="95" rx="110" ry="60" transform="rotate(-20 190 95)" fill="none" stroke="#2563eb" stroke-width="3"/><circle cx="130" cy="55" r="5" fill="#db2777"/><circle cx="230" cy="135" r="5" fill="#db2777"/><line x1="130" y1="55" x2="230" y2="135" stroke="#888" stroke-dasharray="4"/><circle cx="180" cy="95" r="5" fill="#059669"/><text x="185" y="88" fill="#059669">midpoint = centre</text><text x="95" y="48">P1</text><text x="235" y="152">P2</text></svg>
+<h3>Parameter estimation</h3><span class="f">Ax² + 2Hxy + By² + 2Gx + 2Fy + C = 0,  with AB &gt; H²</span>
+<p>After finding the centre, get orientation and axes by least squares or a smaller second-stage Hough transform.</p></section>
+
+<section class="s4" id="i"><span class="tag">Session 5</span><h2>9. Real Uses: Iris Location and Hole Detection</h2>
+<h3>Iris location</h3>
+<p>Why: face analysis, gaze direction, biometric ID. First find the face to set a region of interest (ROI). The iris is a round, high-contrast shape. <b>Challenges:</b> light iris colour or low contrast, eyelid/eyelash occlusion, ellipse shape from gaze angle. Use Canny edges plus Circular HT. <b>Gradient-weighted HT</b> gives stronger votes to strong edges, so peaks are sharper and eyelid or skin-fold edges matter less. The ellipse's eccentricity helps estimate gaze. Typical radius is ~17.5 px; accurate gaze or biometrics needs ~100 px.</p>
+<h3>Hole detection</h3>
+<p>Same circle methods, but holes are <b>darker</b> than the background (negative contrast), so votes go a distance <b>2R</b> along the edge normal. Large holes are easy. Small holes suffer from poor light and weak contrast. Very small holes (1 to 2 pixels) use template matching with a Laplacian mask that sums to zero (so brightness changes don't matter):</p>
+<span class="f">−1 −1 −1 / −1 8 −1 / −1 −1 −1</span>
+<p>Then threshold the result. Bigger holes need impractically big masks, so use HT. Circular holes are isotropic (the same in all directions) and less biased than corners, ideal for precise object location.</p></section>
+
+<section class="s5" id="j"><span class="tag">Sessions 6 and 7</span><h2>10. Generalized Hough Transform (GHT)</h2>
+<p>For shapes with <b>no simple equation</b> (a key, a leaf, a bolt). You teach it the shape through a <b>template</b>.</p>
+<ul><li>Pick a <b>reference point L</b> (often the centroid; for an ellipse, its centre).</li><li>For each boundary point (x,y) store the displacement <code>r = (x₀ − x, y₀ − y)</code> and the edge direction θ.</li></ul>
+<h3>R-table</h3><p>A lookup table indexed by edge orientation θ: <code>R(θ) = {(rx, ry), …}</code>. For concave shapes one θ can have several vectors (multivalued).</p>
+<svg viewBox="0 0 520 150"><text x="10" y="20" font-weight="700">Building (training)</text><text x="10" y="45">Boundary point + direction θ</text><text x="10" y="65">→ store vector to L in row θ</text>
+<rect x="250" y="25" width="120" height="100" fill="none" stroke="#7c3aed"/><text x="278" y="45">R-table</text><text x="262" y="70">θ₁ → r₁, r₂</text><text x="262" y="90">θ₂ → r₃</text><text x="262" y="110">θ₃ → r₄, r₅</text>
+<text x="390" y="20" font-weight="700">Detecting</text><text x="390" y="45">Edge with θ → look up row</text><text x="390" y="65">→ vote at pixel + r</text><text x="390" y="85">Peak = object location</text></svg>
+<div class="ex">Teach GHT a triangle logo. Later, an edge pixel pointing "up-right" looks up its row and votes at the spots where the triangle's centre would be. If the logo is truly there, hundreds of pixels vote for the same centre.</div>
+<h3>Design choices</h3>
+<ul><li><b>Reference point:</b> must be stable; centroid is common.</li><li><b>Orientation quantisation:</b> bins of angle. Fine = precise but heavier; coarse = light but ambiguous.</li><li><b>Translation invariance:</b> built in (vectors are relative to L).</li><li><b>Rotation and scale:</b> not built in. Rotate or scale the vectors during voting, or store several R-tables. This adds dimensions: (x,y), then (x,y,φ), then (x,y,s,φ).</li><li><b>Ellipse template:</b> uses the prototype's boundary to centre vectors, so only a 2D centre search is needed instead of 5D.</li><li><b>Cost:</b> building ≈ N boundary points; voting ≈ O(M·k) for M edge pixels and k vectors per bin; rotation and scale multiply it.</li></ul>
+<p><b>Good:</b> robust to occlusion and noise, finds many instances, works for any contour. <b>Bad:</b> big parameter space and memory; fake edges give false peaks; needs hierarchical or projection tricks.</p>
+<h3>Spatial matched filtering (template matching)</h3>
+<p>Slide a template over the image and compute correlation at each spot; peaks mean the object is likely there. This is optimal for known shapes in white noise. <b>Problems:</b> changing illumination, non-white noise, high cost. <b>Fixes:</b> zero-mean templates (subtract the mean), smaller zero-mean subtemplates, thresholding, noise-whitening high-pass filter.</p></section>
+
+<section class="s1" id="k"><span class="tag">Session 7</span><h2>11. Pose Estimation Accuracy (Affine)</h2>
+<p><b>Pose</b> = where the object is and how it is turned: translation, rotation, scale, and (for affine) shear. An <b>affine transform</b> keeps straight lines and parallelism but not angles or lengths:</p>
+<span class="f">[x′ y′]ᵀ = A·[x y]ᵀ + t</span>
+<p>A holds rotation, scale and shear; t = (tx, ty) is the shift. Accuracy means comparing estimated values (with hats) to ground truth.</p>
+<div class="tb"><table><tr><th>Error</th><th>Formula</th></tr><tr><td>Translation</td><td>√((tx−t̂x)² + (ty−t̂y)²)</td></tr><tr><td>Rotation</td><td>|θ − θ̂| (wrap to −180°..180°)</td></tr><tr><td>Scale</td><td>|s − ŝ| or √((sx−ŝx)² + (sy−ŝy)²)</td></tr><tr><td>Shear</td><td>√((a12−â12)² + (a21−â21)²)</td></tr><tr><td>Frobenius norm</td><td>‖A − Â‖F = √(sum of squared entries)</td></tr><tr><td>Relative transform</td><td>E = T⁻¹·T̂ (perfect = identity matrix)</td></tr><tr><td>MSE / RMSE</td><td>(1/N)Σ‖pᵢ − p̂ᵢ‖², RMSE = √MSE (same units as pixels)</td></tr><tr><td>Reprojection error</td><td>(1/N)Σ‖pᵢ − π(T̂Pᵢ)‖ (3D point projected back)</td></tr><tr><td>IoU</td><td>Area of intersection / Area of union (higher is better)</td></tr></table></div></section>
+
+<section class="s2" id="l"><span class="tag">Session 8</span><h2>12. Probabilistic Voting and Feature Collation</h2>
+<p>Plain voting counts every vote as +1. <b>Probabilistic voting</b> gives each vote a confidence weight wᵢ in [0,1]: <code>A(x,y) = A(x,y) + wᵢ</code>. Weights come from gradient magnitude, edge strength, orientation consistency, feature match confidence, and distance from the expected contour. Strong evidence counts more; weak evidence counts less.</p>
+<h3>Bayesian view</h3>
+<p>H = "object centre is at (x,y)", Eᵢ = evidence from feature i. If features are independent: <code>P(H|E) ∝ ΠP(Eᵢ|H)</code>. Taking logs turns the product into a sum, <code>log P(H|E) = Σ log P(Eᵢ|H)</code>, so accumulator values act as log-likelihood scores.</p>
+<h3>More ideas</h3>
+<ul><li><b>Occlusion:</b> hidden parts give no votes, but strong visible features still make a peak; noisy edges are down-weighted.</li><li><b>Feature collation:</b> combine edges, corners, texture, intensity gradients and shape-context features, each weighted by reliability, into one evidence score.</li><li><b>Normalisation:</b> divide by number of features, by expected visible contour length, or by object size, so big objects don't win unfairly.</li><li><b>Evaluation:</b> detection probability, false-positive rate, precision/recall, ROC curves, localisation error.</li><li>Gains: robustness to noise, stability with partial evidence, reliability in clutter. Cost: extra weight calculations.</li></ul></section>
+
+<section class="s3" id="m"><span class="tag">Session 8</span><h2>13. GHT Scalability Problems</h2>
+<ul><li><b>Dimension growth:</b> 2D (translation), 3D (+rotation), 4D (+scale), 5D+ (affine). With k bins per parameter the accumulator holds <b>k^d cells</b> (exponential).</li><li><b>Memory:</b> R-tables (more for several scales/rotations) plus the huge accumulator, a problem on embedded devices.</li><li><b>Computation:</b> O(M·k), multiplied by the extra bins.</li><li><b>Discretisation:</b> fine bins are accurate but big; coarse bins are small but imprecise.</li><li><b>Multiple objects:</b> votes overlap and peaks merge.</li><li><b>High resolution:</b> more edge pixels and bigger voting area.</li><li><b>Real time:</b> memory, voting, multi-dimensional peak search; needs GPU or approximations.</li><li><b>Clutter:</b> spurious edges blur peaks and cost more filtering.</li></ul>
+<div class="ex">If each of 4 parameters has 100 bins: 100⁴ = 100,000,000 cells. Add a 5th and it is 10 billion.</div></section>
+
+<section class="s4" id="n"><span class="tag">Session 9</span><h2>14. HT and GHT in Modern Vision, and Upgrading Them</h2>
+<p><b>Today's role:</b> deep learning leads, but HT/GHT stay useful as a <b>geometric check</b>: confirming lane boundaries, document text lines, circular parts, medical structures and fixed-shape components. They are <b>interpretable</b> (explicit geometry) and need <b>no big labelled dataset</b>. But deep models are better for textures, non-rigid objects and variation, and scale better, so HT/GHT are rarely the main detector. Hybrid idea: a neural network predicts edge maps or regions, then Hough voting enforces geometry.</p>
+<h3>Modernisation strategies</h3>
+<div class="g"><div><b>Parallelise:</b> pixels vote independently, so use GPU/CUDA/multi-core.</div><div><b>Adaptive bins:</b> coarse-to-fine search, refine around peaks.</div><div><b>Weighted voting:</b> confidence-based votes.</div><div><b>Hybrid with ML:</b> network gives feature maps; HT verifies geometry.</div><div><b>Save memory:</b> sparse accumulators; randomised or probabilistic HT.</div><div><b>Handle transforms:</b> normalise or align images instead of adding dimensions.</div><div><b>Edge pruning:</b> drop weak edges, gradient thresholds, ROI filtering.</div><div><b>Embedded speed:</b> fixed-point maths, hardware acceleration, FPGA.</div><div><b>Modular design:</b> HT as a plug-in inside a bigger pipeline.</div></div></section>
+
+<section class="s5"><h2>Quick Cheat Sheet</h2>
+<div class="tb"><table><tr><th>Shape</th><th>Parameters</th><th>Space</th><th>Key trick</th></tr><tr><td>Line</td><td>ρ, θ</td><td>2D</td><td>Polar form</td></tr><tr><td>Circle</td><td>a, b, r</td><td>3D</td><td>Vote for centres; chord bisection</td></tr><tr><td>Ellipse</td><td>xc, yc, a, b, θ</td><td>5D</td><td>Diameter bisection, chord-tangent</td></tr><tr><td>Any shape</td><td>x, y (+ rotation, scale)</td><td>2D to 4D+</td><td>R-table template</td></tr></table></div>
+<p><b>One-line summary:</b> detect edges, let every edge pixel vote for the shapes it could belong to, and pick the shapes with the most votes. The rest of the unit is about making that faster, more accurate and more flexible.</p></section>
+</div><script>
+if (window.self === window.top) {
+  var b = document.createElement('a');
+  b.href = '../index.html';
+  b.className = 'hub-floating-btn';
+  b.innerHTML = '← Back to Study Portal';
+  b.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;background:#0969da;color:#ffffff;font-family:system-ui,-apple-system,sans-serif;font-size:13px;font-weight:700;padding:10px 18px;border-radius:99px;box-shadow:0 4px 14px rgba(0,0,0,0.35);text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s ease;cursor:pointer;';
+  b.onmouseenter = function(){ b.style.transform='translateY(-2px)'; b.style.boxShadow='0 6px 20px rgba(9,105,218,0.5)'; };
+  b.onmouseleave = function(){ b.style.transform='none'; b.style.boxShadow='0 4px 14px rgba(0,0,0,0.35)'; };
+  document.body.appendChild(b);
+}
+</script>
+</body></html>

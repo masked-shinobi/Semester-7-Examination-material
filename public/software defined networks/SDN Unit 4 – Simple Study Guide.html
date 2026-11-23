@@ -1,0 +1,347 @@
+﻿<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SDN Unit 4 – Simple Study Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Nunito:wght@400;600;700&family=Fira+Code&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f8fb;--card:#fff;--ink:#1d2433;--mute:#5b6478;--line:#dfe3ec;--tip:#fff6d6;--tipi:#6b4e00;
+--c1:#1f4fd8;--c2:#0f766e;--c3:#c2410c;--c4:#6d28d9;--c5:#be123c;--c:#1f4fd8;--soft:#e8eefc;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10131a;--card:#181d28;--ink:#e8ecf5;--mute:#9aa4b8;--line:#2b3345;--tip:#3a3115;--tipi:#f3d98a;
+--c1:#7da2ff;--c2:#4fd1c0;--c3:#ff9d6c;--c4:#b99cff;--c5:#ff7f9f}}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.65 Nunito,Arial,sans-serif}
+.w{max-width:900px;margin:auto;padding:16px}
+h1,h2,h3{font-family:Poppins,Arial,sans-serif;line-height:1.25}
+h1{font-size:2rem;margin:.3em 0}
+nav{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+nav a{padding:6px 12px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--ink);text-decoration:none;font-weight:700;font-size:.9rem}
+section{margin:34px 0}
+.hd{background:var(--c);color:#fff;border-radius:14px;padding:14px 20px}
+.hd h2{margin:0;color:#fff}.hd small{opacity:.9}
+:root[data-x]{}
+#t1{--c:var(--c1)}#t2{--c:var(--c2)}#t3{--c:var(--c3)}#t4{--c:var(--c4)}#t5{--c:var(--c5)}
+@media (prefers-color-scheme:dark){.hd{color:#10131a}.hd h2{color:#10131a}}
+h3{color:var(--c);border-bottom:2px solid var(--line);padding-bottom:4px;margin-top:28px}
+.card{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:10px;padding:10px 16px;margin:12px 0}
+.ex{background:var(--tip);color:var(--tipi);border-radius:10px;padding:10px 16px;margin:12px 0}
+.ex b:first-child{text-transform:uppercase;font-size:.8rem;letter-spacing:.05em}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.g .card{margin:0}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.93rem;background:var(--card)}
+th{background:var(--c);color:#fff;text-align:left;padding:7px 10px}
+@media (prefers-color-scheme:dark){th{color:#10131a}}
+td{padding:7px 10px;border:1px solid var(--line);vertical-align:top}
+svg{width:100%;height:auto;max-width:100%;background:var(--card);border:1px solid var(--line);border-radius:10px;margin:8px 0}
+svg text{fill:var(--ink);font:600 12px Nunito,Arial,sans-serif;text-anchor:middle}
+.b{fill:var(--soft);stroke:var(--c);stroke-width:1.5}.s{fill:var(--c);stroke:var(--c)}svg .s+text,svg text.w{fill:#fff}
+.l{stroke:var(--c);stroke-width:1.5;fill:none}.d{stroke:var(--mute);stroke-dasharray:5 4;fill:none}
+.y{fill:var(--tip);stroke:var(--tipi)}
+pre{background:#12161f;color:#e6edf7;padding:12px;border-radius:10px;overflow-x:auto;font:13px/1.5 'Fira Code',monospace}
+code{font-family:'Fira Code',monospace;font-size:.88em;background:var(--soft);padding:1px 5px;border-radius:5px}
+.chip{display:inline-block;background:var(--soft);color:var(--c);border-radius:6px;padding:0 8px;font-weight:700}
+</style></head><body><div class="w">
+<h1>SDN Unit 4 – Deployments, Applications &amp; Use Cases</h1>
+<p>A plain-English guide. Every hard word is explained the first time it appears, with a real-life example where helpful. Read top to bottom once; nothing from the unit is skipped.</p>
+<div class="card" id="base"><b>Start here – SDN in one minute.</b> In an old network every switch/router decides by itself where to send data (like every traffic police officer making up his own rules). In <b>Software Defined Networking (SDN)</b> the thinking is moved to one central brain, the <b>controller</b> (software). Switches just follow its instructions. The instructions are called <b>flow rules</b>: <i>“if a packet looks like THIS, do THAT.”</i>
+<br><b>Control plane</b> = the brain (decides). <b>Data plane</b> = the muscles (forward packets). <b>API</b> = a way for programs to talk to each other. <b>Northbound</b> = controller ↔ apps above it; <b>southbound</b> = controller ↔ switches below it (e.g. OpenFlow).</div>
+<nav><a href="#t1">I Data Center</a><a href="#t2">II Other Environments</a><a href="#t3">III Applications</a><a href="#t4">IV Use Cases</a><a href="#t5">V ONOS</a><a href="#gl">Glossary</a></nav>
+
+<!-- ============ TOPIC 1 ============ -->
+<section id="t1"><div class="hd"><small>TOPIC I</small><h2>SDN in the Data Center</h2></div>
+<p>A <b>data center (DC)</b> is a huge building full of servers, storage and switches that runs websites, apps and clouds (think Google, Amazon, Azure). Its network must be fast, big, shared safely and automatic.</p>
+
+<h3>1. Why data centers need SDN (the problems)</h3>
+<div class="g">
+<div class="card"><b>Multi-tenancy</b><br>Many customers (“tenants”) share the same hardware but each wants a private network. A <b>VLAN</b> is an old way to separate networks but its ID is only 12 bits → just 4094 usable networks. Too few for a cloud.<div class="ex"><b>Example</b> One apartment building, thousands of families; each needs its own locked flat, but the building only has 4094 door keys.</div></div>
+<div class="card"><b>VM mobility</b><br>A <b>virtual machine (VM)</b> is a “fake computer” running inside a real server. It can be moved live to another server (<i>live migration</i>). Its address, rules and paths must follow it with no manual work.</div>
+<div class="card"><b>East–west traffic</b><br>Most traffic goes server ↔ server <i>inside</i> the data center (storage, big-data jobs), not out to the Internet.</div>
+<div class="card"><b>STP limits</b><br><b>Spanning Tree Protocol</b> avoids loops by switching OFF extra links → wasted capacity.</div>
+<div class="card"><b>Scale &amp; speed</b><br>Tens of thousands of ports; typing commands (<b>CLI</b>) box by box is impossible.</div>
+<div class="card"><b>Small flow tables</b><br><b>TCAM</b> is the special fast memory that stores rules in a switch. It is expensive and small, so rules must be planned carefully.</div>
+</div>
+
+<h3>2. Topologies: three-tier vs leaf–spine</h3>
+<p><b>Three-tier</b> (access → aggregation → core) is old, jammed at the top (“oversubscribed”) and needs STP. <b>Leaf–spine (Clos)</b> is modern: every <b>leaf</b> switch (top-of-rack, <b>ToR</b>, sits on top of a server rack) connects to <b>every spine</b> switch. So any two servers are the same number of hops apart, and all links are used. <b>ECMP</b> (Equal-Cost Multi-Path) spreads traffic across the equal paths.</p>
+<svg viewBox="0 0 620 230" role="img" aria-label="Leaf-spine">
+<g class="l"><path d="M110 60L90 120M110 60L240 120M110 60L390 120M110 60L540 120M310 60L90 120M310 60L240 120M310 60L390 120M310 60L540 120M510 60L90 120M510 60L240 120M510 60L390 120M510 60L540 120"/></g>
+<rect class="s" x="60" y="35" width="100" height="26" rx="6"/><text class="w" x="110" y="53">Spine 1</text>
+<rect class="s" x="260" y="35" width="100" height="26" rx="6"/><text class="w" x="310" y="53">Spine 2</text>
+<rect class="s" x="460" y="35" width="100" height="26" rx="6"/><text class="w" x="510" y="53">Spine 3</text>
+<rect class="b" x="40" y="120" width="100" height="26" rx="6"/><text x="90" y="138">Leaf 1</text>
+<rect class="b" x="190" y="120" width="100" height="26" rx="6"/><text x="240" y="138">Leaf 2</text>
+<rect class="b" x="340" y="120" width="100" height="26" rx="6"/><text x="390" y="138">Leaf 3</text>
+<rect class="b" x="490" y="120" width="100" height="26" rx="6"/><text x="540" y="138">Leaf 4</text>
+<text x="90" y="176">Servers</text><text x="240" y="176">Servers</text><text x="390" y="176">Servers</text><text x="540" y="176">Servers</text>
+<rect class="y" x="190" y="196" width="240" height="24" rx="6"/><text x="310" y="212">SDN controller programs all switches</text></svg>
+<div class="tw"><table><tr><th>Aspect</th><th>Three-tier</th><th>Leaf–spine</th></tr>
+<tr><td>Loops</td><td>STP blocks links</td><td>Routed, all links active</td></tr>
+<tr><td>East–west</td><td>Uneven, oversubscribed</td><td>Same hop count, ECMP</td></tr>
+<tr><td>Growth</td><td>Buy bigger boxes (scale up)</td><td>Add more leaves/spines (scale out)</td></tr>
+<tr><td>SDN fit</td><td>Limited</td><td>Excellent – regular, easy to program</td></tr></table></div>
+<div class="card"><b>Fat-tree (a leaf-spine variant):</b> with <i>k</i>-port switches: <i>k</i> pods, (k/2)² core switches, k³/4 hosts. For k = 48 → <b>27,648 hosts</b> using cheap identical switches.</div>
+
+<h3>3. Network virtualization with overlays</h3>
+<p>The real physical network is the <b>underlay</b>. On top of it, software builds a private virtual network for each tenant: the <b>overlay</b>, using <b>tunnels</b> made by the virtual switch inside each server.</p>
+<div class="ex"><b>Example</b> Overlay = putting your private letter inside an envelope and posting it. The postal system (underlay) only reads the outer address; the inner letter is your tenant’s own frame.</div>
+<p><b>VXLAN</b> (Virtual eXtensible LAN) wraps the VM’s Ethernet frame inside a <b>UDP</b> packet (port <b>4789</b>) and adds a 24-bit <b>VNI</b> (network ID) → ~16 million networks instead of 4094. The tunnel ends are <b>VTEPs</b>, usually inside <b>Open vSwitch (OVS)</b> (a software switch) on each server. Extra header ≈ <b>50 bytes</b>, so the underlay <b>MTU</b> (max packet size) must be increased.</p>
+<svg viewBox="0 0 640 210" role="img" aria-label="VXLAN">
+<rect class="b" x="10" y="10" width="130" height="50" rx="8"/><text x="75" y="32">Server 1: VM-A</text><text x="75" y="48">tenant 1, VNI 5001</text>
+<rect class="b" x="500" y="10" width="130" height="50" rx="8"/><text x="565" y="32">Server 2: VM-B</text><text x="565" y="48">tenant 1, VNI 5001</text>
+<rect class="s" x="20" y="80" width="110" height="26" rx="6"/><text class="w" x="75" y="98">VTEP (OVS)</text>
+<rect class="s" x="510" y="80" width="110" height="26" rx="6"/><text class="w" x="565" y="98">VTEP (OVS)</text>
+<rect class="b" x="190" y="68" width="260" height="50" rx="8" style="stroke-dasharray:5 4"/><text x="320" y="90">Underlay: routed leaf–spine</text><text x="320" y="106">IP network (the “road”)</text>
+<path class="l" d="M130 93H190M450 93H510"/>
+<rect class="b" x="10" y="150" width="90" height="40" rx="6"/><text x="55" y="174">Outer Eth</text>
+<rect class="b" x="105" y="150" width="80" height="40" rx="6"/><text x="145" y="174">Outer IP</text>
+<rect class="b" x="190" y="150" width="90" height="40" rx="6"/><text x="235" y="170">UDP</text><text x="235" y="184">4789</text>
+<rect class="b" x="285" y="150" width="110" height="40" rx="6"/><text x="340" y="170">VXLAN hdr</text><text x="340" y="184">24-bit VNI</text>
+<rect class="y" x="400" y="150" width="230" height="40" rx="6"/><text x="515" y="174">VM’s original frame + data</text></svg>
+<div class="tw"><table><tr><th>Protocol</th><th>ID size</th><th>Carried over</th><th>Note</th></tr>
+<tr><td>VLAN</td><td>12 bit (4094)</td><td>L2 tag</td><td>Too few for cloud</td></tr>
+<tr><td>VXLAN</td><td>24-bit VNI (16 M)</td><td>UDP 4789</td><td>Most widely used (RFC 7348)</td></tr>
+<tr><td>NVGRE</td><td>24-bit VSID</td><td>GRE</td><td>Microsoft-originated</td></tr>
+<tr><td>Geneve</td><td>24-bit VNI</td><td>UDP 6081</td><td>Extensible options (RFC 8926)</td></tr>
+<tr><td>STT</td><td>64-bit context</td><td>TCP-like</td><td>Nicira; NIC-friendly</td></tr></table></div>
+<p>In big networks the VXLAN control plane is often <b>BGP EVPN</b>, while SDN controllers program the virtual switches directly.</p>
+
+<h3>4. SDN architecture in a data center</h3>
+<p>A tenant asks the cloud (<b>OpenStack</b>) to “create a network”. OpenStack’s <b>Neutron</b> service passes it through a plug-in (<b>ML2</b> driver) to the SDN controller (ONOS or OpenDaylight). The controller then configures OVS on every compute node via <b>OpenFlow</b> and <b>OVSDB</b>, and configures the physical leaf/spine switches (OpenFlow/NETCONF).</p>
+<svg viewBox="0 0 620 230" role="img" aria-label="Architecture">
+<rect class="y" x="170" y="8" width="280" height="30" rx="8"/><text x="310" y="28">Cloud orchestrator (OpenStack Nova + Neutron)</text>
+<path class="l" d="M310 38V62"/><text x="400" y="55">tenant requests (REST)</text>
+<rect class="s" x="170" y="62" width="280" height="40" rx="8"/><text class="w" x="310" y="80">SDN controller (ONOS / OpenDaylight)</text><text class="w" x="310" y="95">ML2 / plug-in driver</text>
+<path class="l" d="M230 102L130 140M390 102L490 140"/><text x="140" y="118">OpenFlow / OVSDB</text><text x="500" y="118">OpenFlow / NETCONF</text>
+<rect class="b" x="20" y="140" width="250" height="80" rx="8"/><text x="145" y="158">Compute node: VM1 VM2 VM3</text><rect class="s" x="40" y="172" width="210" height="30" rx="6"/><text class="w" x="145" y="192">Open vSwitch (VTEP + rules)</text>
+<rect class="b" x="350" y="140" width="250" height="80" rx="8"/><text x="475" y="158">Physical fabric</text><text x="475" y="190">Leaf switches ↔ Spine switches</text></svg>
+
+<h3>5. What SDN does inside the data center</h3>
+<div class="card"><ol><li><b>Tenant isolation &amp; micro-segmentation</b> – a firewall rule per VM at the virtual switch, so even VMs of one tenant on one subnet can be separated.</li>
+<li><b>Traffic engineering &amp; load balancing</b> – ECMP can put several “elephant flows” (huge long transfers) on one link. <b>Hedera</b> spots them using switch statistics and moves them to empty paths.</li>
+<li><b>VM migration support</b> – when a VM moves, the controller updates tunnels and rules.</li>
+<li><b>Fast provisioning</b> – a tenant network in seconds by API, not days by CLI.</li>
+<li><b>Failure handling</b> – controller recomputes paths; <i>fast-failover group tables</i> give instant local backup.</li>
+<li><b>Telemetry</b> – flow/port counters feed monitoring and capacity planning.</li></ol></div>
+<h3>Reactive vs proactive rules</h3>
+<div class="g"><div class="card"><b>Reactive</b>: first packet goes to the controller, controller installs a rule. Adds delay + controller load.</div>
+<div class="card"><b>Proactive</b>: rules pushed <i>before</i> traffic. No delay. Data centers use proactive base rules (routing, tunnels) and reactive only for rare cases. <b>Wildcard rules</b> and aggregation save TCAM.</div></div>
+<div class="ex"><b>Example</b> Reactive = asking the manager every time a new customer arrives. Proactive = giving the staff a rule book in the morning.</div>
+
+<h3>6. Real deployments</h3>
+<div class="tw"><table><tr><th>Operator</th><th>System</th><th>What it shows</th></tr>
+<tr><td>Google</td><td>Jupiter, Andromeda, B4</td><td>Central routing in the fabric; software network-virtualization; SDN WAN with central TE between DCs</td></tr>
+<tr><td>Microsoft</td><td>Azure host SDN (<b>VFP</b> = Virtual Filtering Platform), <b>SONiC</b></td><td>Policy and virtual networks as match–action tables in the host vSwitch; open switch OS</td></tr>
+<tr><td>Open source</td><td>OpenStack + ONOS / OpenDaylight / OVN</td><td>Controller-driven tenant networking via Neutron</td></tr></table></div>
+<h3>7. Challenges</h3>
+<div class="card">Controller scalability/availability (fix: clustering) · limited hardware table size and flow-setup rate · hard to correlate overlay and underlay problems · integration with legacy networks and staff skills.</div>
+<div class="ex"><b>Exam tip</b> Always pair overlay (VXLAN, tenant view) with underlay (leaf–spine IP fabric). SDN programs the overlay at the vSwitch.</div></section>
+
+<!-- ============ TOPIC 2 ============ -->
+<section id="t2"><div class="hd"><small>TOPIC II</small><h2>SDN in Other Environments</h2></div>
+<p>SDN is not only for data centers. Same idea everywhere: central brain + open interfaces. Answer pattern: <span class="chip">legacy problem → SDN idea → example → benefit</span>.</p>
+
+<h3>1. Wide Area Networks (WAN) and SD-WAN</h3>
+<p>A <b>WAN</b> links far-apart sites. Links are costly and set up router by router.</p>
+<div class="card"><b>Google B4</b> – first famous SDN WAN. Links Google’s data centers with custom OpenFlow switches and a central traffic-engineering (<b>TE</b>) app. Links run at much higher utilization; controller reroutes after failures.</div>
+<div class="card"><b>SD-WAN</b> brings this to companies. An SD-WAN <i>edge box</i> at each branch builds encrypted tunnels over any mix of <b>MPLS</b> (expensive private line), broadband Internet and 4G/5G. A central orchestrator sends policy and does <b>Zero-Touch Provisioning (ZTP)</b> – ship the box, plug it in, it configures itself.<br><b>Application-aware routing:</b> voice → lowest-delay link; backups → cheapest. <b>Security</b> can be chained at edge or cloud. <b>Benefits:</b> cheaper than all-MPLS, fast setup, central visibility.</div>
+<svg viewBox="0 0 640 220" role="img" aria-label="SD-WAN">
+<rect class="s" x="200" y="8" width="240" height="38" rx="8"/><text class="w" x="320" y="26">SD-WAN orchestrator / controller</text><text class="w" x="320" y="40">policy + zero-touch provisioning</text>
+<path class="d" d="M240 46L80 100M400 46L560 100"/>
+<rect class="b" x="10" y="100" width="130" height="44" rx="8"/><text x="75" y="126">Branch edge</text>
+<rect class="b" x="500" y="100" width="130" height="44" rx="8"/><text x="565" y="126">HQ edge</text>
+<rect class="b" x="220" y="80" width="200" height="26" rx="13"/><text x="320" y="98">MPLS</text>
+<rect class="b" x="220" y="112" width="200" height="26" rx="13"/><text x="320" y="130">Broadband Internet</text>
+<rect class="b" x="220" y="144" width="200" height="26" rx="13"/><text x="320" y="162">4G / 5G</text>
+<path class="l" d="M140 122H220M420 122H500"/>
+<rect class="b" x="250" y="184" width="140" height="30" rx="8"/><text x="320" y="204">Cloud / SaaS gateway</text></svg>
+
+<h3>2. Campus and enterprise</h3>
+<p>Campuses have <b>BYOD</b> (Bring Your Own Device), guests, IoT devices and strict security. The controller authenticates the user, gives a <i>role</i>, and installs matching rules on switches and Wi-Fi access points. <b>Policy follows the user, not the port</b>; an infected device is quarantined centrally. Early research used Mininet labs and OpenFlow campus switches at universities.</p>
+<h3>3. Wireless and mobile</h3>
+<div class="card"><b>Software-defined WLAN – Odin.</b> Each client’s connection is a <b>light virtual access point (LVAP)</b> that the controller can move between physical access points → seamless handover + central policy.<div class="ex"><b>Example</b> Your phone “walks” from one Wi-Fi box to another and the call doesn’t drop, because the controller moves your virtual AP.</div></div>
+<div class="card"><b>5G core – CUPS (Control and User Plane Separation).</b> The <b>SMF</b> (control) programs the <b>UPF</b> (forwards user data; can sit near the edge). <b>RAN</b> = radio part (gNB made of CU/DU/RU). <b>O-RAN</b> adds <b>RICs</b>: <b>non-real-time RIC</b> (loops &gt; 1 s, policies, AI/ML) and <b>near-real-time RIC</b> (10 ms–1 s) hosting <b>xApps</b> that tune the radio via the <b>E2</b> interface.</div>
+<svg viewBox="0 0 640 170" role="img" aria-label="5G">
+<rect class="y" x="10" y="8" width="180" height="40" rx="8"/><text x="100" y="26">Non-RT RIC</text><text x="100" y="40">policies, AI/ML &gt;1 s</text>
+<rect class="y" x="220" y="8" width="180" height="40" rx="8"/><text x="310" y="26">Near-RT RIC</text><text x="310" y="40">xApps 10 ms–1 s</text>
+<rect class="s" x="440" y="8" width="190" height="40" rx="8"/><text class="w" x="535" y="26">5G core control plane</text><text class="w" x="535" y="40">(AMF, SMF)</text>
+<path class="l" d="M190 28H220M310 48L110 110M535 48V110"/><text x="200" y="85">E2</text><text x="580" y="85">N4 rules</text>
+<rect class="b" x="10" y="110" width="200" height="40" rx="8"/><text x="110" y="134">RAN: CU / DU / RU (gNB)</text>
+<rect class="b" x="440" y="110" width="190" height="40" rx="8"/><text x="535" y="134">UPF (edge or core)</text>
+<path class="l" d="M210 130H440"/><text x="325" y="124">user data path (N3 / N6)</text></svg>
+
+<h3>4. Optical transport</h3>
+<p>Long-distance traffic rides on light colours (wavelengths) switched by <b>ROADMs</b>. Transport SDN lets a controller set up <i>lightpaths</i>, restore them after fibre cuts, and coordinate with the packet layer (<i>packet–optical integration</i>). Vendor-neutral models: ONF <b>TAPI</b> and <b>OpenROADM</b>; ONOS has optical apps.</p>
+<h3>5. IoT and sensor networks</h3>
+<p>Sensors are tiny and topology changes. <b>SDN-WISE</b> keeps nodes dumb (just match packets and apply rules) while a controller defines routing, <b>duty cycles</b> (sleep/wake times) and data aggregation. In bigger IoT, SDN gateways/edge controllers segment device classes and apply per-device policy.</p>
+<h3>6. Internet exchange points (IXP) and ISPs</h3>
+<div class="card"><b>SDX</b> – <b>BGP</b> (the Internet’s routing protocol) forwards only by destination. At an SDX, members write application-specific policy (“send web traffic via peer X”); the controller turns it into OpenFlow rules while respecting BGP.</div>
+<div class="card"><b>SDN-IP (ONOS)</b> – lets an SDN network swap BGP routes with outside networks as if it were one ordinary network.</div>
+<div class="card"><b>CORD</b> (Central Office Re-architected as a Datacenter) – replaces telecom-exchange hardware with commodity servers, white-box switches and SDN/NFV software (e.g. virtual broadband access).</div>
+<h3>7. Multi-domain control and challenges</h3>
+<p>A <b>parent orchestrator</b> sits above <b>domain controllers</b>, each speaking its domain’s protocols (OpenFlow, NETCONF, gNMI, SNMP, vendor APIs). Benefit: uniform policy across mixed networks.</p>
+<div class="tw"><table><tr><th>Challenge</th><th>Meaning</th></tr>
+<tr><td>Heterogeneity</td><td>Different devices, vendors, protocols</td></tr><tr><td>Scalability</td><td>Large spread-out networks need many controllers</td></tr>
+<tr><td>Latency</td><td>WAN delay hurts reactive control</td></tr><tr><td>Security &amp; trust</td><td>Inter-domain control exposes sensitive info</td></tr>
+<tr><td>Migration</td><td>Must run alongside legacy gear (hybrid)</td></tr></table></div></section>
+
+<!-- ============ TOPIC 3 ============ -->
+<section id="t3"><div class="hd"><small>TOPIC III</small><h2>SDN Applications</h2></div>
+<p>An <b>SDN application</b> is an ordinary program running <i>above</i> the controller. It uses the northbound API to watch and steer the network.</p>
+<h3>1. How an application works</h3>
+<p>Four steps: <b>Subscribe</b> to events (Packet-In, link up/down, host added, stats ready) → <b>Learn</b> state from controller services → <b>Decide</b> using its policy → <b>Program</b> rules/intents back. <b>Reactive</b> apps start from an event (Packet-In); <b>proactive</b> apps compute and install rules in advance.</p>
+<svg viewBox="0 0 640 200" role="img" aria-label="Loop">
+<rect class="s" x="220" y="8" width="200" height="36" rx="8"/><text class="w" x="320" y="30">SDN application (your logic)</text>
+<rect class="b" x="220" y="76" width="200" height="40" rx="8"/><text x="320" y="94">Controller services</text><text x="320" y="108">topology, host, flow</text>
+<rect class="b" x="220" y="148" width="200" height="36" rx="8"/><text x="320" y="170">Switches (data plane)</text>
+<path class="l" d="M270 76V44M370 44V76M270 148V116M370 116V148"/>
+<text x="150" y="64">events</text><text x="500" y="64">policy / intents / rules</text><text x="150" y="136">Packet-In, stats</text><text x="500" y="136">Flow-Mod, Packet-Out</text></svg>
+<h3>2. Categories</h3>
+<div class="g">
+<div class="card"><b>(a) Traffic engineering &amp; QoS</b><br>Pick least-loaded path, split across paths, reroute on failure, guarantee bandwidth with <b>meters</b> (rate limits) and <b>queues</b>. QoS = Quality of Service. Example: B4.</div>
+<div class="card"><b>(b) Monitoring &amp; telemetry</b><br>Read per-flow/port counters or use <b>sFlow</b> sampling; find elephant flows, congestion, anomalies. Every rule already counts packets/bytes – free data.</div>
+<div class="card"><b>(c) Routing</b><br>Central path computation. SDN-IP talks BGP; <b>segment routing</b> puts the path as a stack of labels at the first switch; policy routing sends different apps on different paths.</div>
+<div class="card"><b>(d) Load balancing</b><br>Server LB rewrites client traffic to a chosen server; path LB spreads flows over equal-cost routes (Unit 5 covers more).</div>
+<div class="card"><b>(e) Security</b><br>Firewall, IDS redirection, DDoS mitigation, access control as flow rules (Unit 5).</div>
+<div class="card"><b>(f) Virtualization &amp; slicing</b><br><b>FlowVisor</b> sits between switches and many controllers and gives each its own “slice” of traffic, so tenants/experiments share hardware.</div>
+<div class="card"><b>(g) Energy saving</b><br><b>ElasticTree</b>: at low load, pack flows on fewer links and switch off idle switches.</div>
+<div class="card"><b>(h) Mobility</b><br>Update paths when a host/VM moves – seamless handover.</div>
+<div class="card"><b>(i) Verification &amp; debugging</b><br><b>VeriFlow</b> and Header Space Analysis check rules before install (no loops, no black holes, isolation). Debuggers record packet histories.</div></div>
+
+<h3>3. A simple app: Ryu learning switch</h3>
+<p>Pattern of almost every reactive app. <b>Ryu</b> is a Python controller. Run: <code>ryu-manager l2switch.py</code> and connect Mininet with <code>--controller remote</code>.</p>
+<div class="card"><ol><li><b>Table-miss rule</b>: when a switch connects, install a lowest-priority rule “unknown packet → send to controller”.</li>
+<li><b>Packet-In</b>: controller gets that packet.</li><li><b>Learn</b>: remember “source MAC X is on port P”.</li>
+<li><b>Decide</b>: if destination MAC is known → that port; else <b>flood</b> (send out all ports).</li>
+<li><b>Install rule</b> so later packets don’t come to the controller.</li><li><b>Packet-Out</b>: send this first packet on its way.</li></ol></div>
+<pre>@set_ev_cls(EventOFPPacketIn, MAIN_DISPATCHER)
+def on_packet_in(self, ev):
+    table[eth.src] = in_port            # learn
+    out = table.get(eth.dst, FLOOD)     # decide
+    if out != FLOOD: add_flow(...)      # install rule
+    send PacketOut(...)                 # forward first packet</pre>
+<div class="ex"><b>Example</b> Like a new receptionist: first time someone asks “where is Ravi?” she searches every room (flood), notes where she found him, and next time points directly.</div>
+<h3>4. High-level languages</h3>
+<p>Raw OpenFlow is tedious; these say <i>what</i> not <i>how</i>:</p>
+<div class="tw"><table><tr><th>Name</th><th>Idea</th></tr><tr><td>Frenetic / Pyretic</td><td>Functional policies; combine in parallel or sequence (monitor then route)</td></tr>
+<tr><td>NetKAT</td><td>Algebra, tools can prove properties</td></tr><tr><td>Procera</td><td>Declarative, event-driven rules</td></tr>
+<tr><td>Ryu / ONOS apps</td><td>General APIs in Python / Java</td></tr><tr><td>P4 / P4Runtime</td><td>P4 defines how a switch parses packets; P4Runtime programs its tables</td></tr></table></div>
+<h3>5. Problems apps must handle</h3>
+<div class="tw"><table><tr><th>Problem</th><th>Meaning</th><th>Remedy</th></tr>
+<tr><td>Rule conflicts</td><td>Two apps make overlapping rules with different actions</td><td>Priorities, policy composition, conflict detection</td></tr>
+<tr><td>Consistent updates</td><td>Updating switches one by one causes loops/drops</td><td>Two-phase (versioned) updates, make-before-break</td></tr>
+<tr><td>Correctness</td><td>Policy errors → black holes</td><td>Verify first (VeriFlow, NetKAT)</td></tr>
+<tr><td>Scalability</td><td>Reactive apps overload controller</td><td>Proactive rules, wildcards, distributed controllers</td></tr>
+<tr><td>Trust</td><td>Bad app can hurt whole network</td><td>Permissions, sandbox, signed apps</td></tr></table></div>
+<h3>6. Application life cycle</h3>
+<div class="card"><ol><li>Define requirement and events.</li><li>Choose controller and API (Ryu Python, ONOS Java, REST).</li><li>Develop and test in <b>Mininet</b> (network emulator).</li><li>Verify rules and failure behaviour.</li><li>Package, deploy, monitor with <b>CI/CD</b> (automatic build-test-release).</li></ol></div></section>
+
+<!-- ============ TOPIC 4 ============ -->
+<section id="t4"><div class="hd"><small>TOPIC IV</small><h2>SDN Use Cases</h2></div>
+<p>A use case = a real problem + how SDN solves it. Answer in this order: <span class="chip">context → problem → SDN design → benefit → limitation</span>. In long answers give one deployed example and one limitation.</p>
+<div class="g">
+<div class="card"><b>1. DC network virtualization</b><br><i>Problem:</i> many tenants, moving VMs. <i>SDN:</i> controller-made overlays enforced in vSwitch; tenant policy as flow rules. <i>Benefit:</i> networks in seconds, millions of segments. <i>Limit:</i> must watch overlay + underlay together. <i>Ex:</i> OpenStack+ONOS/ODL, Azure.</div>
+<div class="card"><b>2. WAN traffic engineering &amp; bandwidth on demand</b><br><i>Problem:</i> each router picks shortest path alone; links over-provisioned, capacity idle. <i>SDN:</i> controller collects demand + topology, allocates bandwidth by priority class, installs paths, reroutes on failure. <i>Benefit:</i> high utilization. <i>Limit:</i> controller must be highly available. <i>Ex:</i> B4. <b>Bandwidth on demand</b>: customer requests capacity for a time window; controller finds, programs and later releases the path.</div>
+<div class="card"><b>3. Campus access &amp; BYOD</b><br>Users log in (e.g. <b>IEEE 802.1X</b>), controller learns role, installs rules so students, staff, guests, IoT reach only allowed things; infected device isolated at once; policy written once for whole campus. <i>Limit:</i> identity integration.</div>
+<div class="card"><b>4. Service providers: CORD &amp; vCPE</b><br>Telecom central office becomes a small data center: <b>ONOS</b> controls a leaf–spine fabric of <b>white-box</b> (generic, open) switches; <b>NFV</b> (Network Function Virtualization – network boxes as software) hosts virtual functions such as a virtual Broadband Network Gateway; <b>vCPE</b> moves home-router functions into the operator’s cloud. New services by software. <i>Limit:</i> VNF performance.</div>
+<div class="card"><b>5. DDoS mitigation</b><br>A <b>DDoS</b> floods a target with traffic from many machines. Edge switch counters → detector notices abnormal rates/spoofed sources → controller drops, rate-limits, or diverts to a <b>scrubbing</b> device (cleaner) while clean traffic continues. Automatic, in seconds. <i>Limit:</i> false positives.</div>
+<div class="card"><b>6. Network visibility</b><br>Old: <b>TAP</b> (physical tap) and <b>SPAN</b> (port mirror) plus costly packet brokers. SDN: add rules to mirror chosen flows to analysis tools, change anytime, no re-cabling. <i>Limit:</i> mirror load on switches.</div>
+<div class="card"><b>7. Service function chaining (SFC)</b><br>Traffic must pass ordered functions e.g. firewall → <b>DPI</b> (deep packet inspection) → <b>NAT</b> (address translation). Controller steers flows through the chain by rules or <b>NSH</b> header; chains per customer without rewiring.</div>
+<div class="card"><b>8. Research &amp; education</b><br><b>GENI</b> (US testbed, OpenFlow slices), <b>Internet2</b> (research network), <b>OF@TEIN</b> (Asia–Pacific OpenFlow testbed), <b>Mininet</b> (cheap classroom emulation).</div>
+<div class="card"><b>9. Others</b><br>5G slicing/edge (transport + user plane per slice) · disaster recovery/cloud bursting (extend networks between sites, reroute on failure) · industrial/smart-grid (separate control traffic).</div></div>
+<svg viewBox="0 0 640 190" role="img" aria-label="DDoS">
+<rect class="b" x="10" y="75" width="110" height="40" rx="8" style="fill:#fde4ea"/><text x="65" y="92">Attackers</text><text x="65" y="106">(botnet)</text>
+<rect class="b" x="190" y="75" width="120" height="40" rx="8"/><text x="250" y="92">Edge switch</text><text x="250" y="106">(counters)</text>
+<rect class="y" x="400" y="10" width="140" height="40" rx="8"/><text x="470" y="34">Scrubbing / IDS</text>
+<rect class="b" x="400" y="140" width="140" height="40" rx="8"/><text x="470" y="164">Protected server</text>
+<rect class="s" x="500" y="75" width="130" height="40" rx="8"/><text class="w" x="565" y="92">SDN controller</text><text class="w" x="565" y="106">+ detector</text>
+<path class="l" d="M120 95H190M310 85L400 35M310 105L400 155"/><path class="d" d="M500 95H310"/>
+<text x="400" y="100">0 stats→detect→Flow-Mod</text><text x="330" y="52">1 divert bad</text><text x="330" y="150">2 clean traffic</text></svg>
+<h3>Summary table</h3>
+<div class="tw"><table><tr><th>Use case</th><th>Legacy problem</th><th>SDN benefit</th><th>Limitation</th></tr>
+<tr><td>DC virtualization</td><td>VLAN limits, slow setup</td><td>API-driven overlays</td><td>Overlay/underlay visibility</td></tr>
+<tr><td>WAN TE</td><td>Idle capacity</td><td>High utilization, fast reroute</td><td>Controller availability</td></tr>
+<tr><td>Campus access</td><td>Per-box ACLs</td><td>Central role-based policy</td><td>Identity integration</td></tr>
+<tr><td>CORD / vCPE</td><td>Proprietary boxes</td><td>Software services</td><td>VNF performance</td></tr>
+<tr><td>DDoS</td><td>Manual response</td><td>Auto detect and divert</td><td>False positives</td></tr>
+<tr><td>Visibility</td><td>TAP/SPAN cost</td><td>Flexible mirroring</td><td>Mirror load on switches</td></tr></table></div></section>
+
+<!-- ============ TOPIC 5 ============ -->
+<section id="t5"><div class="hd"><small>TOPIC V</small><h2>ONOS – Open Network Operating System</h2></div>
+<p>ONOS is an open-source SDN controller built as a distributed <b>network operating system</b>. (Unit 3 covers installing it; here we learn the ideas.)</p>
+<h3>1. The network OS idea</h3>
+<p>Your computer’s OS hides hardware details and gives apps files, processes, devices. A <b>Network OS (NOS)</b> hides device details and gives apps topology, host and flow views, so apps needn’t speak every device protocol. <b>NOX</b> (first OpenFlow controller) introduced this; <b>ONIX</b> and later controllers made it distributed.</p>
+<svg viewBox="0 0 640 150" role="img" aria-label="OS vs NOS">
+<text x="150" y="16">Computer</text><text x="490" y="16">Network</text>
+<rect class="b" x="40" y="24" width="220" height="30" rx="6"/><text x="150" y="44">Applications (browser, editor)</text>
+<rect class="s" x="40" y="62" width="220" height="30" rx="6"/><text class="w" x="150" y="82">Operating system</text>
+<rect class="b" x="40" y="100" width="220" height="30" rx="6"/><text x="150" y="120">Hardware (CPU, disk, NIC)</text>
+<text x="320" y="82" style="font-size:24px">≈</text>
+<rect class="b" x="380" y="24" width="220" height="30" rx="6"/><text x="490" y="44">Network apps (routing, firewall)</text>
+<rect class="s" x="380" y="62" width="220" height="30" rx="6"/><text class="w" x="490" y="82">Network OS (ONOS)</text>
+<rect class="b" x="380" y="100" width="220" height="30" rx="6"/><text x="490" y="120">Switches, routers, optical</text></svg>
+<h3>2. History and governance</h3>
+<p>Created by <b>ON.Lab</b> (Open Networking Laboratory); first release (“Avocet”) December 2014; joined the Linux Foundation in 2015; <b>ONF</b> carried it forward. In 2024 ONF merged its SDN projects into the Linux Foundation, so ONOS and OpenDaylight now sit in the same family.</p>
+<h3>3. Design goals</h3>
+<div class="g"><div class="card"><b>High availability</b> – cluster; if a node fails others continue.</div><div class="card"><b>Scalability &amp; performance</b> – big networks, thousands of events/s, low latency.</div>
+<div class="card"><b>Protocol independence</b> – OpenFlow, P4Runtime, NETCONF, gNMI via providers.</div><div class="card"><b>Modularity</b> – Java on Apache Karaf (<b>OSGi</b>): install/remove apps at run time.</div>
+<div class="card"><b>Northbound abstractions</b> – intents and flow objectives hide device detail.</div></div>
+<h3>4. Distributed architecture</h3>
+<p>Every ONOS node runs identical software. Each switch connects to several nodes but has exactly <b>one master</b> (others standby). State is shared through stores on <b>Atomix</b>: data needing strict agreement (mastership, intents) uses the <b>Raft</b> consensus protocol (nodes vote); topology can use <b>eventually consistent</b> replication (faster). Result: one logical network view across nodes.</p>
+<div class="tw"><table><tr><th>Concern</th><th>How ONOS handles it</th></tr><tr><td>Single point of failure</td><td>Cluster of 3 or 5 nodes, mastership failover</td></tr><tr><td>Consistency</td><td>Strong for critical data, eventual for topology</td></tr><tr><td>Load</td><td>Switches spread over nodes by mastership</td></tr><tr><td>Upgrades</td><td>Rolling upgrade of nodes</td></tr></table></div>
+<h3>5. Subsystem pattern: Service – Manager – Store – Provider</h3>
+<p>Every subsystem (Device, Link, Host, Flow rule, Intent…) has: <b>service</b> (what apps call), <b>manager</b> (logic), <b>store</b> (distributed state), <b>provider</b> (talks protocol to devices). Changes raise <b>events</b> that apps get through <b>listeners</b>. Replaceable providers = protocol independent core.</p>
+<svg viewBox="0 0 640 170" role="img" aria-label="Pattern">
+<rect class="y" x="10" y="10" width="110" height="34" rx="8"/><text x="65" y="32">Application</text>
+<rect class="b" x="190" y="10" width="260" height="34" rx="8"/><text x="320" y="32">Service interface (DeviceService…)</text>
+<rect class="s" x="190" y="68" width="260" height="34" rx="8"/><text class="w" x="320" y="90">Manager (core logic)</text>
+<rect class="y" x="500" y="68" width="130" height="34" rx="8"/><text x="565" y="90">Store (state)</text>
+<rect class="b" x="190" y="126" width="260" height="34" rx="8"/><text x="320" y="148">Provider (OpenFlow, P4Runtime…)</text>
+<rect class="b" x="500" y="126" width="130" height="34" rx="8"/><text x="565" y="148">Network device</text>
+<path class="l" d="M120 27H190M320 44V68M320 102V126M450 85H500M450 143H500"/><text x="65" y="90">events ↑</text><text x="65" y="108">commands ↓</text></svg>
+<h3>6. Core abstractions</h3>
+<div class="tw"><table><tr><th>Abstraction</th><th>Meaning</th></tr>
+<tr><td>Device, Port, Link</td><td>Network elements and connections (links found with <b>LLDP</b>)</td></tr>
+<tr><td>Host</td><td>End system learned from ARP/DHCP: MAC, IP, attachment point</td></tr>
+<tr><td>Flow rule</td><td>Device-specific match–action entry</td></tr>
+<tr><td>Flow objective</td><td>Device-independent goal: <i>filtering</i> (what to accept), <i>forwarding</i> (what to do on match), <i>next</i> (how to forward onward). A <b>driver</b> translates it for a specific switch pipeline</td></tr>
+<tr><td>Group / Meter</td><td>Shared action buckets (multicast, failover) / rate limiters</td></tr>
+<tr><td>Intent</td><td>High-level “what, not how” request; ONOS compiles it to flow rules and keeps it satisfied after failures</td></tr>
+<tr><td>Topology / Path</td><td>Graph of devices and links to compute routes</td></tr></table></div>
+<div class="ex"><b>Example</b> Intent = telling a taxi app “take me to the airport”. It picks the route and re-routes if a road closes. Flow rules = giving the driver every turn.</div>
+<p><b>Intent life cycle:</b> <span class="chip">submitted</span> → <span class="chip">compiling</span> → <span class="chip">installing</span> → <span class="chip">installed</span>; if a link fails it is recompiled automatically; it ends <span class="chip">withdrawn</span> or <span class="chip">failed</span>.</p>
+<h3>7. Southbound and northbound</h3>
+<div class="card"><b>Southbound providers:</b> OpenFlow, P4Runtime, NETCONF, gNMI, OVSDB, BGP, SNMP; drivers describe device behaviour. <b>Northbound:</b> REST API, gRPC, web GUI, CLI, intent framework.</div>
+<h3>8. Applications on ONOS</h3>
+<div class="tw"><table><tr><th>App</th><th>Purpose</th></tr><tr><td>fwd, proxyarp</td><td>Reactive forwarding and ARP handling for labs</td></tr><tr><td>SDN-IP</td><td>Peer with BGP routers, carry external routes using intents</td></tr>
+<tr><td>Segment routing / Trellis</td><td>Leaf–spine DC and CORD fabric: routing, multicast, VLAN</td></tr><tr><td>VTN</td><td>Virtual tenant networking with OpenStack</td></tr><tr><td>ACL, optical apps</td><td>Access control; packet–optical control</td></tr></table></div>
+<h3>9. ONOS vs OpenDaylight</h3>
+<div class="tw"><table><tr><th>Feature</th><th>ONOS</th><th>OpenDaylight</th></tr>
+<tr><td>Origin</td><td>ON.Lab, 2014</td><td>Linux Foundation, 2013</td></tr><tr><td>Target</td><td>Service provider/carrier</td><td>Broad: enterprise, DC, telco</td></tr>
+<tr><td>Core design</td><td>Distributed stores + subsystem services</td><td>MD-SAL built on YANG models</td></tr><tr><td>Clustering</td><td>Atomix + Raft</td><td>Akka-based</td></tr>
+<tr><td>High-level API</td><td>Intent framework</td><td>Group-Based Policy, Network Intent Composition</td></tr>
+<tr><td>Common</td><td colspan="2">Java, Karaf/OSGi, REST northbound, OpenFlow + NETCONF southbound</td></tr></table></div>
+<div class="ex"><b>Exam tip</b> Explain ONOS in order: goal → layered architecture → distributed core → abstractions → apps.</div></section>
+
+<section id="gl"><div class="hd" style="--c:#475569;background:#475569"><h2>Quick glossary</h2></div>
+<div class="tw"><table><tr><th>Term</th><th>Simple meaning</th></tr>
+<tr><td>OpenFlow</td><td>Protocol the controller uses to program switches</td></tr><tr><td>NETCONF / gNMI / SNMP</td><td>Other ways to configure/monitor devices</td></tr>
+<tr><td>YANG</td><td>Language to describe device/config data models</td></tr><tr><td>Packet-In / Flow-Mod / Packet-Out</td><td>Switch→controller packet / controller→switch rule / controller sends a packet out</td></tr>
+<tr><td>LLDP</td><td>Neighbour-discovery messages to find links</td></tr><tr><td>ARP</td><td>Finds a MAC address for an IP address</td></tr>
+<tr><td>MPLS</td><td>Label-based forwarding used by carriers</td></tr><tr><td>QoS</td><td>Priority/bandwidth guarantees</td></tr>
+<tr><td>vSwitch / OVS</td><td>Software switch in a server</td></tr><tr><td>ROADM / TAPI</td><td>Optical wavelength switch / transport API</td></tr>
+<tr><td>AMF, SMF, UPF</td><td>5G access-mobility, session, user-plane functions</td></tr><tr><td>OVN</td><td>Open Virtual Network – virtual networking built on OVS</td></tr>
+<tr><td>P4</td><td>Language that defines how a switch handles packets</td></tr></table></div></section>
+</div><script>
+if (window.self === window.top) {
+  var b = document.createElement('a');
+  b.href = '../index.html';
+  b.className = 'hub-floating-btn';
+  b.innerHTML = '← Back to Study Portal';
+  b.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;background:#0969da;color:#ffffff;font-family:system-ui,-apple-system,sans-serif;font-size:13px;font-weight:700;padding:10px 18px;border-radius:99px;box-shadow:0 4px 14px rgba(0,0,0,0.35);text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s ease;cursor:pointer;';
+  b.onmouseenter = function(){ b.style.transform='translateY(-2px)'; b.style.boxShadow='0 6px 20px rgba(9,105,218,0.5)'; };
+  b.onmouseleave = function(){ b.style.transform='none'; b.style.boxShadow='0 4px 14px rgba(0,0,0,0.35)'; };
+  document.body.appendChild(b);
+}
+</script>
+</body></html>

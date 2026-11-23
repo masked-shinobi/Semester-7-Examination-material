@@ -1,0 +1,394 @@
+﻿<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Unit 5 – SDN Open Source, Security &amp; Services: Easy Study Guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&amp;family=Bricolage+Grotesque:wght@600;800&amp;display=swap">
+<style>
+:root{--bg:#fbfaf7;--tx:#1d2330;--mut:#5b6474;--line:#d9dbe0;--card:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171d;--tx:#e8eaee;--mut:#a2a9b6;--line:#343a46;--card:#1b2029}}
+:root[data-theme="dark"]{--bg:#14171d;--tx:#e8eaee;--mut:#a2a9b6;--line:#343a46;--card:#1b2029}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:17px/1.65 "Atkinson Hyperlegible",system-ui,sans-serif}
+main{max-width:860px;margin:auto;padding:16px}
+h1,h2,h3{font-family:"Bricolage Grotesque","Atkinson Hyperlegible",sans-serif;line-height:1.2}
+h1{font-size:2.3rem;margin:.3em 0}
+.hero{padding:28px 20px;border-radius:14px;background:#1d2330;color:#fff}
+.hero p{color:#cfd4de;margin:0}
+nav{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+nav a{padding:6px 12px;border-radius:99px;color:#fff;text-decoration:none;font-size:.9rem}
+section{margin:34px 0;--t:color-mix(in srgb,var(--c) 11%,var(--bg))}
+.t1{--c:#2563eb}.t2{--c:#0f8a7e}.t3{--c:#d9531e}.t4{--c:#7c3aed}.t5{--c:#c2185b}.t6{--c:#64748b}
+section>h2{background:var(--c);color:#fff;padding:14px 18px;border-radius:12px;margin:0 0 12px;font-size:1.6rem}
+h3{color:var(--c);border-bottom:2px solid var(--line);padding-bottom:3px;margin:26px 0 8px;font-size:1.25rem}
+:root[data-theme="dark"] h3,:root:not([data-theme="light"]) h3{filter:brightness(1)}
+.say,.eg,.tip{border-radius:10px;padding:10px 14px;margin:12px 0;border-left:6px solid}
+.say{background:var(--t);border-color:var(--c)}
+.eg{background:color-mix(in srgb,#e0a100 14%,var(--bg));border-color:#e0a100}
+.tip{background:color-mix(in srgb,#2e9d57 14%,var(--bg));border-color:#2e9d57}
+.say:before{content:"In simple words: ";font-weight:700;color:var(--c)}
+.eg:before{content:"Everyday example: ";font-weight:700;color:#b07d00}
+.tip:before{content:"Exam tip: ";font-weight:700;color:#2e9d57}
+table{border-collapse:collapse;width:100%;margin:10px 0;font-size:.95rem;display:block;overflow-x:auto}
+th{background:var(--c);color:#fff;text-align:left}
+th,td{padding:7px 10px;border:1px solid var(--line);vertical-align:top}
+tr:nth-child(even) td{background:var(--t)}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.c{background:var(--card);border:1px solid var(--line);border-top:4px solid var(--c);border-radius:10px;padding:8px 12px}
+.c b{color:var(--c)}
+.stack div{padding:8px 12px;margin:4px 0;border-radius:8px;border:1.5px solid var(--c);background:var(--t)}
+.stack div:nth-child(2){background:var(--c);color:#fff}
+.stack small{display:block;opacity:.85}
+svg{width:100%;height:auto;background:var(--card);border:1px solid var(--line);border-radius:10px;margin:8px 0}
+svg text{fill:var(--tx);font:13px "Atkinson Hyperlegible",sans-serif}
+svg .b{fill:var(--t);stroke:var(--c);stroke-width:1.5}
+svg .f{fill:var(--c)}svg .f text,svg text.w{fill:#fff}
+svg .r{fill:color-mix(in srgb,#d6204a 16%,var(--card));stroke:#d6204a}
+svg line,svg path{stroke:var(--c);stroke-width:2;fill:none}
+pre{background:var(--t);border-radius:8px;padding:10px;overflow-x:auto;font-size:.82rem;line-height:1.45}
+.cap{text-align:center;color:var(--mut);font-size:.85rem;margin:-2px 0 8px}
+.gl{columns:2 260px;font-size:.88rem}
+ul,ol{padding-left:22px}
+</style></head><body><main>
+
+<div class="hero"><h1>Unit 5 – SDN Open Source, Security &amp; Network Services</h1>
+<p>An easy first-time study guide: simple words, everyday examples, diagrams and exam tips. Five topics, one page.</p></div>
+<nav><a style="background:#2563eb" href="#t1">I Open Source &amp; Future</a><a style="background:#0f8a7e" href="#t2">II SDN Security</a><a style="background:#d9531e" href="#t3">III Switching &amp; Load Balancers</a><a style="background:#7c3aed" href="#t4">IV Firewall &amp; Access Control</a><a style="background:#c2185b" href="#t5">V Legacy Network Security</a><a style="background:#64748b" href="#gl">Short forms</a></nav>
+
+<div class="say" style="--c:#2563eb;--t:color-mix(in srgb,#2563eb 11%,var(--bg));border-color:#2563eb">Normal networks: every switch and router decides for itself. <b>SDN (Software Defined Networking)</b>: one central software “brain” called the <b>controller</b> decides, and the switches just follow its rules. Keep this one idea in mind through the whole unit. Rules inside a switch are called <b>flow entries</b>, kept in a <b>flow table</b>. <b>OpenFlow</b> is the language the controller uses to talk to switches.</div>
+
+<!-- TOPIC 1 -->
+<section id="t1" class="t1"><h2>Topic I – SDN Open Source and SDN Future</h2>
+<h3>1. What is open source, and why does SDN love it?</h3>
+<div class="say">Open source means the software’s code is public. Anyone can use it, read it and improve it. OpenFlow, Open vSwitch, Mininet and the big controllers are all open projects.</div>
+<div class="eg">A restaurant that publishes its recipe lets anyone cook it, fix it, or improve it. A restaurant with a secret recipe makes you buy only from them.</div>
+<div class="g">
+<div class="c"><b>No lock-in (vendor independence)</b><br>Same software runs on many vendors’ hardware.</div>
+<div class="c"><b>Faster innovation</b><br>People add features instead of waiting for a company roadmap.</div>
+<div class="c"><b>Lower cost</b><br>No per-port licence; cheap “white-box” switches.</div>
+<div class="c"><b>Transparency</b><br>Code can be inspected, so it is easier to trust and security-check.</div>
+<div class="c"><b>Interoperability</b><br>Open reference code makes the standards concrete.</div></div>
+
+<h3>2. The open-source SDN stack (bottom to top)</h3>
+<div class="stack">
+<div>Orchestration &amp; applications<small>OpenStack, Kubernetes, ONAP, OSM, your own apps (NetApps) – connect SDN to cloud and services</small></div>
+<div>SDN controllers (the brain)<small>ONOS, OpenDaylight, Ryu, Faucet, Floodlight, POX, OVN</small></div>
+<div>Protocols &amp; languages<small>OpenFlow, P4/P4Runtime, gNMI, NETCONF/YANG, OVSDB – how things talk</small></div>
+<div>Switch software<small>Open vSwitch, SONiC, Stratum, Open Network Linux (ONL), FRRouting</small></div>
+<div>Hardware<small>White-box switches (OCP), ONIE installer, SmartNICs</small></div></div>
+<p class="cap">Figure 1: The layers of open-source SDN (top = applications, bottom = hardware)</p>
+<table><tr><th>Layer</th><th>Projects</th><th>Notes</th></tr>
+<tr><td>Controllers</td><td>ONOS, OpenDaylight, Ryu, Faucet, Floodlight, POX</td><td>ONOS/OpenDaylight: carrier and enterprise. Ryu/POX: popular for teaching. Faucet: compact OpenFlow controller used in real campuses. Floodlight: Java.</td></tr>
+<tr><td>Virtual switching</td><td>Open vSwitch (OVS), OVN, DPDK, FD.io/VPP</td><td>OVS is the default virtual switch; OVN adds virtual networks on top; DPDK and VPP speed up packet handling.</td></tr>
+<tr><td>Switch OS</td><td>SONiC, Stratum, ONL, FRRouting</td><td>SONiC: network OS for white boxes. Stratum: exposes P4Runtime and gNMI. <b>ONIE</b> lets a white-box switch install any network OS.</td></tr>
+<tr><td>Data-plane languages</td><td>P4, P4Runtime, BMv2, eBPF/XDP</td><td>P4 defines how packets are read and processed. BMv2 is the P4 software switch.</td></tr>
+<tr><td>Orchestration</td><td>OpenStack, Kubernetes, ONAP, Open Source MANO (OSM)</td><td>ONAP/OSM orchestrate NFV (Network Function Virtualization) and services.</td></tr>
+<tr><td>Testing</td><td>Mininet, Containernet, OPNFV/Anuket</td><td>Mininet is an emulator: build a fake network on one laptop to practise before real deployment.</td></tr></table>
+<div class="eg">Think of a white-box switch as a phone with no apps and SONiC as Android: buy the cheap hardware, then install the OS you want.</div>
+
+<h3>3. Who looks after these projects?</h3>
+<table><tr><th>Organisation</th><th>Role</th></tr>
+<tr><td>ONF (Open Networking Foundation, formed 2011)</td><td>Created and standardised OpenFlow; incubated ONOS, Stratum, Aether. In 2024 it moved its whole portfolio to the Linux Foundation.</td></tr>
+<tr><td>Linux Foundation (LF)</td><td>Hosts OpenDaylight, ONAP, DPDK, FD.io/VPP, SONiC (moved from Microsoft, April 2022) and the former ONF projects.</td></tr>
+<tr><td>Open Compute Project (OCP)</td><td>Open hardware designs and the Switch Abstraction Interface (SAI).</td></tr>
+<tr><td>P4 Consortium</td><td>Maintains the P4 language and P4Runtime.</td></tr>
+<tr><td>IETF, ETSI, 3GPP</td><td>Standards for protocols, NFV and 5G, which open-source projects then implement.</td></tr>
+<tr><td>CNCF</td><td>Kubernetes networking: CNI plug-ins, Cilium, service meshes.</td></tr></table>
+
+<h3>4. Where SDN is heading (future trends)</h3>
+<ol>
+<li><b>Programmable data planes (P4, eBPF/XDP):</b> define new packet handling in software, without new hardware (e.g. in-band telemetry, custom load balancing).</li>
+<li><b>Intent-based networking:</b> you state the goal (“keep guests away from servers”); software works out and checks the rules (closed-loop automation).</li>
+<li><b>AI/ML for networks (AIOps):</b> predict traffic, spot attacks, fix problems automatically.</li>
+<li><b>Disaggregation:</b> separate hardware from network OS (SONiC on white boxes).</li>
+<li><b>Cloud-native and edge:</b> Kubernetes networking and Multi-access Edge Computing (MEC) move control close to users.</li>
+<li><b>5G, 6G, Open RAN:</b> programmable radio controllers and <b>network slicing</b> (separate virtual networks on one mobile network).</li>
+<li><b>SASE and SD-WAN:</b> networking plus security delivered as cloud services.</li>
+<li><b>Network verification and digital twins:</b> test a software copy of the network before changing the real one.</li></ol>
+
+<h3>5. Challenges that remain</h3>
+<table><tr><th>Challenge</th><th>Meaning</th></tr>
+<tr><td>Fragmentation</td><td>Many overlapping projects; uneven maturity</td></tr>
+<tr><td>Scalability &amp; resilience</td><td>Controller must scale and not be a single point of failure</td></tr>
+<tr><td>Security</td><td>Controller and its northbound API are high-value targets (Topic II)</td></tr>
+<tr><td>Migration</td><td>Must work with legacy networks, step by step</td></tr>
+<tr><td>Skills &amp; support</td><td>Need programming/automation skills; vendor support varies</td></tr>
+<tr><td>Standards &amp; interoperability</td><td>Vendors read the specs differently</td></tr></table>
+<div class="say"><b>Hybrid SDN:</b> for years most networks will run old-style routing and SDN together, so controllers must live alongside them.</div>
+<div class="tip">Group future trends as: programmability (P4/eBPF), intent + AI automation, disaggregation, cloud-native/edge, 5G/6G.</div></section>
+
+<!-- TOPIC 2 -->
+<section id="t2" class="t2"><h2>Topic II – SDN Security</h2>
+<div class="say">SDN changes security in two ways. <b>Security of SDN</b> = protecting the controller, APIs, channels and switches (new targets). <b>Security using SDN</b> = using the central view and programmability to build firewalls, stop DDoS, quarantine and segment (new tools). A good answer covers both.</div>
+<div class="eg">One master key opens every room in a building. That is convenient, but whoever steals it controls the whole building. The controller is that key.</div>
+
+<h3>1. Where SDN can be attacked (by layer)</h3>
+<svg viewBox="0 0 720 270" role="img" aria-label="Attack surface by layer">
+<g><rect class="b" x="20" y="10" width="300" height="38" rx="8"/><text x="170" y="34" text-anchor="middle">Application plane</text><rect class="r" x="380" y="10" width="320" height="38" rx="8"/><text x="540" y="34" text-anchor="middle">malicious / buggy apps</text>
+<rect class="b" x="20" y="62" width="300" height="38" rx="8"/><text x="170" y="86" text-anchor="middle">Northbound API (apps ↔ controller)</text><rect class="r" x="380" y="62" width="320" height="38" rx="8"/><text x="540" y="86" text-anchor="middle">no login, API abuse, injection</text>
+<rect class="b" x="20" y="114" width="300" height="38" rx="8"/><text x="170" y="138" text-anchor="middle">Control plane (controller)</text><rect class="r" x="380" y="114" width="320" height="38" rx="8"/><text x="540" y="138" text-anchor="middle">DoS, takeover, single point of failure</text>
+<rect class="b" x="20" y="166" width="300" height="38" rx="8"/><text x="170" y="190" text-anchor="middle">Southbound channel (OpenFlow)</text><rect class="r" x="380" y="166" width="320" height="38" rx="8"/><text x="540" y="190" text-anchor="middle">eavesdropping, MITM, no TLS</text>
+<rect class="b" x="20" y="218" width="300" height="38" rx="8"/><text x="170" y="242" text-anchor="middle">Data plane (switches)</text><rect class="r" x="380" y="218" width="320" height="38" rx="8"/><text x="540" y="242" text-anchor="middle">table overflow, fake LLDP/ARP</text></g>
+<g stroke="#d6204a" stroke-width="2"><line x1="378" y1="29" x2="322" y2="29"/><line x1="378" y1="81" x2="322" y2="81"/><line x1="378" y1="133" x2="322" y2="133"/><line x1="378" y1="185" x2="322" y2="185"/><line x1="378" y1="237" x2="322" y2="237"/></g></svg>
+<p class="cap">Figure 2: Each layer has its own attacks (red)</p>
+<table><tr><th>Layer</th><th>Threats</th><th>Effect</th></tr>
+<tr><td>Application</td><td>Malicious, buggy or over-privileged apps; rule conflicts</td><td>Traffic hijack, policy bypass, controller crash</td></tr>
+<tr><td>Northbound API</td><td>Weak login, unauthorised REST calls, injection</td><td>Unauthorised network changes</td></tr>
+<tr><td>Control plane</td><td>DoS, compromise, single point of failure, inconsistent cluster state</td><td>Lose control of whole network</td></tr>
+<tr><td>Southbound</td><td>Eavesdropping, man-in-the-middle (MITM), replay when TLS is off</td><td>Rules forged or leaked</td></tr>
+<tr><td>Data plane</td><td>Flow-table exhaustion, Packet-In flooding, spoofed LLDP/ARP, malicious switch, timing side channels</td><td>Black holes, false topology, rule inference</td></tr>
+<tr><td>East–west</td><td>Weak trust between controllers of different domains</td><td>State poisoning across clusters</td></tr></table>
+
+<h3>2. Important attacks explained</h3>
+<div class="g">
+<div class="c"><b>Controller saturation (DoS)</b><br>In reactive mode, every packet with no matching rule is sent to the controller as a <b>Packet-In</b>. Attacker sends packets with random headers; the channel and controller CPU choke; real flows stall.</div>
+<div class="c"><b>Flow-table overflow</b><br>Each new flow may add an entry. A flood of different flows fills the small hardware table (TCAM), so real flows cannot be installed.</div>
+<div class="c"><b>Link fabrication / host location hijacking</b><br>Controllers find links using LLDP packets. A bad host forges LLDP to create fake links, or spoofs a victim’s address so traffic is pulled to the attacker. TopoGuard checks topology updates.</div>
+<div class="c"><b>MITM on control channel</b><br>OpenFlow allows TLS but many leave it off, so an attacker on the path can read or inject messages.</div>
+<div class="c"><b>Malicious application</b><br>Apps run with the controller’s power and can delete rules or exhaust resources. Rosemary sandboxes apps; SE-Floodlight adds permissions.</div>
+<div class="c"><b>Rule inference by timing</b><br>The first packet is slower if no rule exists yet, so an attacker learns the network’s policy by measuring delay.</div></div>
+<div class="eg">Controller saturation is like thousands of fake callers jamming a company’s one reception desk so real customers cannot get through.</div>
+
+<h3>3. Defences</h3>
+<table><tr><th>Threat</th><th>Countermeasure</th></tr>
+<tr><td>Channel attacks</td><td>TLS with mutual authentication (both sides prove identity)</td></tr>
+<tr><td>Controller overload</td><td>Packet-In rate limiting, proactive rules, controller clusters (AVANT-GUARD, FloodGuard research)</td></tr>
+<tr><td>Table overflow</td><td>Aggregate rules, timeouts, per-port quotas</td></tr>
+<tr><td>Topology poisoning</td><td>TopoGuard-style LLDP/host verification</td></tr>
+<tr><td>Rule conflicts</td><td>VeriFlow, FlowChecker (test for loops/conflicts); FortNOX (resolves conflicts between apps)</td></tr>
+<tr><td>Rogue apps</td><td>Role-based access, sandboxing, signed apps, ONOS app permissions</td></tr>
+<tr><td>Single point of failure</td><td>Replicated controllers; fail-secure design</td></tr>
+<tr><td>Monitoring</td><td>Logging, audit, anomaly detection (SPHINX-style)</td></tr>
+<tr><td>Supply chain</td><td>Signed bundles, minimal privileges, patching</td></tr></table>
+
+<h3>4. Using SDN to improve security</h3>
+<svg viewBox="0 0 720 230" role="img" aria-label="Closed-loop security">
+<rect class="b" x="10" y="95" width="100" height="40" rx="8"/><text x="60" y="120" text-anchor="middle">Traffic</text>
+<rect class="b" x="170" y="95" width="140" height="40" rx="8"/><text x="240" y="113" text-anchor="middle">SDN switch</text><text x="240" y="128" text-anchor="middle">(counters)</text>
+<rect class="b" x="400" y="10" width="140" height="44" rx="8"/><text x="470" y="30" text-anchor="middle">Detector</text><text x="470" y="46" text-anchor="middle">(IDS / ML)</text>
+<rect class="f" x="580" y="95" width="130" height="40" rx="8"/><text class="w" x="645" y="120" text-anchor="middle">Controller</text>
+<rect class="r" x="400" y="170" width="150" height="44" rx="8"/><text x="475" y="190" text-anchor="middle">Honeypot / IDS /</text><text x="475" y="206" text-anchor="middle">quarantine</text>
+<line x1="112" y1="115" x2="168" y2="115"/><line x1="310" y1="105" x2="398" y2="40"/><line x1="540" y1="40" x2="620" y2="93"/><line x1="580" y1="118" x2="312" y2="118"/><line x1="290" y1="137" x2="410" y2="175"/>
+<text x="330" y="60">1 stats</text><text x="575" y="62">2 alert</text><text x="400" y="112">3 block / redirect rule</text><text x="330" y="165">4 suspicious flow redirected</text></svg>
+<p class="cap">Figure 3: Closed loop: observe → detect → react</p>
+<ul><li><b>Dynamic firewalling and micro-segmentation:</b> rules follow workloads.</li><li><b>DDoS mitigation:</b> spot attack with flow counters, then drop, rate-limit or divert.</li><li><b>Quarantine:</b> move infected host to an isolated VLAN or drop its traffic instantly.</li><li><b>Traffic steering:</b> send suspicious flows through an IDS (Intrusion Detection System) or honeypot (a decoy system).</li><li><b>Moving-target defence:</b> keep changing addresses and paths so attackers cannot map the network.</li><li><b>Visibility:</b> every flow entry gives statistics for forensics.</li></ul>
+<table><tr><th>Aspect</th><th>Traditional</th><th>SDN</th></tr>
+<tr><td>Policy</td><td>Per-device ACLs</td><td>Central policy compiled to rules</td></tr><tr><td>Response speed</td><td>Manual or slow</td><td>Automatic in seconds</td></tr><tr><td>Visibility</td><td>Local to each device</td><td>Global view of flows</td></tr><tr><td>Main risk</td><td>Distributed misconfiguration</td><td>Compromise of controller and apps</td></tr></table>
+<div class="g"><div class="c"><b>Confidentiality</b><br>TLS, tenant isolation, segmentation</div><div class="c"><b>Integrity</b><br>Authenticated control messages, rule verification</div><div class="c"><b>Availability</b><br>Controller clusters, DoS protection, fail-safe modes</div></div>
+<div class="tip">Answer by layer (application, northbound, control, southbound, data) and give one attack and one defence for each.</div></section>
+
+<!-- TOPIC 3 -->
+<section id="t3" class="t3"><h2>Topic III – Switching and Load Balancers</h2>
+<h3>1. How an SDN switch switches</h3>
+<div class="say">An old switch learns which device is on which port by itself and runs STP (Spanning Tree Protocol) to avoid loops. An SDN switch has no such brain. It only matches packets against rules and acts (“match–action”).</div>
+<svg viewBox="0 0 720 90" role="img" aria-label="Reactive switching steps">
+<rect class="b" x="5" y="20" width="150" height="50" rx="8"/><text x="80" y="42" text-anchor="middle">1 Packet-In</text><text x="80" y="58" text-anchor="middle">no rule matches</text>
+<rect class="b" x="195" y="20" width="150" height="50" rx="8"/><text x="270" y="42" text-anchor="middle">2 Learn</text><text x="270" y="58" text-anchor="middle">MAC → port</text>
+<rect class="b" x="385" y="20" width="150" height="50" rx="8"/><text x="460" y="42" text-anchor="middle">3 Flow-Mod</text><text x="460" y="58" text-anchor="middle">controller installs rule</text>
+<rect class="f" x="575" y="20" width="140" height="50" rx="8"/><text class="w" x="645" y="42" text-anchor="middle">4 Fast path</text><text class="w" x="645" y="58" text-anchor="middle">switch forwards</text>
+<line x1="157" y1="45" x2="193" y2="45"/><line x1="347" y1="45" x2="383" y2="45"/><line x1="537" y1="45" x2="573" y2="45"/></svg>
+<p class="cap">Figure 4: Reactive learning switch</p>
+<div class="say"><b>Reactive</b> = rule created when the first packet arrives (small delay for first packet). <b>Proactive</b> = rules installed in advance (no first-packet delay, and works even if the controller goes down).</div>
+<div class="eg">Reactive is asking the receptionist for directions the first time, then remembering the route. Proactive is being handed a map before you arrive.</div>
+<table><tr><th>Switch type</th><th>Description</th><th>Trade-off</th></tr>
+<tr><td>OpenFlow-only</td><td>Forwards purely by flow tables</td><td>Clean model; no legacy features</td></tr>
+<tr><td>OpenFlow-hybrid</td><td>Flow tables plus normal L2/L3 on the same device</td><td>Gradual migration; harder to reason about</td></tr>
+<tr><td>Hardware (ASIC/TCAM)</td><td>Line-rate forwarding</td><td>Small flow table, costly</td></tr>
+<tr><td>Software (Open vSwitch)</td><td>Runs on servers/hypervisors</td><td>Flexible, large tables; slower unless accelerated (DPDK)</td></tr></table>
+<p><b>Advantages:</b> <b>loop-free paths</b> without STP (controller computes paths, no blocked links); <b>multipath</b> (select-type group tables or ECMP use all links); <b>fast failover</b> (fast-failover group tables switch to a backup port without asking the controller); <b>flexible matching</b> (any header field, not just destination MAC).</p>
+
+<h3>2. Open vSwitch (OVS)</h3>
+<div class="say">OVS is the standard open-source <i>virtual</i> switch that lives inside a server and connects virtual machines (VMs). Supports VXLAN and other tunnels, OpenFlow 1.0–1.5 and DPDK acceleration.</div>
+<svg viewBox="0 0 720 230" role="img" aria-label="Open vSwitch architecture">
+<rect class="b" x="5" y="5" width="710" height="110" rx="10"/><text x="20" y="25" style="font-weight:700">User space</text>
+<rect class="b" x="25" y="40" width="190" height="55" rx="8"/><text x="120" y="62" text-anchor="middle">ovs-vswitchd</text><text x="120" y="80" text-anchor="middle">OpenFlow tables (slow path)</text>
+<rect class="b" x="260" y="40" width="190" height="55" rx="8"/><text x="355" y="62" text-anchor="middle">ovsdb-server</text><text x="355" y="80" text-anchor="middle">configuration database</text>
+<rect class="f" x="495" y="40" width="200" height="55" rx="8"/><text class="w" x="595" y="62" text-anchor="middle">SDN controller</text><text class="w" x="595" y="80" text-anchor="middle">OpenFlow 6653 · OVSDB 6640</text>
+<line x1="217" y1="67" x2="258" y2="67"/><line x1="452" y1="67" x2="493" y2="67"/>
+<rect class="b" x="5" y="150" width="710" height="75" rx="10"/><text x="20" y="170" style="font-weight:700">Kernel</text>
+<rect class="b" x="25" y="180" width="260" height="38" rx="8"/><text x="155" y="204" text-anchor="middle">Fast-path datapath + flow cache</text>
+<rect class="b" x="330" y="180" width="365" height="38" rx="8"/><text x="512" y="204" text-anchor="middle">Ports: NICs, tap/veth to VMs, tunnels</text>
+<line x1="120" y1="97" x2="120" y2="178"/><text x="130" y="140">cache miss ↑ ↓ install flow</text></svg>
+<p class="cap">Figure 5: First packet takes the slow path; later packets stay in the fast kernel path</p>
+<p><b>ovs-vswitchd</b> holds OpenFlow tables and talks to the controller. <b>ovsdb-server</b> stores configuration (managed via OVSDB). The <b>kernel datapath</b> forwards using a flow cache: the first packet misses and goes up to user space, the flow is cached, and the rest are fast.</p>
+<pre>ovs-vsctl show                                  # bridges and ports
+ovs-ofctl -O OpenFlow13 dump-flows s1           # list flow entries
+ovs-ofctl -O OpenFlow13 add-flow s1 "priority=10,in_port=1,actions=output:2"</pre>
+
+<h3>3. Load balancers</h3>
+<div class="say">A load balancer shares work across many resources to raise throughput, cut response time and avoid overload. Old hardware ones (<b>ADC – Application Delivery Controller</b>) are costly proprietary boxes in the path. In SDN, the choice is a controller app and the switches just forward.</div>
+<div class="eg">Supermarket with 3 checkout counters: a guide at the door sends each customer to the shortest line. Customers just see “one entrance”.</div>
+<table><tr><th>Type</th><th>Balances</th><th>SDN technique</th></tr>
+<tr><td>Server</td><td>Client requests across servers</td><td>Virtual IP (VIP) + rewrite destination (Plug-n-Serve)</td></tr>
+<tr><td>Link / path</td><td>Flows across network paths</td><td>ECMP (Equal-Cost Multi-Path), select group tables, Hedera</td></tr>
+<tr><td>Controller</td><td>Switches across controllers</td><td>Mastership migration in clusters (e.g. ONOS)</td></tr></table>
+<h3>Server load balancing with OpenFlow</h3>
+<svg viewBox="0 0 720 240" role="img" aria-label="OpenFlow load balancer">
+<rect class="b" x="5" y="85" width="110" height="50" rx="8"/><text x="60" y="108" text-anchor="middle">Client</text><text x="60" y="125" text-anchor="middle">10.0.0.1</text>
+<rect class="b" x="230" y="85" width="150" height="50" rx="8"/><text x="305" y="107" text-anchor="middle">OpenFlow switch</text><text x="305" y="124" text-anchor="middle">VIP → server</text>
+<rect class="f" x="215" y="185" width="180" height="45" rx="8"/><text class="w" x="305" y="205" text-anchor="middle">Controller</text><text class="w" x="305" y="221" text-anchor="middle">chooses server</text>
+<rect class="b" x="540" y="10" width="170" height="40" rx="8"/><text x="625" y="35" text-anchor="middle">Server 1 10.0.0.2</text>
+<rect class="b" x="540" y="90" width="170" height="40" rx="8"/><text x="625" y="115" text-anchor="middle">Server 2 10.0.0.3</text>
+<rect class="b" x="540" y="170" width="170" height="40" rx="8"/><text x="625" y="195" text-anchor="middle">Server 3 10.0.0.4</text>
+<line x1="117" y1="110" x2="228" y2="110"/><line x1="382" y1="100" x2="538" y2="35"/><line x1="382" y1="110" x2="538" y2="110"/><line x1="382" y1="122" x2="538" y2="190"/>
+<line x1="305" y1="137" x2="305" y2="183" stroke-dasharray="5 4"/>
+<text x="120" y="78">dst = VIP 10.0.0.100</text><text x="318" y="165">Packet-In / Flow-Mod</text></svg>
+<p class="cap">Figure 6: Clients see one virtual IP; the controller installs rewrite rules</p>
+<ol><li>Clients send to one <b>virtual IP (VIP)</b>, 10.0.0.100.</li><li>First packet reaches the switch, no rule, so Packet-In goes to the controller.</li><li>Controller picks a server and installs <b>two rules</b>: a <b>forward rule</b> rewriting destination MAC and IP to the server, and a <b>reverse rule</b> rewriting the server’s source back to the VIP.</li><li>The controller also answers ARP requests for the VIP (proxy ARP).</li></ol>
+<div class="eg">Like a company phone number: callers dial one number, reception forwards them to a staff member, and the reply seems to come from the company.</div>
+<div class="tip">Remember the two-rule pattern: client→VIP becomes client→server, and server→client is rewritten back to the VIP. Idea shown by Stanford’s Plug-n-Serve; later work used wildcard rules over client-address prefixes so most connections skip the controller.</div>
+<pre># Ryu-style logic (OpenFlow 1.3)
+VIP, VMAC = '10.0.0.100', '00:00:00:00:01:00'
+SERVERS = [('10.0.0.2','00:00:00:00:00:02',2), ('10.0.0.3','00:00:00:00:00:03',3)]
+def pick(self):                     # round robin: next server in turn
+    s = SERVERS[self.nxt]; self.nxt = (self.nxt+1) % len(SERVERS); return s
+# On Packet-In for client → VIP:  ip, mac, port = self.pick()
+# fwd match: ipv4_src=client, ipv4_dst=VIP
+#   actions: set eth_dst=mac, set ipv4_dst=ip, output(port)
+# rev match: ipv4_src=ip, ipv4_dst=client
+#   actions: set eth_src=VMAC, set ipv4_src=VIP, output(client_port)
+# install both with idle_timeout, send first packet out, proxy-ARP for VIP</pre>
+<h3>Algorithms and health checks</h3>
+<ul><li><b>Round robin / weighted round robin:</b> servers take turns; weights for stronger servers.</li><li><b>Least connections / least load:</b> pick the server with lowest counters from flow/port statistics.</li><li><b>Hash of 5-tuple</b> (source/destination IP, ports, protocol): one flow always goes to the same server (affinity).</li><li><b>Wildcard split:</b> divide client address space into prefixes, one per server.</li><li><b>Health monitoring:</b> the controller pings or TCP-checks servers or watches port status, removes failed servers and reinstalls rules. Existing connections to the failed server are reset or re-mapped.</li></ul>
+<p><b>Advantage over hardware ADC:</b> commodity switches, programmable policy, global view of server and link load.</p>
+<table><tr><th>Challenge</th><th>Remedy</th></tr>
+<tr><td>Controller handles every new connection</td><td>Wildcard and proactive rules; per-flow rules only when needed</td></tr>
+<tr><td>Limited flow-table size</td><td>Aggregate rules, short idle timeouts</td></tr>
+<tr><td>Session persistence (affinity)</td><td>Hash-based mapping or sticky rules</td></tr>
+<tr><td>Controller as bottleneck/failure point</td><td>Clustered controllers; fail-safe default rules</td></tr>
+<tr><td>Consistent updates when pool changes</td><td>Make-before-break rule updates (add new rules before removing old)</td></tr></table></section>
+
+<!-- TOPIC 4 -->
+<section id="t4" class="t4"><h2>Topic IV – Firewall and Access Control</h2>
+<div class="say">A <b>firewall</b> decides which traffic may enter, leave or cross a network. <b>Access control</b> decides who or what may use which resource. SDN turns both into flow rules managed from one controller.</div>
+<div class="eg">Firewall = security guard checking every bag at the gate. Access control = the ID card deciding which floors you can enter.</div>
+<h3>1. Firewall types</h3>
+<table><tr><th>Type</th><th>Works on</th><th>Remarks</th></tr>
+<tr><td>Packet filter</td><td>Header fields of each packet (L3/L4)</td><td>Fast, stateless, simple ACLs</td></tr>
+<tr><td>Stateful</td><td>Connection state</td><td>Allows replies to established connections</td></tr>
+<tr><td>Application / proxy</td><td>Application data</td><td>Deep inspection, slower</td></tr>
+<tr><td>Next-Generation (NGFW)</td><td>Applications, users, threats</td><td>Combines DPI (Deep Packet Inspection), IPS (Intrusion Prevention System) and identity</td></tr>
+<tr><td>Distributed / host</td><td>Each host or hypervisor switch</td><td>Policy close to the workload</td></tr></table>
+<p>Traditional firewalls sit at the edge (perimeter), so traffic <i>inside</i> (<b>east–west</b>) is unprotected and rules are set box by box.</p>
+<h3>2. Firewall with SDN</h3>
+<div class="say">An OpenFlow switch can match ingress port, MAC, VLAN, IP, protocol and TCP/UDP ports. A rule with <b>no output action drops</b> the packet; with an output action it <b>allows</b>. <b>Priority</b> settles overlaps. No match (table-miss) goes to the controller’s firewall app, which installs an allow or deny rule.</div>
+<svg viewBox="0 0 720 230" role="img" aria-label="Firewall flow table">
+<rect class="b" x="5" y="90" width="110" height="46" rx="8"/><text x="60" y="118" text-anchor="middle">Incoming packet</text>
+<rect class="b" x="170" y="5" width="300" height="220" rx="10"/><text x="185" y="26" style="font-weight:700">Flow table (highest priority first)</text>
+<rect class="r" x="185" y="40" width="270" height="38" rx="8"/><text x="320" y="64" text-anchor="middle">200  ip_src=10.0.0.5 → DROP</text>
+<rect class="r" x="185" y="86" width="270" height="38" rx="8"/><text x="320" y="110" text-anchor="middle">150  tcp, port 22 → DROP</text>
+<rect class="b" x="185" y="132" width="270" height="38" rx="8"/><text x="320" y="156" text-anchor="middle">100  ip_dst=10.0.0.2, tcp:80 → ALLOW</text>
+<rect class="b" x="185" y="178" width="270" height="38" rx="8" style="stroke-dasharray:5 3"/><text x="320" y="202" text-anchor="middle">0  table-miss → Controller</text>
+<line x1="117" y1="113" x2="168" y2="113"/>
+<text x="500" y="75">Denied: dropped (no output)</text><text x="500" y="145">Allowed: forwarded</text><text x="500" y="210">Unknown: Packet-In to app</text></svg>
+<p class="cap">Figure 7: Firewall rules as prioritised flow entries; higher number wins</p>
+<ul><li><b>Controller application:</b> Floodlight Firewall, ONOS ACL app or custom Ryu app keeps a rule list and installs flow entries.</li><li><b>Switch-resident / virtual firewall:</b> rules enforced in Open vSwitch on each hypervisor (distributed firewall), or a firewall VNF (Virtual Network Function) in a service chain.</li><li><b>Stateful behaviour:</b> OpenFlow 1.3 is stateless. The controller fakes state: when an inside host opens a connection it temporarily installs the reverse rule (idle timeout) so replies pass while unsolicited inbound packets stay blocked. OVS connection tracking or P4 gives real state.</li></ul>
+<pre>ovs-ofctl -O OpenFlow13 add-flow s1 "priority=100,tcp,nw_dst=10.0.0.2,tp_dst=80,actions=drop"
+ovs-ofctl -O OpenFlow13 add-flow s1 "priority=1,actions=normal"   # allow the rest
+# Floodlight firewall (REST)
+curl -X PUT  http://127.0.0.1:8080/wm/firewall/module/enable/json -d ''
+curl -X POST http://127.0.0.1:8080/wm/firewall/rules/json \
+  -d '{"src-ip":"10.0.0.1/32","dst-ip":"10.0.0.2/32","nwproto":"ICMP","action":"DENY"}'
+# Mininet test:  h1 ping -c2 h2 (blocked)   h3 ping -c2 h2 (allowed)</pre>
+<table><tr><th>Advantages</th><th>Limitations</th></tr>
+<tr><td>Central policy for all switches</td><td>Mostly L2–L4; limited deep inspection</td></tr>
+<tr><td>Enforcement at every hop, inside the data centre</td><td>Flow-table size and per-flow controller load</td></tr>
+<tr><td>Automated, rapid change via APIs</td><td>Rule conflicts between applications</td></tr>
+<tr><td>Global flow statistics for logging</td><td>Controller becomes security-critical</td></tr></table>
+<table><tr><th>Aspect</th><th>Traditional firewall</th><th>SDN firewall</th></tr>
+<tr><td>Location</td><td>Single perimeter box</td><td>Anywhere: every switch/vSwitch</td></tr><tr><td>Policy</td><td>Per-device ACL</td><td>Central policy → rules</td></tr><tr><td>State</td><td>Stateful inspection in device</td><td>Flow-level; controller tracks state</td></tr><tr><td>Change</td><td>Manual</td><td>API-driven, automatic</td></tr><tr><td>Visibility</td><td>Local logs</td><td>Global flow statistics</td></tr></table>
+
+<h3>3. Access control</h3>
+<div class="say">Began with <b>Ethane</b> (Stanford, 2007): a central controller authenticated users/hosts and approved every new flow against a global policy. It is the direct ancestor of OpenFlow.</div>
+<svg viewBox="0 0 720 230" role="img" aria-label="802.1X access control">
+<rect class="b" x="5" y="95" width="115" height="50" rx="8"/><text x="62" y="116" text-anchor="middle">User device</text><text x="62" y="132" text-anchor="middle">(supplicant)</text>
+<rect class="b" x="190" y="95" width="125" height="50" rx="8"/><text x="252" y="116" text-anchor="middle">Access switch</text><text x="252" y="132" text-anchor="middle">(authenticator)</text>
+<rect class="b" x="330" y="5" width="140" height="50" rx="8" style="fill:color-mix(in srgb,#e0a100 20%,var(--card))"/><text x="400" y="26" text-anchor="middle">RADIUS /</text><text x="400" y="42" text-anchor="middle">identity server</text>
+<rect class="f" x="330" y="175" width="140" height="50" rx="8"/><text class="w" x="400" y="196" text-anchor="middle">SDN controller</text><text class="w" x="400" y="212" text-anchor="middle">(policy engine)</text>
+<rect class="b" x="580" y="95" width="130" height="50" rx="8"/><text x="645" y="116" text-anchor="middle">Network resources</text><text x="645" y="132" text-anchor="middle">(VLAN / servers)</text>
+<line x1="122" y1="120" x2="188" y2="120"/><line x1="290" y1="93" x2="345" y2="57"/><line x1="400" y1="57" x2="400" y2="173" stroke-dasharray="5 4"/><line x1="345" y1="175" x2="290" y2="147"/><line x1="317" y1="120" x2="578" y2="120"/>
+<text x="125" y="88">1 802.1X login</text><text x="235" y="62">2 verify</text><text x="410" y="120">3 role/group</text><text x="200" y="185">4 Flow-Mod</text><text x="450" y="152">5 permitted traffic only</text></svg>
+<p class="cap">Figure 8: Identity-based access control with 802.1X, RADIUS and an SDN controller</p>
+<ol><li>Device logs in with <b>IEEE 802.1X</b>; the access switch relays the request.</li><li>A <b>RADIUS</b> (Remote Authentication Dial-In User Service) or identity server checks credentials.</li><li>The controller receives the user’s role or group.</li><li>The controller installs rules (or assigns a VLAN or slice) for that role.</li><li>Only permitted traffic flows; on logout or alert the rules are removed or tightened.</li></ol>
+<table><tr><th>Model</th><th>Decision based on</th><th>Example</th></tr>
+<tr><td>ACL (5-tuple)</td><td>Addresses, ports, protocol</td><td>Block TCP port 23 to servers</td></tr>
+<tr><td>Role-based (RBAC)</td><td>User’s role</td><td>Students: Internet only; staff: file servers</td></tr>
+<tr><td>Device / port based</td><td>MAC address or switch port</td><td>Printer VLAN</td></tr>
+<tr><td>Captive portal</td><td>Web login</td><td>Guest Wi-Fi redirected to sign-in page</td></tr>
+<tr><td>Micro-segmentation</td><td>Workload group</td><td>Database VMs reachable only from app VMs</td></tr></table>
+
+<h3>4. Policy conflicts and tools</h3>
+<ul><li><b>Shadowing:</b> a higher-priority rule hides a lower one (the lower rule never fires).</li><li><b>Redundancy:</b> a rule has no effect.</li><li><b>Correlation:</b> overlapping rules with different actions.</li><li><b>Generalisation:</b> one rule is a broader version of another.</li></ul>
+<div class="g"><div class="c"><b>FlowGuard</b><br>Detects and resolves firewall violations and conflicts</div><div class="c"><b>FortNOX</b><br>Checks rules from different apps for conflicts</div><div class="c"><b>VeriFlow</b><br>Verifies rules before installing</div><div class="c"><b>FRESCO</b><br>Build security functions as reusable OpenFlow modules</div></div>
+<h3>5. Design guidelines</h3>
+<ul><li>Lowest-priority <b>default-deny</b> rule for sensitive zones, then explicit allows.</li><li>Idle timeouts on dynamic allow rules so the table does not fill.</li><li>Aggregate rules by prefix and protocol.</li><li>Log denied flows (send to controller or mirror to a collector).</li><li>Chain an NGFW or IDS for traffic needing deep inspection.</li></ul>
+<div class="tip">State the weakness: SDN firewalls are mostly L2–L4 and flow-level; deep inspection needs an NGFW or IDS in a service chain.</div></section>
+
+<!-- TOPIC 5 -->
+<section id="t5" class="t5"><h2>Topic V – Use Cases in Legacy Network Security</h2>
+<div class="say"><b>Legacy network</b> = routers and switches with built-in distributed control, configured one by one through CLI (Command-Line Interface), SNMP or NETCONF. They cannot be replaced overnight, so SDN <i>augments</i> them, not only replaces them.</div>
+<h3>1. Weaknesses of legacy networks</h3>
+<ul><li>Policy spread over many boxes, so inconsistent ACLs and firewall rules leave gaps.</li><li>Reaction to attacks is manual and slow.</li><li>Visibility is local; correlating events is hard.</li><li>East–west traffic rarely inspected; flat networks let malware spread.</li><li>Old protocols (Modbus, DNP3) have no authentication.</li></ul>
+<h3>2. How SDN is applied</h3>
+<ul><li><b>Controller as management overlay:</b> collects telemetry (sFlow, NetFlow, SNMP) and applies decisions through CLI, NETCONF or vendor APIs (push ACLs, shut ports, change VLANs).</li><li><b>Hybrid SDN:</b> SDN-capable switches or ports sit alongside legacy devices and take over specific security jobs.</li></ul>
+<svg viewBox="0 0 720 250" role="img" aria-label="Controller with legacy network">
+<rect class="f" x="250" y="5" width="220" height="48" rx="8"/><text class="w" x="360" y="27" text-anchor="middle">SDN / security controller</text><text class="w" x="360" y="44" text-anchor="middle">(policy + analytics)</text>
+<rect class="b" x="5" y="20" width="150" height="46" rx="8" style="fill:color-mix(in srgb,#e0a100 20%,var(--card))"/><text x="80" y="41" text-anchor="middle">IDS / sensors</text><text x="80" y="57" text-anchor="middle">(sFlow, NetFlow)</text>
+<rect class="b" x="565" y="20" width="150" height="46" rx="8" style="fill:color-mix(in srgb,#e0a100 20%,var(--card))"/><text x="640" y="41" text-anchor="middle">RADIUS / NAC</text><text x="640" y="57" text-anchor="middle">identity</text>
+<line x1="157" y1="40" x2="248" y2="32"/><line x1="563" y1="40" x2="472" y2="32"/>
+<rect class="b" x="5" y="125" width="545" height="120" rx="10" style="stroke-dasharray:6 4;fill:none"/><text x="20" y="145">Legacy network (CLI / SNMP / NETCONF managed)</text>
+<rect class="b" x="20" y="165" width="115" height="50" rx="8"/><text x="77" y="195" text-anchor="middle">Legacy switch</text>
+<rect class="b" x="155" y="165" width="115" height="50" rx="8"/><text x="212" y="195" text-anchor="middle">Legacy router</text>
+<rect class="b" x="290" y="165" width="120" height="50" rx="8"/><text x="350" y="195" text-anchor="middle">Legacy firewall</text>
+<rect class="r" x="575" y="165" width="130" height="50" rx="8"/><text x="640" y="187" text-anchor="middle">SDN-capable</text><text x="640" y="203" text-anchor="middle">switch</text>
+<g stroke-dasharray="5 4"><line x1="320" y1="55" x2="95" y2="163"/><line x1="340" y1="55" x2="212" y2="163"/><line x1="380" y1="55" x2="350" y2="163"/></g><line x1="440" y1="55" x2="620" y2="163" stroke="#d6204a"/>
+<text x="130" y="115">ACL / VLAN / port actions via CLI-SNMP-NETCONF</text><text x="560" y="115" style="fill:#d6204a">OpenFlow</text></svg>
+<p class="cap">Figure 9: One security controller managing legacy devices and SDN switches together</p>
+<h3>3. Use cases</h3>
+<div class="g">
+<div class="c"><b>(a) DDoS mitigation</b><br>Legacy: <b>RTBH</b> (Remotely Triggered Black Hole) drops <i>all</i> traffic to the victim address; <b>BGP FlowSpec</b> (RFC 8955) distributes filter rules to routers. SDN detects the attack from flow stats, pushes FlowSpec/ACL rules or diverts victim traffic through a scrubbing centre, restoring service automatically.</div>
+<div class="c"><b>(b) NAC for existing switches</b><br>Network Access Control: switches authenticate with 802.1X or MAB (MAC Authentication Bypass). Controller gets identity from RADIUS and applies the role by dynamic VLAN, downloadable ACLs or RADIUS Change of Authorization (RFC 5176), so policy follows the user.</div>
+<div class="c"><b>(c) Quarantine</b><br>IDS or endpoint tool alerts; controller shuts the port, moves host to a remediation VLAN or installs a drop rule, containing worms and ransomware in seconds.</div>
+<div class="c"><b>(d) Targeted inspection</b><br>Instead of mirroring all traffic (SPAN) to the IDS, redirect only suspicious flows or chosen protocols to the IDS or honeypot.</div>
+<div class="c"><b>(e) ICS / SCADA security</b><br>OT (Operational Technology) networks use protocols that cannot authenticate. Segment zones (IEC 62443 zones and conduits) and whitelist permitted flows; anything else is dropped and reported.</div>
+<div class="c"><b>(f) Policy consolidation</b><br>One high-level policy in the controller is translated into many device ACLs, removing inconsistency across hundreds of firewalls and switches.</div>
+<div class="c"><b>(g) Visibility and forensics</b><br>Flow stats and sampled data (sFlow/NetFlow) collected centrally give a network-wide picture and a record for investigation.</div></div>
+<div class="eg">Blackholing with RTBH is like locking the shop’s front door because a mob is outside: the attack stops but real customers cannot enter. SDN diversion is like a bouncer who turns away only the troublemakers.</div>
+<table><tr><th>Use case</th><th>Legacy problem</th><th>SDN-assisted solution</th><th>Benefit</th></tr>
+<tr><td>DDoS</td><td>Manual blackholing hurts legitimate traffic</td><td>Auto detect, FlowSpec or diversion</td><td>Faster, more precise</td></tr>
+<tr><td>Access control</td><td>Static port ACLs</td><td>Dynamic role-based rules</td><td>Policy follows user</td></tr>
+<tr><td>Quarantine</td><td>Slow containment</td><td>Port/flow isolation</td><td>Seconds not hours</td></tr>
+<tr><td>IDS redirection</td><td>Mirror everything</td><td>Redirect suspicious flows</td><td>Lower cost</td></tr>
+<tr><td>SCADA/ICS</td><td>Unauthenticated protocols</td><td>Segmentation + whitelist</td><td>Smaller attack surface</td></tr></table>
+<h3>4. Hybrid SDN migration models</h3>
+<div class="g">
+<div class="c"><b>Port-based</b><br>Some ports of a switch run OpenFlow, others stay legacy.</div>
+<div class="c"><b>Topology-based</b><br>SDN “islands” inside the legacy network. Panopticon research: a few SDN switches give most of the benefit.</div>
+<div class="c"><b>Service-based</b><br>Legacy routing for normal traffic; SDN only for chosen services like firewalling.</div>
+<div class="c"><b>Traffic-class based</b><br>Some traffic classes follow SDN rules, others legacy forwarding.</div></div>
+<div class="say"><b>Fail modes</b> (controller lost): <b>fail-secure</b> keeps existing rules and drops unmatched traffic. <b>Fail-standalone</b> falls back to normal switch forwarding. Security-critical zones choose fail-secure.</div>
+<h3>5. Challenges and roadmap</h3>
+<table><tr><th>Challenge</th><th>Explanation</th></tr>
+<tr><td>Heterogeneity</td><td>Different vendors and interfaces (CLI, SNMP, NETCONF)</td></tr>
+<tr><td>Partial visibility</td><td>Legacy devices expose less telemetry</td></tr>
+<tr><td>Coexistence</td><td>OSPF/BGP and SDN rules must not conflict</td></tr>
+<tr><td>Skills and process</td><td>Teams need automation skills and change control</td></tr>
+<tr><td>Controller security</td><td>The new central part must itself be protected (Topic II)</td></tr></table>
+<ol><li>Collect telemetry and build visibility.</li><li>Automate low-risk actions: quarantine, port shutdown, alerts.</li><li>Add SDN-capable devices as enforcement points.</li><li>Consolidate policy centrally.</li><li>Expand SDN islands and retire legacy functions step by step.</li></ol>
+<div class="tip">Define “legacy” clearly (per-device CLI/SNMP management with distributed protocols) and say SDN augments it through hybrid deployment.</div></section>
+
+<section id="gl" class="t6"><h2>Short forms quick list</h2><div class="gl"><p>
+<b>ACL</b> Access Control List · <b>ADC</b> Application Delivery Controller · <b>AIOps</b> AI for IT Operations · <b>API</b> Application Programming Interface · <b>ARP</b> Address Resolution Protocol · <b>ASIC</b> Application-Specific Integrated Circuit · <b>BGP</b> Border Gateway Protocol · <b>BMv2</b> Behavioral Model v2 (P4 software switch) · <b>CLI</b> Command-Line Interface · <b>CNCF</b> Cloud Native Computing Foundation · <b>CNI</b> Container Network Interface · <b>DDoS/DoS</b> (Distributed) Denial of Service · <b>DPDK</b> Data Plane Development Kit · <b>DPI</b> Deep Packet Inspection · <b>eBPF</b> extended Berkeley Packet Filter · <b>ECMP</b> Equal-Cost Multi-Path · <b>ETSI</b> European Telecommunications Standards Institute · <b>FD.io</b> Fast Data Input/Output · <b>gNMI</b> gRPC Network Management Interface · <b>ICS</b> Industrial Control System · <b>IDS/IPS</b> Intrusion Detection/Prevention System · <b>IEC</b> International Electrotechnical Commission · <b>IETF</b> Internet Engineering Task Force · <b>LF</b> Linux Foundation · <b>LLDP</b> Link Layer Discovery Protocol · <b>MAB</b> MAC Authentication Bypass · <b>MAC</b> Media Access Control · <b>MEC</b> Multi-access Edge Computing · <b>MITM</b> Man-in-the-Middle · <b>NAC</b> Network Access Control · <b>NETCONF</b> Network Configuration Protocol · <b>NFV</b> Network Function Virtualization · <b>NGFW</b> Next-Generation Firewall · <b>O-RAN</b> Open Radio Access Network · <b>OCP</b> Open Compute Project · <b>ODL</b> OpenDaylight · <b>ONAP</b> Open Network Automation Platform · <b>ONF</b> Open Networking Foundation · <b>ONIE</b> Open Network Install Environment · <b>ONL</b> Open Network Linux · <b>ONOS</b> Open Network Operating System · <b>OSM</b> Open Source MANO · <b>OSPF</b> Open Shortest Path First · <b>OT</b> Operational Technology · <b>OVN</b> Open Virtual Network · <b>OVS</b> Open vSwitch · <b>OVSDB</b> OVS Database protocol · <b>P4</b> Programming Protocol-independent Packet Processors · <b>PLC</b> Programmable Logic Controller · <b>RADIUS</b> Remote Authentication Dial-In User Service · <b>RBAC</b> Role-Based Access Control · <b>REST</b> Representational State Transfer · <b>RFC</b> Request for Comments · <b>RTBH</b> Remotely Triggered Black Hole · <b>SAI</b> Switch Abstraction Interface · <b>SASE</b> Secure Access Service Edge · <b>SCADA</b> Supervisory Control and Data Acquisition · <b>SD-WAN</b> Software-Defined Wide Area Network · <b>SDN</b> Software Defined Networking · <b>SNMP</b> Simple Network Management Protocol · <b>SONiC</b> Software for Open Networking in the Cloud · <b>SPAN</b> Switched Port Analyzer · <b>STP</b> Spanning Tree Protocol · <b>TCAM</b> Ternary Content-Addressable Memory (fast, small, costly rule memory in switches) · <b>TLS</b> Transport Layer Security · <b>VIP</b> Virtual IP address · <b>VLAN</b> Virtual Local Area Network · <b>VM</b> Virtual Machine · <b>VNF</b> Virtual Network Function · <b>VXLAN</b> Virtual eXtensible LAN · <b>WLAN</b> Wireless LAN · <b>XDP</b> eXpress Data Path · <b>YANG</b> Yet Another Next Generation (data modelling language)</p></div></section>
+</main><script>
+if (window.self === window.top) {
+  var b = document.createElement('a');
+  b.href = '../index.html';
+  b.className = 'hub-floating-btn';
+  b.innerHTML = '← Back to Study Portal';
+  b.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;background:#0969da;color:#ffffff;font-family:system-ui,-apple-system,sans-serif;font-size:13px;font-weight:700;padding:10px 18px;border-radius:99px;box-shadow:0 4px 14px rgba(0,0,0,0.35);text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s ease;cursor:pointer;';
+  b.onmouseenter = function(){ b.style.transform='translateY(-2px)'; b.style.boxShadow='0 6px 20px rgba(9,105,218,0.5)'; };
+  b.onmouseleave = function(){ b.style.transform='none'; b.style.boxShadow='0 4px 14px rgba(0,0,0,0.35)'; };
+  document.body.appendChild(b);
+}
+</script>
+</body></html>

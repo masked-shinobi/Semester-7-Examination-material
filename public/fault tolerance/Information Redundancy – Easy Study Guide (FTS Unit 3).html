@@ -1,0 +1,226 @@
+﻿<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Information Redundancy – Easy Study Guide (FTS Unit 3)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Nunito:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f7f8fc;--card:#fff;--tx:#1f2437;--mut:#5b6280;--bd:#dfe3f0;--pri:#4f46e5;
+--def:#e8efff;--defb:#3b6cf5;--ex:#e6f7ee;--exb:#1f9d63;--key:#fff4d6;--keyb:#d99a00;--wr:#ffe9e9;--wrb:#d64545;--code:#eef0f8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#12141f;--card:#1b1e2e;--tx:#e8eaf5;--mut:#a0a7c4;--bd:#2c3150;--pri:#9a93ff;
+--def:#1b2744;--defb:#6b94ff;--ex:#143326;--exb:#3cc486;--key:#3a2f0f;--keyb:#f0b93a;--wr:#3b1c20;--wrb:#ff7b7b;--code:#262a40}}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--tx);font:17px/1.7 'Nunito',system-ui,sans-serif}
+.w{max-width:860px;margin:auto;padding:16px}
+h1,h2,h3{font-family:'Poppins',sans-serif;line-height:1.25}
+h1{font-size:clamp(26px,6vw,38px);margin:.2em 0}
+h2{font-size:24px;color:var(--pri);border-bottom:3px solid var(--pri);padding-bottom:6px;margin-top:0}
+h3{font-size:18px;margin:22px 0 6px}
+section{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:20px;margin:18px 0}
+.hero{background:linear-gradient(135deg,#4f46e5,#9333ea);color:#fff;border-radius:18px;padding:26px;margin-top:10px}
+.hero p{margin:4px 0;opacity:.92}
+.box{border-left:6px solid;border-radius:10px;padding:10px 14px;margin:12px 0}
+.def{background:var(--def);border-color:var(--defb)}.ex{background:var(--ex);border-color:var(--exb)}
+.key{background:var(--key);border-color:var(--keyb)}.wr{background:var(--wr);border-color:var(--wrb)}
+.box b.t{font-family:'Poppins';font-size:13px;text-transform:uppercase;letter-spacing:.05em;display:block}
+.def b.t{color:var(--defb)}.ex b.t{color:var(--exb)}.key b.t{color:var(--keyb)}.wr b.t{color:var(--wrb)}
+code,.m{font-family:'JetBrains Mono',monospace;background:var(--code);padding:1px 6px;border-radius:6px;font-size:.92em}
+.sc{overflow-x:auto}table{border-collapse:collapse;margin:10px 0;min-width:260px}
+td,th{border:1px solid var(--bd);padding:6px 10px;text-align:center}th{background:var(--def)}
+svg{max-width:100%;height:auto;display:block;margin:10px auto}svg text{fill:var(--tx);font-family:Nunito,sans-serif;font-size:13px}
+.s{stroke:var(--mut);fill:none;stroke-width:2}.f{fill:var(--def);stroke:var(--defb);stroke-width:2}.h{fill:var(--wr);stroke:var(--wrb);stroke-width:3}
+.g td{width:38px;height:34px}.hi{background:var(--wr);font-weight:700}.pb{background:var(--key);font-weight:700}
+nav a{display:inline-block;margin:3px;padding:3px 10px;border-radius:20px;background:var(--def);color:var(--tx);text-decoration:none;font-size:14px}
+</style></head><body><div class="w">
+<div class="hero"><p>21CSE479T · Fault Tolerant Systems</p><h1>Unit 3: Information Redundancy</h1><p>A first-time-reader guide: simple words, examples and pictures. Colour key below.</p></div>
+<div class="box def"><b class="t">Blue = Definition</b></div><div class="box ex"><b class="t">Green = Example</b></div><div class="box key"><b class="t">Yellow = Remember this / Formula</b></div><div class="box wr"><b class="t">Red = Warning / limitation</b></div>
+<nav><a href="#a">1 Basics</a><a href="#b">2 Parity</a><a href="#c">3 Checksum</a><a href="#d">4 M-of-N</a><a href="#e">5 Berger</a><a href="#f">6 Cyclic</a><a href="#g">7 Arithmetic</a><a href="#h">8 RAID</a><a href="#i">9 Replication</a><a href="#j">10 ABFT</a></nav>
+
+<section><h2>The big idea</h2>
+<p>Data can get damaged while it is <b>sent</b> (one unit to another), or while it is <b>stored</b> in memory. To survive this we add <b>extra information</b> that is not strictly needed. That is <b>information redundancy</b>.</p>
+<div class="box ex"><b class="t">Everyday example</b>You tell a friend your phone number and add “the last digit is the sum of the others”. If they hear it wrong, the check fails and they know something is off. The extra part is the redundancy.</div>
+<p>The most common form is <b>coding</b>: adding <b>check bits</b> so we can <i>detect</i> an error and sometimes even <i>correct</i> it. The rest of the unit shows different ways to do this: codes for single words, then <b>RAID</b> (disks), <b>replication</b> (copies on many computers) and <b>ABFT</b> (inside algorithms).</p></section>
+
+<section id="a"><h2>1 · Coding basics</h2>
+<div class="box def"><b class="t">Codeword</b>A <i>d</i>-bit data word is turned into a longer <i>c</i>-bit word (c &gt; d). That longer word is a codeword. The extra bits are the redundancy.</div>
+<p>With c bits there are 2<sup>c</sup> possible patterns, but only some are <b>valid</b> codewords. If the receiver sees an invalid pattern, it knows an error happened. A <b>code</b> is simply the set of all valid codewords.</p>
+<p><b>Costs (overhead):</b> extra bits needed, plus extra time to encode and decode.</p>
+<h3>Hamming distance</h3>
+<div class="box def"><b class="t">Hamming distance</b>The number of bit positions where two words differ.</div>
+<div class="box ex"><b class="t">Example</b><span class="m">101</span> vs <span class="m">100</span> differ in 1 position → distance 1. <span class="m">000</span> vs <span class="m">111</span> differ in 3 → distance 3.</div>
+<svg viewBox="0 0 260 185" width="300" role="img" aria-label="3-bit cube"><g class="s"><path d="M40 150H130V70H40Z M90 115H180V35H90Z M40 150L90 115 M130 150L180 115 M130 70L180 35 M40 70L90 35"/></g>
+<g><circle class="f" cx="40" cy="150" r="9"/><circle class="f" cx="130" cy="150" r="9"/><circle class="f" cx="130" cy="70" r="9"/><circle class="f" cx="40" cy="70" r="9"/><circle class="f" cx="90" cy="115" r="9"/><circle class="f" cx="180" cy="115" r="9"/><circle class="f" cx="90" cy="35" r="9"/><circle class="h" cx="180" cy="35" r="9"/><circle class="h" cx="40" cy="150" r="9"/></g>
+<text x="8" y="170">000</text><text x="115" y="172">001</text><text x="135" y="68">011</text><text x="8" y="66">010</text><text x="58" y="124">100</text><text x="185" y="120">101</text><text x="60" y="30">110</text><text x="185" y="32">111</text></svg>
+<p style="text-align:center;color:var(--mut);font-size:14px">Fig 1: all 3-bit words. A line joins two words at distance 1. Red = valid codewords {000, 111}.</p>
+<div class="box def"><b class="t">Code distance</b>The smallest Hamming distance between any two valid codewords.</div>
+<ul><li>If two valid codewords differ in just one bit (e.g. 101 and 100), one flipped bit turns one valid word into the other. The error goes <b>unnoticed</b>.</li>
+<li>Code {001, 010, 100, 111}: distance 2 → detects any 1-bit error.</li>
+<li>Code {000, 111}: distance 3 → detects any 1- or 2-bit error. If double errors are unlikely, it can also <b>correct</b> a single error: 0 is sent as 000 and 1 as 111, and a received 011 is closest to 111, so it is corrected to 1.</li></ul>
+<div class="box key"><b class="t">Rules</b>To <b>detect</b> up to k bit errors: distance ≥ <b>k + 1</b>.<br>To <b>correct</b> up to k bit errors: distance ≥ <b>2k + 1</b>.</div>
+<h3>Separable vs non-separable</h3>
+<p><b>Separable code:</b> data bits and check bits sit in separate fields. Decoding = just take the data bits (still check the check bits to verify). <b>Non-separable:</b> data and check bits are mixed, so extracting the data needs extra work.</p></section>
+
+<section id="b"><h2>2 · Parity codes</h2>
+<div class="box def"><b class="t">Parity code</b>d data bits + 1 extra bit. <b>Even parity:</b> the extra bit makes the total number of 1s even. <b>Odd parity:</b> makes it odd.</div>
+<div class="box ex"><b class="t">Example (even parity)</b><span class="m">10101</span> has three 1s → parity bit <b>1</b> (now four 1s). <span class="m">11101</span> has four 1s → parity bit <b>0</b>.</div>
+<p>Parity is computed with <b>XOR (⊕)</b>: output is 1 only when the inputs differ. 0⊕0=0, 0⊕1=1, 1⊕0=1, 1⊕1=0. Chain XORs over all bits to get the parity bit; the encoder makes it, the decoder re-XORs everything and raises an error signal if the result is wrong (Fig 2 in slides).</p>
+<ul><li><b>Overhead</b> = 1/d. <b>Distance</b> = 2.</li><li>Detects <b>every single-bit error</b> (a flip changes the parity).</li></ul>
+<div class="box wr"><b class="t">Limits</b>It cannot <b>correct</b> anything, and it cannot detect <b>double-bit errors</b> (two flips cancel out).</div>
+<h3>Even or odd? Depends on the likely failure</h3>
+<p>A common failure is “all bits stuck at 0” or “all at 1”.</p>
+<ul><li>Even parity: all-zero data gets parity 0 → all-0s word is valid → an all-0s failure goes <b>undetected</b>. Odd parity catches it.</li>
+<li>If all-1s is likelier, make sure the all-1s word is <b>invalid</b>: choose <b>odd</b> parity if the total bit count (with parity) is even, and even parity if it is odd.</li></ul>
+<h3>Variants</h3>
+<ul><li><b>Parity per byte:</b> one parity bit for each byte (m groups). Overhead rises to <b>m/d</b>, but up to m errors are detected if they fall in <i>different</i> bytes. Mix odd and even bytes to guard against all-0/all-1 failures.</li>
+<li><b>Byte-interlaced parity:</b> for d = 64, use 8 parity bits; the first covers the top bit of every byte (a63, a55, a47 … a7), the second covers the next bit of every byte, and so on.</li>
+<li><b>Two-dimensional (overlapping) parity:</b> arrange data in rows and columns, add a parity bit for every row and column. One flipped bit makes one row <i>and</i> one column fail; their crossing point is the bad bit, so it can be <b>corrected</b>.</li></ul>
+<div class="sc"><table class="g"><tr><td>1</td><td>0</td><td>1</td><td class="pb">0</td></tr><tr><td>0</td><td class="hi">1</td><td>1</td><td class="pb hi">1</td></tr><tr><td>1</td><td>1</td><td>0</td><td class="pb">0</td></tr><tr><td class="pb">0</td><td class="pb hi">0</td><td class="pb">0</td><td></td></tr></table></div>
+<p style="text-align:center;color:var(--mut);font-size:14px">Yellow = parity bits. Red row + red column cross at the wrong bit.</p></section>
+
+<section id="c"><h2>3 · Checksum</h2>
+<p>Mostly used for <b>data sent over a channel</b>. Idea: add up all the data words and send the sum too. The receiver adds what it got and compares. Mismatch = error. Assume words are d bits long.</p>
+<ul><li><b>Single-precision:</b> modulo-2<sup>d</sup> addition (keep only the lowest d bits of the sum).</li>
+<li><b>Double-precision:</b> modulo-2<sup>2d</sup> addition (keeps more bits, so it catches more errors; single-precision catches fewer).</li>
+<li><b>Residue checksum:</b> the carry out of the top bit is added back to the lowest bit (“end-around carry”).</li>
+<li><b>Honeywell checksum:</b> join words in pairs and add modulo-2<sup>2d</sup>. Guards against errors in the <b>same bit position</b> of different words.</li></ul>
+<div class="box ex"><b class="t">Example</b>Data words 0000, 0101, 1111, 0010 give single-precision checksum <span class="m">0110</span>, double-precision <span class="m">00010110</span>, residue <span class="m">0111</span> and Honeywell <span class="m">11110111</span>. In the slides’ Fig 4 case: if the line carrying a3 is stuck at 0, the single-precision checksum still matches (error missed!) but the Honeywell checksum differs, so it is caught.</div></section>
+
+<section id="d"><h2>4 · M-of-N codes</h2>
+<div class="box def"><b class="t">Unidirectional error</b>All wrong bits flip in the <i>same</i> direction (all 0→1, or all 1→0, never both).</div>
+<p>In an <b>M-of-N code</b>, every N-bit codeword has exactly <b>M ones</b>. A single flip changes the number of 1s to M+1 or M−1, so it is detected. The number of codewords is “N choose M”.</p>
+<div class="box ex"><b class="t">2-of-5 code (decimal digits)</b>Each digit uses 5 bits with exactly two 1s: 0=00011, 1=00101, 2=00110, 3=01001, 4=01010, 5=01100, 6=10001, 7=10010, 8=10100, 9=11000. There are 10! ways to assign these 10 codewords to digits.</div>
+<ul><li><b>Good:</b> simple idea. <b>Bad:</b> encoding/decoding is complex (non-separable).</li>
+<li>A separable version is <b>M-of-2M</b>: add M check bits to M data bits so the total has exactly M ones. Easy to encode/decode, but overhead is <b>100% or more</b>.</li></ul></section>
+
+<section id="e"><h2>5 · Berger code</h2>
+<p>A <b>separable</b> code for unidirectional errors with much less overhead than M-of-2M.</p>
+<div class="box key"><b class="t">How to encode</b>1) Count the 1s. 2) Write the count in binary. 3) Flip (complement) every bit of it. 4) Append it to the data.</div>
+<div class="box ex"><b class="t">Example: 11101</b>Four 1s → 100 → complement 011 → codeword <span class="m">11101 011</span>.</div>
+<ul><li>With d data bits, the count needs up to ⌈log<sub>2</sub>(d+1)⌉ bits, so overhead per data bit = ⌈log<sub>2</sub>(d+1)⌉ / d. Examples: d=8 → 4 check bits (0.5); d=63 → 6 (0.095); d=255 → 8 (0.031).</li>
+<li>If d = 2<sup>k</sup> − 1, check bits r = k: this is a <b>maximum-length Berger code</b>.</li>
+<li>It needs the <b>fewest check bits</b> of any known separable code for detecting unidirectional errors.</li></ul></section>
+
+<section id="f"><h2>6 · Cyclic codes</h2>
+<div class="box def"><b class="t">Cyclic code</b>Encoding = multiply the data (modulo-2, i.e. no carries) by a fixed number. Decoding = divide by the same number; <b>remainder ≠ 0 means error</b>. It is “cyclic” because rotating any codeword gives another codeword.</div>
+<div class="box ex"><b class="t">Cyclic check</b>The 5-bit code {00000, 00011, 00110, 01100, 11000, 10001, …} is cyclic: rotating 00011 gives 00110, 01100, 11000, 10001, all valid.</div>
+<h3>Generator polynomial</h3>
+<ul><li>k data bits, n total bits. The multiplier (n−k+1 bits) is written as a polynomial G(X), the <b>generator polynomial</b>, of degree n−k. This gives an <b>(n, k) cyclic code</b>.</li>
+<li><b>Example:</b> multiplier 11001 → G(X) = X<sup>4</sup> + X<sup>3</sup> + 1.</li>
+<li>To be a valid generator, G(X) must be a <b>factor of X<sup>n</sup> − 1</b>.</li>
+<li>X<sup>15</sup>−1 has five prime factors: (X+1)(X²+X+1)(X⁴+X+1)(X⁴+X³+1)(X⁴+X³+X²+X+1). Any one of them, or a product of two or more, can be a generator. X⁴+X³+1 → (15, 11) code; X⁴+X+1 → another (15, 11) code; (X+1)(X²+X+1) = X³+1 → (15, 12) code; X+1 → (5, 4) code for 4-bit data.</li></ul>
+<div class="box ex"><b class="t">Encoding example</b>Data 1110 = X³+X²+X, generator X+1 (binary 11). Multiply 1110 × 11 (no carries): 1110 + 11100 = <span class="m">10010</span>.</div>
+<h3>Why errors are caught</h3>
+<p>A codeword is D(X)·G(X). A single error in position i adds Xⁱ, giving D(X)G(X)+Xⁱ. G(X) (with at least two terms) does not divide Xⁱ, so dividing leaves a <b>non-zero remainder</b>.</p>
+<h3>Hardware is easy</h3>
+<p>Multiplying and dividing by G(X) uses just <b>shift registers and XOR gates</b>, so it is fast. Division is done through a <b>feedback loop</b>. With no error, the decoder gets E(X)/G(X) = D(X) with remainder zero. Since add = subtract modulo-2, D(X) = E(X) + D(X)(X³+X⁴ terms) as in the slide’s worked example. The slide table shows the 15-bit input 110000100011101 being fed in clock by clock into the (15,11) decoder.</p></section>
+
+<section id="g"><h2>7 · Arithmetic codes</h2>
+<p>These codes survive <b>arithmetic</b>, so they catch errors made <i>during</i> calculation. A code is “preserved” under an operation ★ if, with encoded operands X′ and Y′, doing a matching operation ⊛ gives the same thing as encoding X★Y: <span class="m">X′ ⊛ Y′ = (X ★ Y)′</span>. The result stays in the same code.</p>
+<h3>AN codes (non-separable)</h3>
+<ul><li>Multiply the number N by a constant A and store <b>A×N</b>. All valid codewords are <b>multiples of A</b>.</li>
+<li>An error E is undetectable only if A×N + E is still a multiple of A, that is, if E is itself a multiple of A.</li>
+<li>Don’t choose A as a power of 2 (a bit flip adds or subtracts 2ⁱ, which could be a multiple). <b>Any odd A</b> detects every single-digit fault.</li></ul>
+<div class="box ex"><b class="t">Example, A = 3</b>0110 (6) is stored as 3×6 = 18 = 010010. A fault in bit 3 gives 011010 = 26. 26 is not a multiple of 3 → detected.</div>
+<h3>Residue and inverse residue codes (separable)</h3>
+<ul><li><b>Residue code:</b> codeword = (X, |X|<sub>A</sub>), where the check is X mod A.</li>
+<li><b>Inverse residue:</b> check = A − (X mod A).</li>
+<li>Works for addition and multiplication: |X+Y|<sub>A</sub> = ||X|<sub>A</sub> + |Y|<sub>A</sub>|<sub>A</sub>.</li></ul>
+<div class="box ex"><b class="t">Example, A = 3, X = 7, Y = 5</b>|7|₃ = 1, |5|₃ = 2. Add: 7+5 = 12 → 12 mod 3 = 0, and (1+2) mod 3 = 0 ✓. Multiply: 35 mod 3 = 2, and (1·2) mod 3 = 2 ✓.</div>
+<svg viewBox="0 0 440 150" width="440" role="img" aria-label="adder with residue check"><rect class="f" x="60" y="10" width="100" height="40" rx="6"/><text x="85" y="35">Adder X+Y</text><rect class="f" x="60" y="95" width="100" height="40" rx="6"/><text x="75" y="120">Adder mod A</text><rect class="h" x="250" y="52" width="110" height="46" rx="6"/><text x="262" y="80">Error detection</text>
+<path class="s" d="M160 30H210V62H250 M160 115H210V88H250 M10 30H60 M10 115H60"/><text x="14" y="25">X,Y</text><text x="8" y="110">|X|,|Y|</text><text x="365" y="80">→ Error?</text></svg>
+<p style="text-align:center;color:var(--mut);font-size:14px">An adder with a separate residue check: the main sum is compared with a smaller mod-A sum.</p></section>
+
+<section id="h"><h2>8 · Resilient disk systems (RAID)</h2>
+<div class="box def"><b class="t">RAID</b>Redundant Array of Independent (or Inexpensive) Disks: using several disks so one failure does not lose data. It is information redundancy at a higher level than single words.</div>
+<h3>RAID 1: mirroring</h3>
+<p>Two disks, each an exact copy. If one dies, the other serves requests. <b>Reads can be faster</b> (split across both). <b>Writes are slower</b> (both must finish).</p>
+<p><b>Reliability model:</b> each disk fails at rate λ; repair time averages 1/µ. A <b>Markov chain</b> (a diagram of states and transition rates) has states = number of working disks.</p>
+<svg viewBox="0 0 420 110" width="420"><circle class="f" cx="50" cy="55" r="26"/><text x="46" y="60">2</text><circle class="f" cx="210" cy="55" r="26"/><text x="206" y="60">1</text><circle class="h" cx="370" cy="55" r="26"/><text x="366" y="60">0</text>
+<path class="s" d="M76 42Q130 15 184 42 M184 68Q130 95 76 68 M236 55H344"/><text x="115" y="22">2λ</text><text x="118" y="102">µ</text><text x="285" y="48">λ</text></svg>
+<p style="text-align:center;color:var(--mut);font-size:14px">State 0 = data lost (both disks dead).</p>
+<div class="box key"><b class="t">Key results</b>MTTDL = Mean Time To Data Loss = average time until complete failure. For RAID 1 (µ ≫ λ): <b>MTTDL ≈ (3λ+µ) / 2λ²</b>. Reliability ≈ e<sup>−t/MTTDL</sup>. Availability A = µ(µ+2λ) / (λ+µ)².<br>Idea: wait 1/2λ to reach state 1; there, repair (prob. q = µ/(µ+λ)) or a second failure (p = λ/(µ+λ)). <b>Faster repair strongly lowers the chance of data loss.</b></div>
+<h3>RAID 2 · bit-level striping with Hamming code</h3>
+<p>d data disks + c code disks; bit i of every disk forms a (c+d)-bit Hamming-coded word, so a single bad bit can be corrected. Needs 2<sup>c</sup> ≥ c + d + 1. Overhead is still large; later levels use less.</p>
+<h3>RAID 3 · one parity disk</h3>
+<p>Each disk already has error-correcting codes per sector, so a bad sector is <i>known</i>. So only a parity disk is needed: d data disks + 1 parity disk, data bit-interleaved; position i of the parity disk holds the parity of position i of all data disks. Markov chain like RAID 1, but d+1 disks; data is lost if 2+ disks fail. MTTDL ≈ ((2d+1)λ+µ) / (d(d+1)λ²); d = 1 equals RAID 1.</p>
+<h3>RAID 4 · block (stripe) interleaving</h3>
+<p>Like RAID 3 but the unit is a <b>stripe</b> (a block of any size), not one bit. <b>Small reads</b> touch just one disk, so they’re faster. A write updates the data disk and the parity disk; parity simply <b>toggles</b> if the new bit differs from the old one. Reliability same as RAID 3.</p>
+<h3>RAID 5 · spread the parity</h3>
+<p>In RAID 4 the parity disk is used on <i>every</i> write, so it becomes a bottleneck. RAID 5 mixes parity blocks across all disks. Reliability is the same as RAID 4; only performance differs.</p>
+<div class="sc"><table class="g"><tr><th>Disk1</th><th>Disk2</th><th>Disk3</th><th>Disk4</th><th>Disk5</th></tr><tr><td>D</td><td>D</td><td>D</td><td>D</td><td class="pb">P</td></tr><tr><td>D</td><td>D</td><td>D</td><td class="pb">P</td><td>D</td></tr><tr><td>D</td><td>D</td><td class="pb">P</td><td>D</td><td>D</td></tr></table></div>
+<h3>Correlated failures (strings)</h3>
+<p>Disks in one enclosure form a <b>string</b>, sharing power, cabling, cooling, controller. If that fails, the whole string fails. Failure rate of a group on one string: <b>λ<sub>total</sub> = λ<sub>indep</sub> + λ<sub>str</sub></b>. Putting a whole RAID on one string makes it <b>several orders of magnitude</b> less reliable.</p>
+<p><b>Fix: orthogonal arrangement.</b> Each RAID group takes one disk from each string. A string failure then kills only <i>one</i> disk per group, which RAID can handle. To model it, treat failures <b>triggered by a single disk</b> and those <b>triggered by a string</b> separately (both are rare), compute each rate, <b>add them</b>, then get MTTDL.</p></section>
+
+<section id="i"><h2>9 · Data replication</h2>
+<p>Keep identical copies of data on 2+ computers (nodes). Gives <b>fault tolerance and speed</b>, but copies must stay <b>consistent</b>.</p>
+<div class="box wr"><b class="t">Problem</b>Five nodes hold copies. Two links fail and node A gets cut off from B and C. A write reaching A can’t reach others → their copies are <b>stale</b> (old); reading them returns outdated data.</div>
+<h3>Voting (non-hierarchical)</h3>
+<p>Give each copy i some votes vᵢ; v = total votes. Choose read quorum r and write quorum w with <b>r + w &gt; v</b> and <b>w &gt; v/2</b>.</p>
+<div class="box def"><b class="t">Quorum</b>Any set of copies whose votes total ≥ r is a <b>read quorum</b>; ≥ w is a <b>write quorum</b>.</div>
+<ul><li>r + w &gt; v ⇒ every read quorum and write quorum <b>overlap</b>, so a read always sees at least one up-to-date copy.</li><li>w &gt; v/2 ⇒ two write quorums overlap, so two writes can’t happen at once unseen.</li></ul>
+<div class="box ex"><b class="t">Five nodes, 1 vote each (v = 5)</b>w ∈ {3, 4, 5}, r &gt; 5−w. Pairs: (r,w) = (3,3), (2,4), (1,5).<br><b>(1,5):</b> read any one copy, but a write needs all 5. Reads work even when disconnected; writes become impossible.<br><b>(3,3):</b> writes need only 3, reads need 3 (slower). After the split, A can’t serve anything, but the other four keep working.</div>
+<div class="box key"><b class="t">Trade-off</b>Many reads? Keep r small. But r = 1 forces w = 5, so one disconnected node stops all writes. r = 2 allows w = 4. <b>Performance vs reliability.</b> Choosing the best votes for maximum availability is a very hard problem.</div>
+<h3>Two heuristics for assigning votes</h3>
+<p>Use node availability aₙ(i) and link availability aₗ(j); L(i) = links at node i.</p>
+<ul><li><b>Heuristic 1:</b> v(i) = aₙ(i) · Σ aₗ(j) over links of i, rounded to nearest whole number. If the total is even, give one extra vote to a node with the most votes.</li>
+<li><b>Heuristic 2:</b> as above, but link availability is combined with the availability of the node at the other end of the link (a(k(i,j))).</li></ul>
+<div class="box ex"><b class="t">Worked example</b>Heuristic 1 gives A = 0 votes (so unreliable it’s ignored), B = C = D = 1, total 3. Then w ∈ {2,3}. If w = 2 → r = 2: quorums {BC, CD, BD}. If w = 3 → r = 1: reads {B, C, D}, write only BCD.<br>Heuristic 2 gives A=1, B=3, C=2, D=1; total is 7 (B got an extra vote), so w ∈ {4,5,6,7}:
+<div class="sc"><table><tr><th>r</th><th>w</th><th>Read quorums</th><th>Write quorums</th></tr><tr><td>4</td><td>4</td><td>AB, BC, BD, ACD</td><td>AB, BC, BD, ACD</td></tr><tr><td>3</td><td>5</td><td>B, AC, CD</td><td>BC, ABD</td></tr><tr><td>2</td><td>6</td><td>B, C, AD</td><td>ABC, BCD</td></tr><tr><td>1</td><td>7</td><td>A, B, C, D</td><td>ABCD</td></tr></table></div></div>
+<h3>Hierarchical voting</h3>
+<p>Used when r + w &gt; v is awkward: with many copies, operations get slow. Build an <b>m-level tree</b>: real copies are leaves; add <i>virtual</i> grouping nodes up to the root (level 0). Every node at level i has the same number of children (lᵢ+1). Give each node 1 vote; at level i need rᵢ + wᵢ &gt; lᵢ and wᵢ &gt; lᵢ/2.</p>
+<p><b>Building a read quorum:</b> read-mark the root; at each level read-mark rᵢ₊₁ children of every marked node; if a marked node lacks enough working children, <b>backtrack</b> and undo it. Continue down to the leaves; the marked leaves are the quorum.</p>
+<svg viewBox="0 0 330 150" width="330"><g class="s"><path d="M165 22L55 62M165 22L165 62M165 22L275 62M55 62L25 112M55 62L55 112M55 62L85 112M165 62L135 112M165 62L165 112M165 62L195 112M275 62L245 112M275 62L275 112M275 62L305 112"/></g>
+<g class="f"><circle cx="165" cy="22" r="13"/><circle cx="55" cy="62" r="13"/><circle cx="165" cy="62" r="13"/><circle cx="275" cy="62" r="13"/></g>
+<g class="f"><circle cx="25" cy="112" r="12"/><circle cx="55" cy="112" r="12"/><circle cx="85" cy="112" r="12"/><circle cx="135" cy="112" r="12"/><circle cx="165" cy="112" r="12"/><circle cx="195" cy="112" r="12"/><circle cx="245" cy="112" r="12"/><circle cx="275" cy="112" r="12"/><circle cx="305" cy="112" r="12"/></g>
+<text x="161" y="27">W</text><text x="51" y="67">X</text><text x="161" y="67">Y</text><text x="271" y="67">Z</text>
+<text x="20" y="117">A</text><text x="50" y="117">B</text><text x="80" y="117">C</text><text x="130" y="117">D</text><text x="160" y="117">E</text><text x="190" y="117">F</text><text x="240" y="117">G</text><text x="270" y="117">H</text><text x="302" y="117">I</text></svg>
+<div class="box ex"><b class="t">Example (wᵢ = 2, rᵢ = lᵢ − wᵢ + 1 = 2)</b>Mark W; mark two children, X and Y; under X pick A, B; under Y pick D, E. Read quorum = {A, B, D, E}. If D is faulty, pick F instead. If two of Y’s children are faulty, backtrack and mark Z instead.</div>
+<h3>Primary-backup approach</h3>
+<p>One node is the <b>primary</b>; the others are <b>backups</b>. All client requests go to the primary, which decides the order (<b>serializes</b>) and forwards each request to backups, waits for <b>acknowledgments</b> from all, then answers the client. Messages are <b>numbered</b> so backups process them in the same order (wrong order can make a wrong state).</p>
+<svg viewBox="0 0 420 120" width="420"><rect class="f" x="5" y="45" width="70" height="30" rx="6"/><text x="20" y="65">Client</text><rect class="h" x="140" y="45" width="80" height="30" rx="6"/><text x="152" y="65">Primary</text><rect class="f" x="320" y="5" width="90" height="28" rx="6"/><text x="335" y="24">Backup 1</text><rect class="f" x="320" y="46" width="90" height="28" rx="6"/><text x="335" y="65">Backup 2</text><rect class="f" x="320" y="87" width="90" height="28" rx="6"/><text x="335" y="106">Backup 3</text><path class="s" d="M75 60H140M220 52L320 20M220 60H320M220 68L320 100"/><text x="85" y="40">request</text><text x="235" y="40">copy + ack</text></svg>
+<h3>What if something fails?</h3>
+<ul><li><b>Network cut:</b> only the group the primary can reach keeps working. Others fall out of date and must be re-initialised after repair.</li>
+<li><b>Lost messages:</b> resend until an acknowledgment arrives; assume delivery unless a node fails.</li>
+<li><b>Backup fails:</b> primary would wait forever, so use a <b>timeout</b>: if no ack in time, mark that backup faulty and remove it.</li>
+<li><b>Primary fails</b> (three cases): (1) <b>before</b> sending request R to any backup: no inconsistency; choose a new primary (e.g. the smallest-numbered working copy). (2) <b>after</b> sending R to all backups: all have R, just choose a new primary. (3) <b>after sending to only some</b>: the hard case, fixed using <b>group view</b>.</li></ul>
+<div class="box def"><b class="t">Group view</b>The list of copies (primary + backups) that are currently working and consistent. The initial one is G0; every member knows it.</div>
+<p>Backups label messages <b>stable</b> (acknowledged by everyone in the current view) or <b>unstable</b> (not yet). A backup detects primary failure if the primary misses its regular “I am alive” broadcast (at least once every T seconds). It announces this; a <b>new group view</b> is built without the old primary and a new primary is chosen. Before installing it, each node <b>sends all its unstable messages</b> to the others, then an <b>end-of-stream</b> message; once it receives acknowledgments from every node in the new view, the new view is established.</p></section>
+
+<section id="j"><h2>10 · Algorithm-Based Fault Tolerance (ABFT)</h2>
+<div class="box def"><b class="t">ABFT</b>Fault detection and diagnosis using data redundancy built into the <b>application software</b> itself (not hardware or the OS). Details differ per application. Used for matrix and signal processing: matrix multiplication, inversion, LU decomposition, Fast Fourier Transform. For matrices, the redundancy is a <b>checksum code</b>.</div>
+<h3>Checksum matrices (A is n × m)</h3>
+<ul><li><b>Column checksum A<sub>C</sub></b> = A with one extra row eA at the bottom (e = row of all 1s), which holds the column sums.</li>
+<li><b>Row checksum A<sub>R</sub></b> = [A  Af], an extra column Af (f = column of all 1s) holding row sums.</li>
+<li><b>Full checksum A<sub>F</sub></b> = both, an (n+1) × (m+1) matrix.</li></ul>
+<div class="box ex"><b class="t">Tiny example</b>A = [[1,2],[3,4]] → extra row (column sums) [4,6]; extra column (row sums) [3,7]; corner = 10. If one entry is wrong, one row sum and one column sum fail: the crossing shows <b>which element</b>.</div>
+<ul><li>Column or row checksum: <b>detects</b> a single fault in a column or row. Full checksum: can <b>locate</b> a single bad element.</li>
+<li>They work across operations: A+B=C becomes A<sub>C</sub>+B<sub>C</sub>=C<sub>C</sub> (also row/full versions); A·B=C becomes A<sub>C</sub>·B<sub>R</sub>=C<sub>F</sub> style (AB<sub>R</sub>=C<sub>R</sub>, A<sub>C</sub>B=C<sub>C</sub>, A<sub>C</sub>B<sub>R</sub>=C<sub>F</sub>).</li></ul>
+<h3>Weighted checksum code (WCC)</h3>
+<p>To <b>locate and correct</b> with only a row or column checksum, add a <b>second</b> checksum using weights 1, 2, 4 … 2<sup>n−1</sup> (e<sub>w</sub> = [1 2 … 2<sup>n−1</sup>]). Adding just two extra rows (or columns) lets it <b>correct a single error</b>.</p>
+<div class="box key"><b class="t">Correcting with WCC</b>Error in column j found. S₁ = (sum of column j) − (unweighted checksum); S₂ = (weighted sum) − (weighted checksum).<br>• Only one of S₁, S₂ non-zero → the checksum itself is wrong.<br>• Both non-zero → S₂/S₁ = 2<sup>k−1</sup> tells row k. Fix: <b>a′ = a − S₁</b>.</div>
+<p>Extend further with weights of the form (1<sup>d−1</sup>, 2<sup>d−1</sup>, …): d = 1 gives unweighted, d = 2 weighted. Using d = 1…v gives <b>Hamming distance v + 1</b>: it can <b>detect up to v errors</b> and <b>correct up to ⌊v/2⌋</b>.</p></section>
+
+<section><h2>Quick revision table</h2><div class="sc"><table><tr><th>Technique</th><th>One-line idea</th><th>Can do</th></tr>
+<tr><td>Parity</td><td>1 extra bit, even/odd 1s</td><td>Detect 1-bit</td></tr><tr><td>2-D parity</td><td>Row + column parity</td><td>Correct 1-bit</td></tr>
+<tr><td>Checksum</td><td>Send the sum too</td><td>Detect (transmission)</td></tr><tr><td>M-of-N</td><td>Exactly M ones</td><td>Unidirectional</td></tr>
+<tr><td>Berger</td><td>Complemented count of 1s</td><td>Unidirectional, low overhead</td></tr>
+<tr><td>Cyclic</td><td>Multiply/divide by G(X)</td><td>Detect, remainder ≠ 0</td></tr>
+<tr><td>AN / residue</td><td>Multiples of A / X mod A</td><td>Errors in arithmetic</td></tr>
+<tr><td>RAID 1/3/4/5</td><td>Mirror / parity disk / stripes / spread parity</td><td>Survive 1 disk</td></tr>
+<tr><td>Replication</td><td>Copies + quorums / primary-backup</td><td>Survive node/link faults</td></tr>
+<tr><td>ABFT</td><td>Checksum matrices</td><td>Detect/correct in matrix maths</td></tr></table></div></section>
+</div><script>
+if (window.self === window.top) {
+  var b = document.createElement('a');
+  b.href = '../index.html';
+  b.className = 'hub-floating-btn';
+  b.innerHTML = '← Back to Study Portal';
+  b.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;background:#0969da;color:#ffffff;font-family:system-ui,-apple-system,sans-serif;font-size:13px;font-weight:700;padding:10px 18px;border-radius:99px;box-shadow:0 4px 14px rgba(0,0,0,0.35);text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s ease;cursor:pointer;';
+  b.onmouseenter = function(){ b.style.transform='translateY(-2px)'; b.style.boxShadow='0 6px 20px rgba(9,105,218,0.5)'; };
+  b.onmouseleave = function(){ b.style.transform='none'; b.style.boxShadow='0 4px 14px rgba(0,0,0,0.35)'; };
+  document.body.appendChild(b);
+}
+</script>
+</body></html>

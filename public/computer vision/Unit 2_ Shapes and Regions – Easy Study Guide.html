@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Unit 2: Shapes and Regions – Easy Study Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f8fc;--card:#fff;--tx:#1f2937;--mu:#5b6475;--bd:#e3e6ef;--c1:#4f46e5;--c2:#0d9488;--c3:#d97706;--c4:#db2777;--c5:#2563eb;--c6:#7c3aed;--c7:#dc2626;--c8:#059669;--c9:#0891b2;--on:#4f46e5;--off:#e5e7eb;--hl:#f59e0b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1220;--card:#181c30;--tx:#e8eaf3;--mu:#a2a9bf;--bd:#2a3050;--off:#2a3050;--on:#818cf8}}
+:root[data-theme="dark"]{--bg:#0f1220;--card:#181c30;--tx:#e8eaf3;--mu:#a2a9bf;--bd:#2a3050;--off:#2a3050;--on:#818cf8}
+*{box-sizing:border-box}html{scroll-padding-top:60px}
+body{margin:0;background:var(--bg);color:var(--tx);font:17px/1.65 Nunito,system-ui,sans-serif}
+main{max-width:860px;margin:auto;padding:16px}
+h1{font-size:2rem;margin:.4em 0;line-height:1.2}h2{margin:0 0 .3em;font-size:1.45rem}h3{margin:1.1em 0 .3em;font-size:1.1rem;color:var(--ac)}
+.hero{background:linear-gradient(135deg,#4f46e5,#db2777);color:#fff;border-radius:18px;padding:22px}.hero p{margin:.3em 0;opacity:.95}
+nav{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}nav a{padding:5px 11px;border-radius:99px;background:var(--card);border:1px solid var(--bd);color:var(--tx);text-decoration:none;font-size:.85rem;font-weight:600}
+section{background:var(--card);border:1px solid var(--bd);border-left:7px solid var(--ac);border-radius:14px;padding:18px 20px;margin:18px 0}
+.tag{display:inline-block;background:var(--ac);color:#fff;border-radius:8px;padding:2px 10px;font-size:.78rem;font-weight:800}
+.say{background:color-mix(in srgb,var(--ac) 10%,transparent);border-radius:10px;padding:9px 13px;margin:10px 0}
+.ex{border:2px dashed var(--ac);border-radius:10px;padding:9px 13px;margin:10px 0}.ex:before{content:"EXAMPLE  ";font-weight:800;color:var(--ac);font-size:.75rem}
+.say:before{content:"IN SIMPLE WORDS  ";font-weight:800;color:var(--ac);font-size:.75rem}
+code,.m{font-family:'Fira Code',monospace;font-size:.88em;background:color-mix(in srgb,var(--ac) 12%,transparent);padding:1px 6px;border-radius:5px}
+table{border-collapse:collapse;width:100%;font-size:.92rem;margin:8px 0}th,td{border:1px solid var(--bd);padding:6px 9px;text-align:left;vertical-align:top}th{background:color-mix(in srgb,var(--ac) 16%,transparent)}
+.wrap{overflow-x:auto}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:10px 0}.flow span{background:var(--ac);color:#fff;padding:5px 10px;border-radius:8px;font-size:.85rem;font-weight:600}.flow i{color:var(--mu);font-style:normal}
+.figs{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;margin:10px 0}.fig{text-align:center;font-size:.8rem;color:var(--mu)}
+.g{display:inline-grid;gap:2px}.g b{width:22px;height:22px;border-radius:4px;background:var(--off);font:600 11px/22px 'Fira Code',monospace;color:var(--mu)}.g b.o{background:var(--on);color:#fff}.g b.h{background:var(--hl);color:#000}
+.arrow{align-self:center;font-size:1.6rem;color:var(--mu)}
+svg text{fill:var(--tx);font-family:Nunito,sans-serif}
+ul{padding-left:1.2em;margin:.3em 0}li{margin:.15em 0}
+.pros{color:var(--c8)}.cons{color:var(--c7)}
+footer{text-align:center;color:var(--mu);font-size:.85rem;margin:20px 0 40px}
+</style></head><body><main>
+<div class="hero"><h1>Unit 2: Shapes and Regions</h1><p>Computer Vision (21CSE454T) – an easy, first-time-reader guide covering all 9 sessions.</p><p><b>How to read:</b> each topic has a plain-words box, an example, and a picture. Dark-blue squares in grids = object pixels (1), grey = background (0).</p></div>
+<nav><a href="#s1">1 Binary Shape</a><a href="#s2">2 Labeling</a><a href="#s3">3 Size Filter &amp; Skeleton</a><a href="#s4">4 Boundary Tracking</a><a href="#s5">5 Active Contours</a><a href="#s6">6 Shape Models</a><a href="#s7">7 Occlusion</a><a href="#s8">8 Boundary Descriptors</a><a href="#s9">9 Region Descriptors</a></nav>
+
+<section id="s1" style="--ac:var(--c1)"><span class="tag">SESSION 1</span><h2>Binary Shape Analysis</h2>
+<h3>What is a binary image?</h3>
+<p>An image with only <b>two pixel values</b>: <code>1</code> = object (white, foreground) and <code>0</code> = background (black). Rule: <code>B(x,y)=1</code> if the pixel belongs to the object, else <code>0</code>.</p>
+<div class="say">Think of a black-and-white stamp: ink where the object is, blank elsewhere. Shape analysis = measuring that stamp.</div>
+<p><b>Why bother?</b> Boundaries and shape measurements become easy to compute. Used in tumor detection, industrial inspection, OCR (reading text) and remote sensing (finding roads/buildings).</p>
+<h3>Workflow (6 steps)</h3>
+<div class="flow"><span>1 Acquire image</span><i>→</i><span>2 Remove noise</span><i>→</i><span>3 Threshold</span><i>→</i><span>4 Find objects</span><i>→</i><span>5 Extract features</span><i>→</i><span>6 Classify</span></div>
+<ul><li><b>Acquire:</b> camera/sensor takes the picture.</li><li><b>Preprocess:</b> Gaussian or median filter removes noise (random specks).</li><li><b>Threshold:</b> pixel &gt; T becomes 1, else 0 (turns grey picture into black/white).</li><li><b>Object detection:</b> find <i>connected components</i> (groups of touching pixels).</li><li><b>Features:</b> measure geometry (area, perimeter…).</li><li><b>Classify:</b> machine learning decides "what is it?".</li></ul>
+<h3>Two ways to represent a shape</h3>
+<table><tr><th>Boundary-based</th><th>Region-based</th></tr><tr><td>Uses only the <b>edge pixels</b>. E.g. perimeter, curvature.</td><td>Uses <b>all pixels inside</b>. E.g. area, centroid.</td></tr></table>
+<h3>Basic features</h3>
+<table><tr><th>Feature</th><th>Meaning</th></tr>
+<tr><td>Area</td><td>Number of object pixels (size)</td></tr><tr><td>Perimeter</td><td>Length of the boundary</td></tr><tr><td>Centroid</td><td>Centre point of the object</td></tr><tr><td>Bounding box</td><td>Smallest rectangle that fits around it</td></tr><tr><td>Aspect ratio</td><td>Width ÷ Height (&gt;1 or &lt;1 means stretched)</td></tr>
+<tr><td>Circularity</td><td><code>4πA / P²</code> – closer to 1 = more like a circle</td></tr><tr><td>Compactness</td><td><code>P² / 4πA</code> – inverse of circularity (1 = circle, bigger = irregular)</td></tr><tr><td>Eccentricity</td><td>Major axis ÷ minor axis – how long and thin</td></tr></table>
+<p><b>Moment features:</b> numbers describing how the pixels are spread out. <b>Boundary features:</b> boundary length, curvature, Fourier descriptors (outline as waves).</p>
+<div class="ex">Square 10×10: A=100, P=40 → circularity = 4π·100/1600 ≈ <b>0.79</b>. A circle gives 1.0. So the square is "less round".</div>
+<p><b>Algorithm:</b> read image → find connected components → extract boundaries → compute area/centroid → compute perimeter → compute moments → build a <b>feature vector</b> (a list of numbers) for classification.</p>
+<p class="pros">Advantages: simple, fast, easy features.</p><p class="cons">Limits: sensitive to noise; loses colour/texture; complex shapes need advanced descriptors.</p>
+
+<h3>Morphology – reshaping with a "stamp" (structuring element)</h3>
+<div class="say">Morphology uses a small shape B (the <b>structuring element</b>) that slides over image A to shrink, grow, or clean objects. It is based on set theory.</div>
+<table><tr><th>Operation</th><th>Symbol</th><th>What it does</th><th>Rule</th></tr>
+<tr><td>Erosion</td><td><code>A ⊖ B</code></td><td>Shrinks object, removes tiny noise, breaks thin links</td><td>Pixel stays 1 only if <b>all</b> pixels under B are 1</td></tr>
+<tr><td>Dilation</td><td><code>A ⊕ B</code></td><td>Grows object, fills small holes, joins nearby objects</td><td>Pixel becomes 1 if <b>any</b> pixel under B is 1</td></tr>
+<tr><td>Opening</td><td><code>(A⊖B)⊕B</code></td><td>Erode then dilate: removes small noise, keeps big shapes</td><td>Noise is gone and can't grow back</td></tr>
+<tr><td>Closing</td><td><code>(A⊕B)⊖B</code></td><td>Dilate then erode: fills small holes/gaps</td><td></td></tr></table>
+<div class="figs"><div class="fig"><div class="g" data-g="0000000/0100000/0111110/0111110/0111110/0000000" data-c="7"></div><br>Before (noise dot + blob)</div><div class="arrow">→<br><small>Opening</small></div><div class="fig"><div class="g" data-g="0000000/0000000/0111110/0111110/0111110/0000000" data-c="7"></div><br>After (dot removed, blob kept)</div></div>
+<p><b>Role:</b> clean shapes first, so descriptors are measured on tidy objects. <b>Skeletonization</b> reduces a shape to a thin centre line while keeping its topology.</p>
+<p><b>Irregular shapes</b> are handled with: region growing &amp; contour analysis (follow wiggly edges), <b>convex hulls</b> (wrap a rubber band around the shape → simple convex form), and <b>Fourier descriptors</b> (outline as frequencies).</p>
+<div class="ex">Tumor detection in MRI/CT: round, smooth shape often = normal; irregular, spiky shape = suspicious. Shape and size help treatment planning.</div></section>
+
+<section id="s2" style="--ac:var(--c2)"><span class="tag">SESSION 2</span><h2>Object Labeling and Counting</h2>
+<h3>Connectedness</h3>
+<p>Two pixels are <b>connected</b> if they are neighbours <i>and</i> both are 1. It decides which pixels belong to the same object (e.g. which pixels form one letter in OCR).</p>
+<div class="figs"><div class="fig"><div class="g" data-g="010/1P1/010" data-c="4"></div><br>4-connectivity <code>N4</code></div><div class="fig"><div class="g" data-g="101/0P0/101" data-c="4"></div><br>Diagonal <code>ND</code></div><div class="fig"><div class="g" data-g="111/1P1/111" data-c="4"></div><br>8-connectivity <code>N8 = N4 ∪ ND</code></div></div>
+<table><tr><th>Type</th><th>Neighbours</th><th>Notes</th></tr>
+<tr><td>4-connectivity</td><td>Up, down, left, right</td><td>Simple. Diagonal pixels are NOT connected.</td></tr>
+<tr><td>Diagonal</td><td>4 corners only</td><td>Detects diagonal structures.</td></tr>
+<tr><td>8-connectivity</td><td>All 8 around</td><td>Strong; common in recognition/segmentation.</td></tr>
+<tr><td>m-connectivity (mixed)</td><td>4-neighbours, or diagonal only if the shared 4-neighbours are not object</td><td>Removes the ambiguity of 8-connectivity (double paths).</td></tr></table>
+<div class="ex">Pixels <code>1 0 / 0 1</code> touch only diagonally: <b>not</b> connected under 4-connectivity, connected under 8.</div>
+<h3>Connected Component Labeling (CCL)</h3>
+<p>Give every group of connected 1-pixels its own number. Count of labels = count of objects.</p>
+<div class="figs"><div class="fig"><div class="g" data-g="00110/00110/10001/10001" data-c="5"></div><br>Binary image</div><div class="arrow">→</div><div class="fig"><div class="g" data-g="00110/00110/20003/20003" data-c="5" data-l="1"></div><br>Labeled: <b>3 objects</b></div></div>
+<div class="flow"><span>Acquire</span><i>→</i><span>Threshold</span><i>→</i><span>Remove noise (open/close)</span><i>→</i><span>Choose 4/8/m</span><i>→</i><span>Label</span><i>→</i><span>Count labels</span></div>
+<p><b>Two-pass algorithm:</b> <b>Pass 1</b> – scan pixel by pixel, check neighbours, assign a label, note which labels are "the same object". <b>Pass 2</b> – replace equivalent labels with one label, so every object has a unique ID.</p>
+<div class="ex">Cell counting: actual cells = 120, detected = 118 → accuracy ≈ 98%. Quality of labeling is measured with <b>precision, recall, accuracy</b>.</div></section>
+
+<section id="s3" style="--ac:var(--c3)"><span class="tag">SESSION 3</span><h2>Size Filtering, Distance and Skeletons</h2>
+<h3>Size filtering (throw away specks)</h3>
+<div class="say">Big blobs = real objects. Tiny blobs = dust/noise. Count pixels in each blob and delete the small ones.</div>
+<p>Steps: label objects (BFS, DFS or CCL) → measure area → set threshold T → remove if Area &lt; T (optionally also remove if above a maximum) → output filtered image. Rule: <code>Area &lt; T → irrelevant</code>, <code>Area ≥ T → relevant</code>.</p>
+<table><tr><th>Component</th><th>Area</th><th>T = 50</th></tr><tr><td>Object 1</td><td>300</td><td>Relevant</td></tr><tr><td>Object 2</td><td>250</td><td>Relevant</td></tr><tr><td>Noise</td><td>4, 3</td><td>Irrelevant (removed)</td></tr></table>
+<p><b>Relevant:</b> cells, coins, characters, fruits (large, meaningful shapes). <b>Irrelevant:</b> noise pixels, dust, segmentation errors (tiny, random). <i>Opening</i> can also remove tiny particles. Cell example: remove blobs under 20 pixels.</p>
+<h3>Distance functions</h3>
+<p>For each pixel, how far is the nearest object pixel? Three ways to measure:</p>
+<table><tr><th>Name</th><th>Formula</th><th>Contour shape</th></tr><tr><td>D4 city-block</td><td><code>|x1−x2| + |y1−y2|</code> (walk only along streets)</td><td>Diamond</td></tr><tr><td>D8 chessboard</td><td><code>max(|x1−x2|, |y1−y2|)</code> (like a chess king)</td><td>Square</td></tr><tr><td>D2 Euclidean</td><td><code>√((x1−x2)²+(y1−y2)²)</code> (straight line)</td><td>Circle</td></tr></table>
+<p>Example image: object pixels at (0,2) and (2,0), rest background.</p>
+<div class="figs"><div class="fig"><div class="g" data-g="0010/0000/1000" data-c="4"></div><br>Input</div><div class="arrow">→</div><div class="fig"><div class="g" data-g="2101/1212/0123" data-c="0" data-n="1"></div><br>D4 map</div><div class="fig"><div class="g" data-g="2101/1111/0122" data-c="0" data-n="1"></div><br>D8 map</div><div class="fig"><div class="g" data-g="2.001.000.001.00/1.001.411.001.41/0.001.002.002.24" data-c="0"></div></div></div>
+<p>Euclidean map (rounded): row1 = 2.00, 1.00, 0.00, 1.00; row2 = 1.00, 1.41, 1.00, 1.41; row3 = 0.00, 1.00, 2.00, 2.24.</p>
+<h3>Skeletonization and thinning</h3>
+<div class="say">Skeleton = peel the shape down to a 1-pixel-wide centre line, without breaking it or changing how many pieces/holes it has.</div>
+<p><b>Uses:</b> shape representation, length/width/orientation, fingerprint &amp; character recognition, matching. <b>Rules:</b> keep connectivity, keep overall shape/topology.</p>
+<p><b>Medial Axis Transform (MAT):</b> medial axis = points inside the object that have <b>at least two closest boundary points</b>. MAT also stores each point's distance (radius) to the boundary. Skeleton = plain black/white image; MAT = grey image where brightness = distance.</p>
+<p>Two ways to get it: (1) <b>Thinning</b> – repeatedly erode boundary pixels (keeping line ends) until nothing more can go; (2) <b>Distance transform + ridge extraction</b>. Also: Voronoi-based skeleton.</p>
+<div class="flow"><span>Binary shape</span><i>→</i><span>Clean (median/opening, threshold)</span><i>→</i><span>Distance transform</span><i>→</i><span>Ridge (local maxima)</span><i>→</i><span>Skeleton</span><i>→</i><span>Prune/smooth</span></div>
+<ul><li><b>Distance transform:</b> each object pixel gets its distance to the nearest background; edges small (1), centre large.</li><li><b>Ridge extraction:</b> keep peak values = farthest from boundary = centre line.</li><li><b>Post-processing:</b> pruning removes tiny false branches; smoothing cleans the line.</li></ul>
+<div class="ex">A rectangle's skeleton: a horizontal centre line with a "Y" fork at each end (the diagonal lines to the corners).</div>
+<svg viewBox="0 0 300 90" width="300" role="img" aria-label="Rectangle with skeleton"><rect x="40" y="20" width="220" height="50" fill="none" stroke="#d97706" stroke-width="2"/><path d="M40 20L95 45L205 45L260 20M40 70L95 45M205 45L260 70" stroke="#4f46e5" stroke-width="3" fill="none"/><text x="100" y="85" font-size="11">rectangle (orange) + skeleton (blue)</text></svg></section>
+
+<section id="s4" style="--ac:var(--c4)"><span class="tag">SESSION 4</span><h2>Boundary Tracking</h2>
+<p><b>Goal:</b> walk around an object's edge and record the pixels in order. Generic recipe: find a start pixel (top-left object pixel) → set a direction → search neighbours (4 or 8) → record boundary pixel → repeat until back at the start.</p>
+<table><tr><th>Method</th><th>Idea</th></tr><tr><td>Moore-neighbour tracing</td><td>8-connectivity; check neighbours clockwise to find the next boundary pixel; stop at the start.</td></tr><tr><td>Freeman chain code</td><td>Store the boundary as direction numbers 0–7 instead of coordinates.</td></tr><tr><td>Radial sweep</td><td>Pick centroid inside; shoot rays outward; mark where they hit the edge.</td></tr><tr><td>Edge-detect + follow</td><td>Sobel/Canny find edges, then follow them using connectivity.</td></tr><tr><td>Active contours</td><td>A flexible curve that crawls to the edge (see Session 5).</td></tr><tr><td>Square tracing</td><td>Another simple boundary-following method.</td></tr></table>
+<h3>Boundary coordinates</h3>
+<p>The boundary as an ordered list <code>(x1,y1),(x2,y2),…,(xn,yn)</code> (row and column positions). Steps: acquire → preprocess (median/Gaussian, threshold) → extract boundary → track it.</p>
+<div class="say">A boundary pixel = an object pixel that has at least one background neighbour.</div>
+<p><b>Morphological boundary extraction:</b> <code>B = A − (A ⊖ S)</code> → take the object, erode it, subtract: only the outer ring is left.</p>
+<div class="figs"><div class="fig"><div class="g" data-g="00000/01110/01110/01110/00000" data-c="5"></div><br>A</div><div class="arrow">−</div><div class="fig"><div class="g" data-g="00000/00000/00100/00000/00000" data-c="5"></div><br>A ⊖ S</div><div class="arrow">=</div><div class="fig"><div class="g" data-g="00000/01110/01010/01110/00000" data-c="5"></div><br>Boundary B</div></div>
+<h3>Ways to represent the boundary</h3>
+<ul><li><b>Chain code:</b> directions as numbers – compact, good for matching.</li><li><b>Polygon approximation:</b> replace the boundary with straight line segments – fewer points.</li><li><b>Signature:</b> turn the outline into a 1D graph <code>r(θ)</code> = distance from centroid at each angle – easy to compare.</li></ul>
+<p><b>Features from coordinates:</b> perimeter <code>P=Σ dist(pi,pi+1)</code>, area (pixels inside), circularity <code>4πA/P²</code>, curvature (how sharply the edge bends).</p>
+<div class="ex">OCR: scan → binary → trace each letter's boundary → features tell <b>O</b> (round), <b>S</b> (curvy), <b>L</b> (straight edges). Advantages: less computation, keeps shape info, good for comparison. Uses: OCR, medical, fingerprint, inspection, self-driving.</div></section>
+
+<section id="s5" style="--ac:var(--c5)"><span class="tag">SESSION 5</span><h2>Active Contours ("Snakes")</h2>
+<div class="say">Draw a loose rubber loop around an object. The loop shrinks and wiggles until it hugs the object's edge. It "wants" to be smooth (internal force) and "wants" to sit on edges (external force).</div>
+<p>It minimises energy: <code>E_snake = E_internal + E_external</code> (sometimes <code>+ E_constraint</code>).</p>
+<svg viewBox="0 0 400 110" width="400" style="max-width:100%" role="img" aria-label="Snake process"><circle cx="55" cy="55" r="22" fill="#9ca3af"/><ellipse cx="55" cy="55" rx="42" ry="40" fill="none" stroke="#dc2626" stroke-dasharray="4 3" stroke-width="2"/><text x="14" y="107" font-size="11">Initial loop</text><text x="125" y="60" font-size="22">→</text><circle cx="200" cy="55" r="22" fill="#9ca3af"/><ellipse cx="200" cy="55" rx="30" ry="29" fill="none" stroke="#dc2626" stroke-width="2"/><text x="160" y="107" font-size="11">Shrinking…</text><text x="265" y="60" font-size="22">→</text><circle cx="340" cy="55" r="22" fill="#9ca3af"/><circle cx="340" cy="55" r="22" fill="none" stroke="#059669" stroke-width="3"/><text x="300" y="107" font-size="11">Fits boundary</text></svg>
+<h3>Steps</h3>
+<ol><li><b>Initialise</b> a rough circle/ellipse near the object (need not be exact).</li><li><b>Edges via gradients:</b> <code>|∇I| = √(Ix² + Iy²)</code> (big intensity change = edge). Tools: Sobel, Prewitt, Canny.</li><li><b>Internal forces:</b> <i>elastic</i> (keeps points close) + <i>bending/rigidity</i> (prevents sharp kinks) → smooth curve.</li><li><b>External forces:</b> from gradients, edge maps, intensity changes → pull the curve to strong edges.</li><li><b>Iterate:</b> repeat update many times.</li><li><b>Stop</b> when contour is stable, energy is minimum, or max iterations reached.</li></ol>
+<p class="pros">Pros: accurate, handles irregular shapes, smooth result, OK with noise, great for medical images.</p><p class="cons">Cons: sensitive to starting position, fails on weak edges, slow, can get stuck in local minima.</p>
+<p><b>Uses:</b> tumor boundaries (MRI/CT; measure size, shape, growth), face contours, tracking in video, shape analysis, road boundaries.</p>
+<h3>Binary vs grayscale</h3>
+<table><tr><th>Binary</th><th>Grayscale</th></tr><tr><td>Edge is where 1 changes to 0. Faster, clearer, cheaper. (Characters, shape detection, inspection.)</td><td>Edges come from intensity gradients. Problems: weak edges, noise, uneven brightness. Fixes: <b>Gradient Vector Flow (GVF)</b>, <b>Level Set methods</b>.</td></tr></table>
+<h3>Judging the result (TP/TN/FP/FN = right/wrong pixel counts)</h3>
+<table><tr><th>Metric</th><th>Formula</th><th>Meaning</th></tr><tr><td>Accuracy</td><td>(TP+TN)/(TP+TN+FP+FN)</td><td>% pixels correct</td></tr><tr><td>Precision</td><td>TP/(TP+FP)</td><td>Of detected pixels, how many are really object</td></tr><tr><td>Recall</td><td>TP/(TP+FN)</td><td>Of real object pixels, how many were found</td></tr><tr><td>Dice</td><td>2|A∩B|/(|A|+|B|)</td><td>Overlap with ground truth (A = result, B = truth)</td></tr></table></section>
+
+<section id="s6" style="--ac:var(--c6)"><span class="tag">SESSION 6</span><h2>Shape Models and Shape Recognition</h2>
+<p>A <b>shape model</b> is a simplified mathematical description of an object's geometry, used to recognise and classify it.</p>
+<table><tr><th>Model</th><th>Idea</th><th>Example</th></tr><tr><td>Contour-based</td><td>Only the outline (list of boundary points). Less memory.</td><td>OCR, shape matching</td></tr><tr><td>Region-based</td><td>All pixels inside: area, centroid, orientation.</td><td>Detailed interior info</td></tr><tr><td>Statistical</td><td>Learn average shape + variations from many examples (uses PCA).</td><td>Faces, medical segmentation</td></tr><tr><td>Parametric</td><td>Equations with parameters (size, position, angle).</td><td>Circles, ellipses</td></tr><tr><td>Deformable</td><td>Flexible curve that adapts by minimising energy.</td><td>Snakes</td></tr></table>
+<div class="wrap"><table><tr><th>Feature</th><th>Contour</th><th>Region</th><th>Statistical</th><th>Parametric</th><th>Deformable</th></tr><tr><td>Uses boundary</td><td>✓</td><td>✗</td><td>✓</td><td>Sometimes</td><td>✓</td></tr><tr><td>Uses interior</td><td>✗</td><td>✓</td><td>✓</td><td>✗</td><td>Sometimes</td></tr><tr><td>Learns from data</td><td>✗</td><td>✗</td><td>✓</td><td>✗</td><td>Sometimes</td></tr><tr><td>Complex shapes</td><td>Medium</td><td>Medium</td><td>High</td><td>Low</td><td>Very high</td></tr></table></div>
+<h3>Shape recognition</h3>
+<p>Identify an object from its geometry – useful even when colour/texture is poor. Techniques: <b>template matching</b> (compare with stored shapes), <b>feature-based</b>, <b>statistical classification</b> (SVM, k-NN), <b>contour-based</b>.</p>
+<div class="flow"><span>Image</span><i>→</i><span>Binary/segment</span><i>→</i><span>Features</span><i>→</i><span>Feature vector</span><i>→</i><span>Compare with models</span><i>→</i><span>Classify</span><i>→</i><span>Output class</span></div>
+<p><b>Classifiers:</b> <b>k-NN</b> (look at nearest similar examples), <b>SVM</b> (best dividing line between classes), <b>Decision tree</b> (if-then rules), <b>Neural network</b> (learns complex patterns).</p>
+<div class="ex">Corners: 0 → circle, 3 → triangle, 4 → rectangle. Apps: traffic signs (stop = octagon, warning = triangle), tumors, defective products, handwriting.</div></section>
+
+<section id="s7" style="--ac:var(--c7)"><span class="tag">SESSION 7</span><h2>Handling Occlusion</h2>
+<div class="say">Occlusion = something is blocking part of the object, like a person standing in front of a building. The front object is <b>foreground</b>, the hidden one is <b>background</b>.</div>
+<p>It happens because a 3D scene is flattened to 2D. Less visible information makes detection, tracking, face recognition and scene understanding harder; the system may lose or misidentify the object.</p>
+<svg viewBox="0 0 260 90" width="260" role="img" aria-label="Occlusion"><rect x="30" y="20" width="120" height="60" fill="#2563eb" opacity=".8"/><rect x="100" y="10" width="60" height="75" rx="10" fill="#059669"/><text x="34" y="14" font-size="11">hidden (background)</text><text x="165" y="50" font-size="11">in front</text></svg>
+<ul><li><b>Tracking:</b> a pedestrian walks behind a car → system loses them, or counts two people.</li><li><b>Face recognition:</b> masks, sunglasses, hats hide nose/eyes/mouth.</li><li><b>Augmented reality:</b> virtual items must appear correctly in front of or behind real ones.</li></ul>
+<h3>Six ways to cope</h3>
+<table><tr><th>Method</th><th>How it helps</th><th>Example</th></tr><tr><td>Feature-based (SIFT, SURF)</td><td>Match visible corners/edges/keypoints</td><td>Car behind a tree via headlights/wheels</td></tr><tr><td>Part-based models</td><td>Detect parts separately</td><td>Head+torso found though legs hidden</td></tr><tr><td>Deep learning (CNN, YOLO, Faster R-CNN)</td><td>Learn from occluded examples</td><td>Face with mask</td></tr><tr><td>Temporal tracking (Kalman, particle filter, optical flow)</td><td>Predict position from past motion</td><td>Pedestrian behind car</td></tr><tr><td>3D understanding (LiDAR, stereo)</td><td>Use depth</td><td>Self-driving cars</td></tr><tr><td>Shape &amp; context</td><td>Infer from visible clues</td><td>Two wheels + window = car</td></tr></table></section>
+
+<section id="s8" style="--ac:var(--c8)"><span class="tag">SESSION 8</span><h2>Boundary Descriptors</h2>
+<p>Numbers or codes that describe an object using <b>only its outline</b>. Less computation, still keeps the important shape. Boundary comes from edge detection or boundary tracking.</p>
+<h3>Chain code</h3>
+<p>Record each move from one boundary pixel to the next as a direction number. 4-directional: 0 right, 1 up, 2 left, 3 down. 8-directional adds diagonals.</p>
+<svg viewBox="0 0 300 130" width="300" role="img" aria-label="Chain code directions"><g stroke="#059669" stroke-width="2" fill="#059669"><path d="M60 65H110M60 65H10M60 65V15M60 65V115"/></g><text x="114" y="69" font-size="13">0</text><text x="0" y="69" font-size="13">2</text><text x="56" y="11" font-size="13">1</text><text x="56" y="128" font-size="13">3</text><text x="30" y="85" font-size="11">4-dir</text><g stroke="#4f46e5" stroke-width="2"><path d="M225 65H280M225 65H170M225 65V15M225 65V115M225 65L262 28M225 65L188 28M225 65L188 102M225 65L262 102"/></g><text x="284" y="69" font-size="13">0</text><text x="266" y="26" font-size="13">1</text><text x="221" y="11" font-size="13">2</text><text x="176" y="26" font-size="13">3</text><text x="156" y="69" font-size="13">4</text><text x="176" y="112" font-size="13">5</text><text x="221" y="128" font-size="13">6</text><text x="266" y="112" font-size="13">7</text></svg>
+<div class="ex">Boundary <code>0 0 6 6 4 4 2 2</code> = right, right, down, down, left, left, up, up → a square. Great for storing and comparing shapes.</div>
+<h3>Shape number</h3>
+<p>Take the <b>first difference</b> of a chain code (how much the direction <i>changes</i> each step). Because it records turns, not absolute directions, it stays the same if the shape rotates. Example: chain <code>0 0 2 2 4 4 6 6</code> → difference <code>0 2 0 2 0 2</code>.</p>
+<h3>Other descriptors</h3>
+<ul><li><b>Fourier descriptors:</b> boundary coordinates → Fourier Transform. Low frequencies = general shape; high frequencies = fine details. Invariant to translation, rotation, scale (when normalised).</li><li><b>Polygonal approximation:</b> straight line pieces; fewer points, same structure.</li><li><b>Curvature:</b> how sharply the boundary turns; finds corners and bends.</li><li><b>Contour length (perimeter):</b> separates shapes with equal area but different outlines.</li><li><b>Boundary diameter:</b> largest distance between two boundary points; gives size and orientation.</li></ul>
+<div class="ex">Circle: smooth, low curvature. Square: 4 corners, equal sides. Triangle: 3 corners. Uses: object &amp; character recognition, organs in medical images, defect detection, robotics.</div></section>
+
+<section id="s9" style="--ac:var(--c9)"><span class="tag">SESSION 9</span><h2>Region Descriptors</h2>
+<p>Describe an object using <b>all pixels inside it</b>: size, orientation, symmetry, intensity spread. First segment the object (grayscale → denoise → threshold).</p>
+<table><tr><th>Descriptor</th><th>Formula</th><th>In simple words</th></tr>
+<tr><td>Area</td><td><code>Σx Σy f(x,y)</code> (f=1 object, 0 background)</td><td>Count the object pixels = size</td></tr>
+<tr><td>Centroid</td><td><code>xc=(1/A)Σx, yc=(1/A)Σy</code></td><td>Average position = balance point (tracking, alignment)</td></tr>
+<tr><td>Orientation</td><td><code>θ = ½·tan⁻¹(2μ11 / (μ20 − μ02))</code></td><td>Tilt angle of the long axis</td></tr>
+<tr><td>Eccentricity</td><td><code>E = √(1 − b²/a²)</code></td><td>0 = circle, near 1 = long and thin (a = major, b = minor axis)</td></tr>
+<tr><td>Compactness</td><td><code>C = 4πA / P²</code></td><td>1 = perfect circle, lower = irregular</td></tr>
+<tr><td>Moments</td><td>Raw <code>Mpq=ΣΣ x^p y^q f(x,y)</code>; central <code>μpq=ΣΣ (x−xc)^p (y−yc)^q f(x,y)</code></td><td>Statistics of how pixels are spread; give area, centroid, orientation</td></tr></table>
+<div class="say">Moments: M00 = area; M10/M00 and M01/M00 = centroid. Central moments subtract the centroid so they don't change when the object moves. <b>Hu moments</b> (built from them) are invariant to translation, rotation and scale.</div>
+<div class="ex">Centroid of a 3×3 square at x=1..3, y=1..3: average x = 2, average y = 2 → centroid (2,2), the exact middle.</div>
+<svg viewBox="0 0 300 90" width="300" role="img" aria-label="Circle vs ellipse"><circle cx="60" cy="45" r="32" fill="#0891b2" opacity=".8"/><text x="25" y="88" font-size="11">E≈0, C≈1 (coin)</text><ellipse cx="210" cy="45" rx="70" ry="22" fill="#d97706" opacity=".8"/><text x="170" y="88" font-size="11">E high (leaf)</text></svg>
+<h3>Classifying objects</h3>
+<p>Feed the features to KNN, SVM, decision tree or neural network. Compactness ≈ 1 and eccentricity ≈ 0 → circular object (coin). High eccentricity → elongated (leaf).</p>
+<h3>Quick recap</h3>
+<table><tr><th>Descriptor</th><th>Measures</th><th>Used for</th></tr><tr><td>Area</td><td>Size</td><td>Detection</td></tr><tr><td>Centroid</td><td>Position</td><td>Tracking</td></tr><tr><td>Orientation</td><td>Direction</td><td>Alignment</td></tr><tr><td>Eccentricity</td><td>Elongation</td><td>Classification</td></tr><tr><td>Compactness</td><td>Circle-likeness</td><td>Comparison</td></tr><tr><td>Moments</td><td>Pixel spread</td><td>Pattern recognition</td></tr></table></section>
+<footer>End of guide. Tip: re-read each session's "In simple words" boxes the night before an exam.</footer>
+</main>
+<script>
+document.querySelectorAll('.g').forEach(function(el){var rows=el.dataset.g.split('/'),n=el.dataset.n,l=el.dataset.l,c=+el.dataset.c;
+var cols=rows[0].length;var cells=[];
+if(rows[0].indexOf('.')>-1){rows=rows.map(function(r){return r.match(/\d\.\d\d/g)});cols=rows[0].length;rows.forEach(function(r){r.forEach(function(v){cells.push('<b>'+v+'</b>')})})}
+else rows.forEach(function(r){r.split('').forEach(function(ch){var o=(ch==='1'||ch==='P'||(l&&ch!=='0'));var cls=ch==='P'?'h':o?'o':'';
+if(c===4&&ch==='P'){cls='h'}
+cells.push('<b class="'+cls+'">'+(ch==='P'?'P':(n||l)?ch:(c===0?ch:''))+'</b>')})});
+el.style.gridTemplateColumns='repeat('+cols+',auto)';
+if(rows[0].indexOf&&el.dataset.g.indexOf('.')>-1)el.style.gridTemplateColumns='repeat('+cols+',44px)';
+el.innerHTML=cells.join('');
+if(el.dataset.g.indexOf('.')>-1)el.querySelectorAll('b').forEach(function(b){b.style.width='44px'});
+});
+</script><script>
+if (window.self === window.top) {
+  var b = document.createElement('a');
+  b.href = '../index.html';
+  b.className = 'hub-floating-btn';
+  b.innerHTML = '← Back to Study Portal';
+  b.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;background:#0969da;color:#ffffff;font-family:system-ui,-apple-system,sans-serif;font-size:13px;font-weight:700;padding:10px 18px;border-radius:99px;box-shadow:0 4px 14px rgba(0,0,0,0.35);text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s ease;cursor:pointer;';
+  b.onmouseenter = function(){ b.style.transform='translateY(-2px)'; b.style.boxShadow='0 6px 20px rgba(9,105,218,0.5)'; };
+  b.onmouseleave = function(){ b.style.transform='none'; b.style.boxShadow='0 4px 14px rgba(0,0,0,0.35)'; };
+  document.body.appendChild(b);
+}
+</script>
+</body></html>

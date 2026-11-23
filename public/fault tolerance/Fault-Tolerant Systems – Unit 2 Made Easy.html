@@ -1,0 +1,238 @@
+﻿<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fault-Tolerant Systems – Unit 2 Made Easy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bitter:wght@600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f5f8fb;--ink:#1c2a39;--mut:#5a6b7b;--card:#fff;--line:#d5dfe8;
+--def:#e3f4f1;--defb:#0f8b7d;--ex:#fff3d9;--exb:#c98a00;--wr:#fde6e8;--wrb:#c8374a;--fm:#ede8fb;--fmb:#6a4bc4;--tip:#e4eefc;--tipb:#2f6fcf}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121a22;--ink:#e6edf3;--mut:#9fb0c0;--card:#1a2530;--line:#2d3b49;
+--def:#12312e;--defb:#3fc7b6;--ex:#38301a;--exb:#e8b43c;--wr:#3a1d23;--wrb:#f0788a;--fm:#27213f;--fmb:#a994f0;--tip:#182a45;--tipb:#6ea6f5}}
+:root[data-theme="dark"]{--bg:#121a22;--ink:#e6edf3;--mut:#9fb0c0;--card:#1a2530;--line:#2d3b49;--def:#12312e;--defb:#3fc7b6;--ex:#38301a;--exb:#e8b43c;--wr:#3a1d23;--wrb:#f0788a;--fm:#27213f;--fmb:#a994f0;--tip:#182a45;--tipb:#6ea6f5}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.65 Nunito,system-ui,sans-serif}
+main{max-width:860px;margin:0 auto;padding:16px 18px 60px}
+h1,h2,h3{font-family:Bitter,Georgia,serif;line-height:1.25}
+h1{font-size:2rem;margin:.2em 0}h2{font-size:1.5rem;margin:0 0 .4em;padding:.35em .6em;border-radius:8px;color:#fff}
+h3{font-size:1.1rem;margin:1.3em 0 .3em}
+.hero{padding:20px 0 6px}.hero p{color:var(--mut);margin:.3em 0}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;font-size:.85rem}
+.legend span{padding:3px 10px;border-radius:20px;border:1.5px solid}
+section{margin-top:34px}
+.d{background:var(--def);border-left:6px solid var(--defb)}.e{background:var(--ex);border-left:6px solid var(--exb)}
+.w{background:var(--wr);border-left:6px solid var(--wrb)}.f{background:var(--fm);border-left:6px solid var(--fmb)}.t{background:var(--tip);border-left:6px solid var(--tipb)}
+.box{padding:10px 14px;margin:12px 0;border-radius:8px}.box>b:first-child{display:block;font-size:.85rem;margin-bottom:2px}
+.d>b:first-child{color:var(--defb)}.e>b:first-child{color:var(--exb)}.w>b:first-child{color:var(--wrb)}.f>b:first-child{color:var(--fmb)}.t>b:first-child{color:var(--tipb)}
+.f .m{font-size:1.15rem;font-weight:700;margin:.2em 0}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0}
+.flow div{padding:8px 14px;border-radius:8px;background:var(--card);border:2px solid var(--line);font-weight:700;text-align:center}
+.flow i{font-style:normal;color:var(--mut);font-size:1.3rem}
+.fl{border-color:var(--wrb)!important}.ok{border-color:var(--defb)!important}.am{border-color:var(--exb)!important}
+svg{width:100%;height:auto;display:block;margin:10px 0;background:var(--card);border:1px solid var(--line);border-radius:8px}
+svg text{fill:var(--ink);font:700 14px Nunito,sans-serif;text-anchor:middle}svg .s{font-size:12px;font-weight:600;fill:var(--mut)}
+svg .b{fill:var(--card);stroke:var(--ink);stroke-width:2}svg .g{fill:var(--def);stroke:var(--defb);stroke-width:2}svg .r{fill:var(--wr);stroke:var(--wrb);stroke-width:2}svg .y{fill:var(--ex);stroke:var(--exb);stroke-width:2}
+svg .l{stroke:var(--ink);stroke-width:2;fill:none}svg .lr{stroke:var(--wrb);stroke-width:2.5;fill:none}
+.tw{overflow-x:auto;margin:12px 0}table{border-collapse:collapse;width:100%;min-width:480px;font-size:.95rem}
+th{background:var(--defb);color:#fff;text-align:left}th,td{padding:7px 10px;border:1px solid var(--line)}td{background:var(--card)}
+.c1 h2{background:#0f8b7d}.c2 h2{background:#2f6fcf}.c3 h2{background:#c98a00}.c4 h2{background:#6a4bc4}.c5 h2{background:#c8374a}.c6 h2{background:#3a7d44}
+nav{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0}nav a{font-size:.85rem;padding:4px 10px;border-radius:6px;background:var(--card);border:1px solid var(--line);color:var(--ink);text-decoration:none}
+ul{padding-left:1.2em}li{margin:.15em 0}
+.cm{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}.cm div{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:.9rem}.cm b{display:block}
+</style></head><body><main>
+
+<div class="hero"><h1>Fault-Tolerant Systems – Unit 2 Made Easy</h1>
+<p>Failure rate, reliability, MTTF, structures, redundancy, evaluation techniques, processor-level fault tolerance and Byzantine failures, explained in plain words with examples and pictures.</p>
+<div class="legend"><span style="background:var(--def);border-color:var(--defb)">Definition</span><span style="background:var(--ex);border-color:var(--exb)">Example</span><span style="background:var(--fm);border-color:var(--fmb)">Formula</span><span style="background:var(--tip);border-color:var(--tipb)">Everyday picture</span><span style="background:var(--wr);border-color:var(--wrb)">Careful!</span></div>
+<nav><a href="#s1">1 Basics</a><a href="#s2">2 Failure rate</a><a href="#s3">3 Reliability</a><a href="#s4">4 MTTF</a><a href="#s5">5 Structures</a><a href="#s6">6 Redundancy</a><a href="#s7">7 Evaluation</a><a href="#s8">8 Processor FT</a><a href="#s9">9 Standby</a><a href="#s10">10 Byzantine</a><a href="#s11">11 Limits</a><a href="#s12">12 Revision</a></nav></div>
+
+<section id="s1" class="c1"><h2>1. The big idea: Fault → Error → Failure</h2>
+<p>A computer system should do its job correctly for a given period of time. But parts (hardware and software) can have problems. Those problems travel in three steps:</p>
+<div class="flow"><div class="am">Fault<br><small>the root defect</small></div><i>→</i><div class="am">Error<br><small>wrong data appears</small></div><i>→</i><div class="fl">Failure<br><small>wrong service to the user</small></div></div>
+<div class="box e"><b>Example: a server</b>Fault: the hard disk develops a defect. Error: wrong data is read from it. Failure: the server gives the user incorrect service.</div>
+<div class="box d"><b>Goal of fault-tolerant design</b>Prevent, detect, contain, mask or recover from faults, so a fault does not become a failure.</div>
+<div class="box t"><b>Everyday picture</b>A tiny crack in a water pipe (fault) → a little water leaks (error) → the room floods (failure).</div></section>
+
+<section id="s2" class="c2"><h2>2. Failure rate, λ(t)</h2>
+<div class="box d"><b>Definition</b>Failure rate is how quickly a part fails at a particular moment, given that it has survived until that moment. Symbol: λ(t). Unit: failures per hour (1/hour).</div>
+<p><b>Why “given that it survived”?</b> A 10-year-old bulb that is still glowing is judged only against bulbs that also lasted 10 years. That makes it a <i>conditional</i> measure.</p>
+<div class="box f"><b>Failure rate function</b><div class="m">λ(t) = f(t) / R(t)</div>T = time to failure, f(t) = probability density of failure (how likely failure is around time t), R(t) = reliability at time t.</div>
+<h3>Constant failure rate</h3>
+<p>For simple calculations we assume λ never changes: λ(t) = λ. Then reliability follows the <b>exponential reliability model</b>:</p>
+<div class="box f"><div class="m">R(t) = e<sup>−λt</sup></div></div>
+<div class="box w"><b>How to read λ</b>λ = 0.001 failures/hour means the failure <i>intensity</i> is 0.001 per hour. It does <u>not</u> mean exactly 0.001 failures happen every hour.</div>
+
+<h3>The Bathtub Curve</h3>
+<div class="box d"><b>Definition</b>A graph of failure rate over a component’s whole life. It has three regions and looks like a bathtub.</div>
+<svg viewBox="0 0 560 270" role="img" aria-label="Bathtub curve">
+<rect x="50" y="20" width="110" height="190" fill="var(--wr)"/><rect x="160" y="20" width="240" height="190" fill="var(--def)"/><rect x="400" y="20" width="130" height="190" fill="var(--ex)"/>
+<path class="l" d="M50 25 C70 150 100 170 170 170 L390 170 C450 170 490 100 525 25" style="stroke-width:3"/>
+<path class="l" d="M50 20V210H535"/><text x="30" y="110" transform="rotate(-90 30 110)">Failure rate</text><text x="480" y="232">Time →</text>
+<text x="105" y="60">Early failures</text><text class="s" x="105" y="78">rate falls</text>
+<text x="280" y="140">Useful life</text><text class="s" x="280" y="158">rate ≈ constant</text>
+<text x="465" y="60">Wear-out</text><text class="s" x="465" y="78">rate rises</text></svg>
+<ul>
+<li><b style="color:var(--wrb)">Region 1 – Early failure (infant mortality):</b> rate starts high and drops. Causes: manufacturing defects, design defects, installation errors, weak parts from the start.</li>
+<li><b style="color:var(--defb)">Region 2 – Useful life:</b> rate is about constant, λ(t) ≈ constant. The exponential model R(t) = e<sup>−λt</sup> is used here. Failures are mostly <i>random</i>.</li>
+<li><b style="color:var(--exb)">Region 3 – Wear-out:</b> rate rises with time. Causes: aging, physical wear, material degradation, thermal (heat) stress, mechanical deterioration.</li></ul>
+<div class="box t"><b>Everyday picture</b>A new phone: some are faulty from the factory (early), most work fine for years (useful life), then the battery and buttons wear out (wear-out).</div></section>
+
+<section id="s3" class="c3"><h2>3. Reliability, failure probability and how they connect</h2>
+<div class="box d"><b>Reliability R(t)</b>The probability that a system or component does its intended job, without failure, for a stated time, under stated operating conditions.</div>
+<p>It is a probability, so 0 ≤ R(t) ≤ 1 (or 0% to 100%).</p>
+<div class="box f"><b>Reliability function</b><div class="m">R(t) = P(T &gt; t)</div>Meaning: the chance that the system is still working after time t.</div>
+<div class="box e"><b>Example: reliability after 100 hours with λ = 0.001/hour</b>R(100) = e<sup>−0.001×100</sup> = e<sup>−0.1</sup> ≈ 0.9048, so reliability ≈ <b>90.48%</b>. There is about a 90.48% chance it runs 100 hours without failing (under the constant-failure-rate model).</div>
+<div class="box d"><b>Failure probability F(t)</b>The probability that the item has failed by time t. It is the opposite (complement) of reliability.</div>
+<div class="box f"><div class="m">F(t) = 1 − R(t)</div><div class="m">F(t) = 1 − e<sup>−λt</sup> (constant λ)</div></div>
+<div class="box e"><b>Example</b>R = 0.9048 → F = 1 − 0.9048 = 0.0952 = <b>9.52%</b>.</div>
+<h3>Link between failure rate and reliability</h3>
+<div class="box f"><div class="m">R(t) = e<sup>−∫₀ᵗ λ(u) du</sup></div>If λ is constant this becomes R(t) = e<sup>−λt</sup>. The integral simply “adds up” the failure rate over time. This link is very important in reliability work.</div></section>
+
+<section id="s4" class="c4"><h2>4. MTTF, and MTTF vs MTBF</h2>
+<div class="box d"><b>MTTF – Mean Time To Failure</b>The expected running time of a <b>non-repairable</b> part before its <b>first</b> failure. Measured in hours, days or years.</div>
+<div class="box f"><b>General formula</b><div class="m">MTTF = ∫₀^∞ R(t) dt</div><b style="color:var(--fmb)">For constant failure rate</b><div class="m">MTTF = 1 / λ &nbsp;&nbsp;and&nbsp;&nbsp; λ = 1 / MTTF</div></div>
+<div class="box e"><b>Example</b>λ = 0.0001/hour → MTTF = 1 / 0.0001 = <b>10,000 hours</b>.</div>
+<div class="box w"><b>Careful</b>10,000 hours does not mean every part dies at exactly 10,000 hours. It is an <i>average</i>.</div>
+<div class="flow"><div class="fl">Higher failure rate</div><i>→</i><div>Lower MTTF</div><span style="width:24px"></span><div class="ok">Lower failure rate</div><i>→</i><div>Higher MTTF</div></div>
+<h3>MTTF vs MTBF</h3>
+<div class="flow"><div>MTTF: Operation</div><i>→</i><div class="fl">Failure (end)</div></div>
+<div class="flow"><div>MTBF: Operation</div><i>→</i><div class="fl">Failure</div><i>→</i><div class="am">Repair</div><i>→</i><div>Operation</div><i>→</i><div class="fl">Failure</div></div>
+<div class="tw"><table><tr><th>MTTF</th><th>MTBF</th></tr><tr><td>Mean Time To Failure</td><td>Mean Time Between Failures</td></tr><tr><td>For non-repairable systems</td><td>For repairable systems</td></tr><tr><td>Time until failure</td><td>Interval between successive failures</td></tr><tr><td>No normal repair cycle</td><td>Repair cycle exists</td></tr></table></div>
+<div class="box t"><b>Everyday picture</b>MTTF: a light bulb, used until it burns out and is thrown away. MTBF: a car, which breaks, gets repaired and runs again.</div></section>
+
+<section id="s5" class="c1"><h2>5. Canonical structures: series and parallel</h2>
+<div class="box d"><b>Canonical structure</b>A standard way of arranging components to show how they depend on each other, for reliability analysis. The two basic ones are <b>series</b> and <b>parallel</b>; bigger systems are built from them.</div>
+<h3>Series structure</h3>
+<div class="box d"><b>Definition</b>Every component must work for the system to work.</div>
+<svg viewBox="0 0 560 90"><path class="l" d="M10 45H60M140 45H210M290 45H360M440 45H550"/><rect class="b" x="60" y="25" width="80" height="40" rx="6"/><rect class="b" x="210" y="25" width="80" height="40" rx="6"/><rect class="b" x="360" y="25" width="80" height="40" rx="6"/><text x="100" y="51">A</text><text x="250" y="51">B</text><text x="400" y="51">C</text><text class="s" x="30" y="30">Input</text><text class="s" x="525" y="30">Output</text><text class="s" x="280" y="84">if any one fails, the whole system fails</text></svg>
+<div class="box f"><div class="m">Rs = R1 × R2 × R3 × … × Rn = Π Ri</div>(components must be statistically independent)</div>
+<div class="box e"><b>Example</b>R1 = 0.9, R2 = 0.8 → Rs = 0.9 × 0.8 = 0.72 = <b>72%</b>.<br><b>Ten components</b>, each 0.99: Rs = (0.99)<sup>10</sup> ≈ 0.904. So adding more components in series generally <i>lowers</i> reliability.</div>
+<div class="box t"><b>Everyday picture</b>Old festival lights: if one bulb goes, the whole string goes dark.</div>
+<h3>Parallel structure</h3>
+<div class="box d"><b>Definition</b>The system keeps working as long as at least one component (path) still works.</div>
+<svg viewBox="0 0 560 130"><path class="l" d="M20 65H110M110 30V100M110 30H210M110 100H210M350 30H450M350 100H450M450 30V100M450 65H540"/><rect class="g" x="210" y="10" width="140" height="40" rx="6"/><rect class="r" x="210" y="80" width="140" height="40" rx="6"/><text x="280" y="36">A (working)</text><text x="280" y="106">B (failed)</text><text class="s" x="45" y="55">Input</text><text class="s" x="515" y="55">Output</text></svg>
+<p>Here A works while B has failed, so the system still operates.</p>
+<div class="box f"><div class="m">Rp = 1 − [(1−R1)(1−R2)…(1−Rn)]</div>Two identical components: <div class="m">Rp = 1 − (1−R)²</div></div>
+<div class="box e"><b>Example</b>R = 0.9 for each → Rp = 1 − (0.1)² = 1 − 0.01 = <b>0.99 = 99%</b>. The system fails only if <i>both</i> fail.</div>
+<div class="tw"><table><tr><th>Series</th><th>Parallel</th></tr><tr><td>All components must work</td><td>At least one path must work</td></tr><tr><td>One failure can fail the system</td><td>System may survive one failure</td></tr><tr><td>More components usually lowers reliability</td><td>Redundancy can raise reliability</td></tr><tr><td>No functional redundancy</td><td>Provides redundancy</td></tr></table></div></section>
+
+<section id="s6" class="c2"><h2>6. Redundancy and resilient structures</h2>
+<div class="box d"><b>Redundancy</b>Adding extra resources beyond the minimum needed, so the system can tolerate faults. Example: one CPU becomes CPU1, CPU2, CPU3.</div>
+<h3>Four types</h3>
+<div class="cm"><div><b>1. Hardware</b>Extra hardware, e.g. three processors doing the same computation.</div><div><b>2. Information</b>Extra data to detect or correct errors: parity bits, error-correcting codes, check bits.</div><div><b>3. Software</b>Several software versions, to survive software faults.</div><div><b>4. Time</b>Repeat the operation to catch or overcome temporary (transient) faults.</div></div>
+<h3>Resilient structure</h3>
+<div class="box d"><b>Definition</b>A design that uses redundancy plus fault-tolerance mechanisms so the system keeps giving its required service despite specified faults.</div>
+<div class="flow"><div>Normal system</div><i>→</i><div>Add redundancy</div><i>→</i><div class="fl">Fault occurs</div><i>→</i><div class="ok">Spare takes over, or the fault is masked</div><i>→</i><div class="ok">System continues</div></div>
+<svg viewBox="0 0 560 190"><text x="20" y="22" style="text-anchor:start">Without redundancy: B fails → system fails</text>
+<path class="l" d="M20 55H80M160 55H220M300 55H360"/><rect class="b" x="80" y="40" width="80" height="30" rx="6"/><rect class="b" x="360" y="40" width="80" height="30" rx="6"/><rect class="r" x="220" y="40" width="80" height="30" rx="6"/><text x="120" y="60">A</text><text x="260" y="60">B ✗</text><text x="400" y="60">C</text>
+<text x="20" y="105" style="text-anchor:start">With redundancy: B1 fails, B2 carries on</text>
+<path class="l" d="M20 150H80M160 150H190M190 125V170M190 125H230M190 170H230M310 125H350M310 170H350M350 125V170M350 150H370"/><rect class="b" x="80" y="135" width="80" height="30" rx="6"/><rect class="r" x="230" y="110" width="80" height="30" rx="6"/><rect class="g" x="230" y="155" width="80" height="30" rx="6"/><rect class="b" x="370" y="135" width="80" height="30" rx="6"/><text x="120" y="155">A</text><text x="270" y="130">B1 ✗</text><text x="270" y="175">B2 ✓</text><text x="410" y="155">C</text></svg></section>
+
+<section id="s7" class="c3"><h2>7. Reliability evaluation techniques</h2>
+<div class="box d"><b>Reliability evaluation</b>Working out (or estimating) the probability that a system performs its required function for a given time under given conditions. It gets harder as systems get complex. Four common techniques: RBD, Fault Tree Analysis, Cut-Set Analysis, Markov Analysis.</div>
+<h3>Reliability Block Diagram (RBD)</h3>
+<div class="box d"><b>Definition</b>A picture of the system’s working structure: blocks are components, and the connections show what must work for the system to work.</div>
+<p><b>Series RBD</b> [A]–[B]–[C]: all blocks must work, Rs = RA × RB × RC. <b>Parallel RBD</b> [A] and [B] side by side: at least one path must work, Rp = 1 − (1−RA)(1−RB). (Use the series and parallel pictures from section 5.)</p>
+<h3>Fault Tree Analysis (FTA)</h3>
+<div class="box d"><b>Definition</b>A <b>top-down</b> method. Start from a bad outcome (the <b>Top Event</b>) and find which combinations of lower-level faults can cause it.</div>
+<svg viewBox="0 0 560 230"><text class="s" x="140" y="16">OR gate</text><text class="s" x="420" y="16">AND gate</text>
+<rect class="r" x="70" y="25" width="140" height="34" rx="6"/><text x="140" y="47">Server fails</text><path class="l" d="M140 59V80M140 80H80M140 80H200M80 80V140M200 80V140"/><circle class="y" cx="140" cy="80" r="14"/><text x="140" y="85" style="font-size:11px">OR</text>
+<rect class="b" x="20" y="140" width="120" height="34" rx="6"/><text x="80" y="162">CPU fails</text><rect class="b" x="150" y="140" width="110" height="34" rx="6"/><text x="205" y="162">Power fails</text>
+<rect class="r" x="350" y="25" width="140" height="34" rx="6"/><text x="420" y="47">System fails</text><path class="l" d="M420 59V80M420 80H370M420 80H470M370 80V140M470 80V140"/><circle class="y" cx="420" cy="80" r="14"/><text x="420" y="85" style="font-size:11px">AND</text>
+<rect class="b" x="330" y="140" width="80" height="34" rx="6"/><text x="370" y="162">A fails</text><rect class="b" x="430" y="140" width="80" height="34" rx="6"/><text x="470" y="162">B fails</text>
+<text class="s" x="140" y="205">CPU fails OR power fails → server fails</text><text class="s" x="420" y="205">A fails AND B fails → system fails</text></svg>
+<div class="box d"><b>AND gate</b>Output happens only if <i>all</i> inputs happen.</div><div class="box f"><div class="m">P(A AND B) = P(A) × P(B)</div>(independent events)</div>
+<div class="box d"><b>OR gate</b>Output happens if <i>any one</i> input happens.</div><div class="box f"><div class="m">P(A OR B) = 1 − (1−P(A))(1−P(B))</div>(independent events)</div>
+<h3>Cut set and minimal cut set</h3>
+<div class="box d"><b>Cut set</b>A set of component failures that is enough to make the system fail.</div>
+<div class="box e"><b>Example</b>If A alone or B alone can fail the system, then {A} and {B} are cut sets.</div>
+<div class="box d"><b>Minimal cut set</b>A cut set with nothing extra: remove any member and it no longer causes failure.</div>
+<div class="box e"><b>Example</b>The system fails only when both A and B fail. Then {A, B} is a minimal cut set (since neither A nor B alone causes failure).</div>
+<h3>Markov analysis</h3>
+<div class="box d"><b>Definition</b>A state-based method. The system is shown as a set of states (e.g. Working, Failed), and the moves between states have rates. Best when a system has several states and repair or recovery matters.</div>
+<svg viewBox="0 0 560 150"><circle class="g" cx="130" cy="75" r="45"/><text x="130" y="80">Working</text><circle class="r" cx="430" cy="75" r="45"/><text x="430" y="80">Failed</text>
+<path class="l" d="M175 55C250 20 310 20 385 55" marker-end="url(#a)"/><path class="l" d="M385 100C310 135 250 135 175 100" marker-end="url(#a)"/><text x="280" y="32">λ (failure rate)</text><text x="280" y="142">μ (repair rate)</text>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="currentColor"/></marker></defs></svg></section>
+
+<section id="s8" class="c4"><h2>8. Processor-level fault tolerance</h2>
+<div class="box d"><b>Definition</b>Using redundancy, fault detection, fault masking and recovery at the processor level, so the system stays correct despite a processor fault.</div>
+<div class="flow"><div class="fl">Processor fault</div><i>→</i><div>Wrong computation</div><i>→</i><div>Wrong output</div><i>→</i><div class="fl">System failure</div></div>
+<h3>Duplex system (2 processors)</h3>
+<div class="box d"><b>Definition</b>Two processors do the same work and a comparator checks that their outputs agree.</div>
+<svg viewBox="0 0 560 170"><text class="s" x="280" y="14">Input</text><path class="l" d="M280 20V40M280 40H150M280 40H410M150 40V60M410 40V60"/>
+<rect class="b" x="100" y="60" width="100" height="34" rx="6"/><text x="150" y="82">CPU 1</text><rect class="b" x="360" y="60" width="100" height="34" rx="6"/><text x="410" y="82">CPU 2</text>
+<path class="l" d="M150 94V115H280M410 94V115H280M280 115V125"/><rect class="y" x="220" y="125" width="120" height="30" rx="6"/><text x="280" y="145">Comparator → Output</text></svg>
+<ul><li><b>Agree:</b> CPU1 = 50, CPU2 = 50 → 50 = 50 → output accepted.</li><li><b>Disagree:</b> CPU1 = 50, CPU2 = 60 → mismatch → <b>error detected</b>.</li></ul>
+<div class="box w"><b>Limitation</b>We know they disagree, but from two outputs alone we generally cannot tell <i>which</i> processor is wrong.</div>
+<h3>Triple Modular Redundancy (TMR)</h3>
+<div class="box d"><b>Definition</b>Three modules do the same job and a <b>majority voter</b> picks the value given by at least two of them.</div>
+<svg viewBox="0 0 560 200"><text class="s" x="280" y="14">Input</text><path class="l" d="M280 20V36M280 36H100M280 36H460M100 36V55M280 36V55M460 36V55"/>
+<rect class="b" x="50" y="55" width="100" height="34" rx="6"/><text x="100" y="77">CPU1 = 100</text><rect class="r" x="230" y="55" width="100" height="34" rx="6"/><text x="280" y="77">CPU2 = 250 ✗</text><rect class="b" x="410" y="55" width="100" height="34" rx="6"/><text x="460" y="77">CPU3 = 100</text>
+<path class="l" d="M100 89V120H280M460 89V120H280M280 89V130"/><rect class="y" x="210" y="130" width="140" height="32" rx="6"/><text x="280" y="151">Majority voter</text><path class="l" d="M280 162V180"/><text x="280" y="196">Output = 100</text></svg>
+<p>CPU2 is faulty and says 250. The voter sees 100, 250, 100 → majority is 100 → output 100. The wrong value is <b>masked</b>.</p>
+<div class="box d"><b>Fault masking</b>Stopping a fault’s effect from reaching the system output, using redundancy or other mechanisms. TMR is the key example.</div>
+<h3>N-modular redundancy (NMR)</h3>
+<div class="box d"><b>Definition</b>N modules do the same job and a voting mechanism decides the output.</div>
+<div class="box f"><b>Faulty modules tolerated (odd N, ideal voting, reliable voter)</b><div class="m">(N − 1) / 2</div>N = 3 → (3−1)/2 = <b>1</b>. N = 5 → (5−1)/2 = <b>2</b>.</div>
+<h3>Fault detection vs fault masking</h3>
+<div class="tw"><table><tr><th></th><th>Fault detection</th><th>Fault masking</th></tr><tr><td>What it does</td><td>Notices something is wrong</td><td>Hides the effect of the fault</td></tr><tr><td>Example</td><td>50 vs 60 → mismatch</td><td>50, 60, 50 → majority 50 → output 50</td></tr><tr><td>Used by</td><td>Duplex</td><td>TMR (one faulty CPU, under its assumptions)</td></tr></table></div></section>
+
+<section id="s9" class="c6"><h2>9. Standby redundancy</h2>
+<div class="box d"><b>Definition</b>One or more backup units wait, and are switched on when the active unit fails. Unlike TMR, the backup is not necessarily working alongside the main unit before the failure.</div>
+<div class="flow"><div class="ok">Active CPU</div><i>→</i><div class="fl">Failure</div><i>→</i><div class="ok">Standby CPU takes over</div><i>→</i><div>Output</div></div>
+<div class="cm"><div style="border-color:#3b82c4"><b>Cold standby</b>Backup is off or powered down; started only after failure. + Low power while waiting. − Slower switch-over.</div><div style="border-color:var(--exb)"><b>Warm standby</b>Backup is partly active; does limited work or keeps some state. Takeover is faster than cold.</div><div style="border-color:var(--wrb)"><b>Hot standby</b>Backup runs along with, or closely tracks, the active unit. + Very fast recovery. − More hardware and power.</div></div>
+<div class="tw"><table><tr><th>Feature</th><th>Cold</th><th>Warm</th><th>Hot</th></tr><tr><td>Backup state</td><td>Inactive</td><td>Partially active</td><td>Active / closely synchronized</td></tr><tr><td>Power need</td><td>Low</td><td>Moderate</td><td>High</td></tr><tr><td>Takeover time</td><td>High</td><td>Moderate</td><td>Low</td></tr><tr><td>State maintenance</td><td>Little/none</td><td>Partial</td><td>Extensive</td></tr><tr><td>Recovery speed</td><td>Slow</td><td>Moderate</td><td>Fast</td></tr></table></div>
+<div class="box t"><b>Everyday picture</b>A spare tyre in the boot (cold), a second driver sitting beside you and half-awake (warm), a co-pilot flying along with you (hot).</div></section>
+
+<section id="s10" class="c5"><h2>10. Byzantine failures</h2>
+<div class="box d"><b>Byzantine failure</b>A faulty component can behave in <i>any</i> way: give wrong results, or give <b>different or conflicting information to different parts</b> of the system. One of the hardest failure models in distributed systems.</div>
+<div class="box e"><b>Example</b>CPU1 is faulty. It tells CPU2 “Result = 100” but tells CPU3 “Result = 200”. Now CPU2 believes 100 and CPU3 believes 200.</div>
+<svg viewBox="0 0 560 170"><rect class="r" x="210" y="10" width="140" height="34" rx="6"/><text x="280" y="32">CPU1 (faulty)</text><path class="lr" d="M240 44L130 105M320 44L430 105"/><text class="s" x="150" y="75" style="text-anchor:end">“Result = 100”</text><text class="s" x="410" y="75" style="text-anchor:start">“Result = 200”</text>
+<rect class="b" x="60" y="105" width="140" height="34" rx="6"/><text x="130" y="127">CPU2 believes 100</text><rect class="b" x="360" y="105" width="140" height="34" rx="6"/><text x="430" y="127">CPU3 believes 200</text></svg>
+<h3>A Byzantine faulty part may…</h3>
+<ul><li>produce incorrect results;</li><li>send different results to different components;</li><li>change its behaviour over time;</li><li>look correct to some components;</li><li>behave wrongly toward others;</li><li>give arbitrary responses.</li></ul>
+<h3>Crash failure vs Byzantine failure</h3>
+<div class="box d"><b>Crash failure</b>A component simply stops and gives no more service. Easy, because it never sends conflicting information afterwards.</div>
+<div class="tw"><table><tr><th>Crash</th><th>Byzantine</th></tr><tr><td>Component stops</td><td>May keep operating</td></tr><tr><td>No further response</td><td>May keep sending responses</td></tr><tr><td>Fairly predictable</td><td>Arbitrary behaviour</td></tr><tr><td>Easier to detect and handle</td><td>Harder to detect and handle</td></tr><tr><td>No conflicting messages after stopping</td><td>Can send conflicting information</td></tr><tr><td>Simpler fault model</td><td>More complex fault model</td></tr></table></div>
+<h3>The Byzantine Generals Problem</h3>
+<div class="box d"><b>Definition</b>A distributed agreement problem: correct participants must reach one consistent decision even though some participants are faulty and may send arbitrary or conflicting information.</div>
+<div class="box t"><b>Story</b>Several generals must decide: ATTACK or RETREAT. Some are traitors. A traitor might tell General A “ATTACK” and General B “RETREAT”. The loyal generals must still agree, according to the protocol’s assumptions.</div>
+<h3>Byzantine agreement: 3 goals</h3>
+<div class="cm"><div><b>1. Agreement</b>Correct participants never make conflicting decisions.</div><div><b>2. Validity</b>The decision meets the required validity condition when the protocol’s assumptions hold.</div><div><b>3. Termination</b>Correct participants eventually reach a decision.</div></div></section>
+
+<section id="s11" class="c5"><h2>11. Limits of redundancy (very exam-friendly)</h2>
+<div class="box w"><b>Redundancy is not magic</b>Redundancy helps fault tolerance and, under suitable assumptions, reliability. But it adds extra parts (voters, comparators, switching circuits, interconnections) that can fail too. So extra redundancy does <u>not</u> automatically give unlimited reliability. Evaluate the complete architecture.</div>
+<h3>The voter</h3>
+<p>In TMR the voter picks the majority (A, A, B → A). But it is a critical part: unless it is protected, the voter can be a <b>single point of failure</b>.</p>
+<h3>Common-cause failures</h3>
+<div class="box d"><b>Definition</b>One underlying cause hits several redundant components at once.</div>
+<svg viewBox="0 0 560 150"><rect class="r" x="200" y="8" width="160" height="32" rx="6"/><text x="280" y="29">Power supply fails</text><path class="lr" d="M280 40V60M280 60H100M280 60H460M100 60V80M280 60V80M460 60V80"/>
+<rect class="r" x="50" y="80" width="100" height="30" rx="6"/><text x="100" y="100">CPU1 ✗</text><rect class="r" x="230" y="80" width="100" height="30" rx="6"/><text x="280" y="100">CPU2 ✗</text><rect class="r" x="410" y="80" width="100" height="30" rx="6"/><text x="460" y="100">CPU3 ✗</text><text class="s" x="280" y="138">three “redundant” CPUs, one shared cause</text></svg>
+<div class="box w"><b>Key point</b>Redundancy works best when the redundant units are sufficiently <b>independent</b>.</div>
+<h3>Independence of failures</h3>
+<p>Series and parallel formulas (multiplying probabilities) assume component failures are <b>statistically independent</b>. If CPU1, CPU2 and CPU3 share one power supply, that assumption is broken, and the simple formulas may not match the real reliability.</p></section>
+
+<section id="s12" class="c1"><h2>12. Revision: compare, map, formulas, definitions</h2>
+<h3>Which technique is for what?</h3>
+<div class="tw"><table><tr><th>Technique</th><th>Main purpose</th></tr><tr><td>Duplex</td><td>Fault detection by comparison</td></tr><tr><td>TMR</td><td>Fault masking by majority voting</td></tr><tr><td>Standby</td><td>Fault recovery by activating a backup</td></tr><tr><td>RBD</td><td>Reliability evaluation</td></tr><tr><td>Fault tree</td><td>Finding causes of failure</td></tr><tr><td>Markov model</td><td>State-based reliability analysis</td></tr><tr><td>Byzantine agreement</td><td>Agreeing despite Byzantine behaviour</td></tr></table></div>
+<h3>Concept map of the unit</h3>
+<div class="cm"><div style="border-color:var(--defb)"><b>Reliability</b>Failure rate → Reliability → MTTF</div><div style="border-color:var(--tipb)"><b>Structures</b>Series, Parallel → Resilient structures → Reliability evaluation (RBD, FTA, Markov)</div><div style="border-color:var(--fmb)"><b>Processor FT</b>Duplex, TMR, Standby → Byzantine failures</div></div>
+<h3>Formula sheet</h3>
+<div class="box f"><div>1. Reliability: <b>R(t) = P(T &gt; t)</b></div><div>2. Failure probability: <b>F(t) = 1 − R(t)</b></div><div>3. Failure rate: <b>λ(t) = f(t)/R(t)</b></div><div>4. Reliability from failure rate: <b>R(t) = e^[−∫₀ᵗ λ(u)du]</b></div><div>5. Constant failure rate: <b>R(t) = e^(−λt)</b></div><div>6. MTTF: <b>∫₀^∞ R(t)dt</b></div><div>7. Constant λ: <b>MTTF = 1/λ</b></div><div>8. <b>λ = 1/MTTF</b></div><div>9. Series: <b>Rs = R1×R2×…×Rn</b></div><div>10. Parallel: <b>Rp = 1 − [(1−R1)(1−R2)…(1−Rn)]</b></div><div>11. Two identical parallel: <b>Rp = 1 − (1−R)²</b></div><div>12. Max faulty modules (odd N, ideal voting): <b>(N−1)/2</b></div></div>
+<h3>One-line definitions</h3>
+<div class="box d"><ul>
+<li><b>Failure rate:</b> instantaneous rate of failure given survival so far.</li><li><b>Reliability:</b> probability of working without failure for a given time and conditions.</li><li><b>MTTF:</b> expected time to first failure of a non-repairable item.</li><li><b>Canonical structure:</b> standard arrangement showing component relationships.</li><li><b>Series:</b> every component must work.</li><li><b>Parallel:</b> one working path is enough.</li><li><b>Redundancy:</b> extra resources beyond the minimum.</li><li><b>Resilient structure:</b> keeps service despite specified faults.</li><li><b>Reliability evaluation:</b> estimating probability of successful operation.</li><li><b>RBD:</b> diagram of functional relationships among components.</li><li><b>Fault tree analysis:</b> top-down search for fault combinations causing a top event.</li><li><b>Cut set:</b> failures enough to fail the system.</li><li><b>Minimal cut set:</b> cut set with no unnecessary member.</li><li><b>Processor-level FT:</b> redundancy and fault handling at the processor level.</li><li><b>Duplex:</b> two processors compared to detect disagreement.</li><li><b>TMR:</b> three modules and a majority vote, tolerating one faulty module.</li><li><b>Fault masking:</b> keeping a fault’s effect away from the output.</li><li><b>Standby redundancy:</b> backups activated when the active unit fails.</li><li><b>Byzantine failure:</b> arbitrary or conflicting behaviour by a faulty component.</li></ul></div></section>
+</main><script>
+if (window.self === window.top) {
+  var b = document.createElement('a');
+  b.href = '../index.html';
+  b.className = 'hub-floating-btn';
+  b.innerHTML = '← Back to Study Portal';
+  b.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;background:#0969da;color:#ffffff;font-family:system-ui,-apple-system,sans-serif;font-size:13px;font-weight:700;padding:10px 18px;border-radius:99px;box-shadow:0 4px 14px rgba(0,0,0,0.35);text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s ease;cursor:pointer;';
+  b.onmouseenter = function(){ b.style.transform='translateY(-2px)'; b.style.boxShadow='0 6px 20px rgba(9,105,218,0.5)'; };
+  b.onmouseleave = function(){ b.style.transform='none'; b.style.boxShadow='0 4px 14px rgba(0,0,0,0.35)'; };
+  document.body.appendChild(b);
+}
+</script>
+</body></html>

@@ -1,0 +1,17 @@
+{
+  "name": "semester-7-exam-portal",
+  "version": "1.0.0",
+  "description": "Professional study hub and interactive unit navigator for Semester 7 Examination materials",
+  "scripts": {
+    "start": "node server.js",
+    "build": "echo 'Static build ready for Vercel deployment'"
+  },
+  "keywords": [
+    "study-portal",
+    "computer-vision",
+    "fault-tolerance",
+    "software-defined-networks"
+  ],
+  "author": "",
+  "license": "ISC"
+}

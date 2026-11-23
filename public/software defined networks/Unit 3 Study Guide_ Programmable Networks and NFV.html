@@ -1,0 +1,452 @@
+﻿<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Unit 3 Study Guide: Programmable Networks and NFV</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fbfaf8;--card:#fff;--tx:#1d2330;--mut:#5b6475;--ln:#e3e0d9;--ex:#fff6dc;--exb:#e0b43a;--c1:#1d4ed8;--c2:#0f766e;--c3:#c2410c;--c4:#6d28d9;--c5:#be123c;--sel:#eef;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171e;--card:#1c212b;--tx:#e8eaf0;--mut:#a3abbb;--ln:#2e3441;--ex:#2c2616;--exb:#b8912a;--c1:#7aa2ff;--c2:#4fd1c0;--c3:#fb923c;--c4:#b69cff;--c5:#fb7185}}
+:root[data-theme="dark"]{--bg:#14171e;--card:#1c212b;--tx:#e8eaf0;--mut:#a3abbb;--ln:#2e3441;--ex:#2c2616;--exb:#b8912a;--c1:#7aa2ff;--c2:#4fd1c0;--c3:#fb923c;--c4:#b69cff;--c5:#fb7185}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:17px/1.7 'Nunito Sans',system-ui,sans-serif}
+main{max-width:820px;margin:0 auto;padding:24px 18px 80px}
+h1,h2,h3{font-family:'Bricolage Grotesque',system-ui,sans-serif;line-height:1.2}
+h1{font-size:2.3rem;margin:.3em 0}
+h2{font-size:1.6rem;margin:0 0 .4em}
+h3{font-size:1.15rem;margin:1.5em 0 .3em}
+.lead{color:var(--mut)}
+nav{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}
+nav a{padding:6px 14px;border-radius:99px;border:2px solid var(--ac);color:var(--ac);text-decoration:none;font-weight:700;font-size:.9rem}
+section{--ac:var(--c1);margin:46px 0;padding:22px 20px;background:var(--card);border:1px solid var(--ln);border-left:8px solid var(--ac);border-radius:6px}
+#t2{--ac:var(--c2)}#t3{--ac:var(--c3)}#t4{--ac:var(--c4)}#t5{--ac:var(--c5)}
+nav a:nth-child(1){--ac:var(--c1)}nav a:nth-child(2){--ac:var(--c2)}nav a:nth-child(3){--ac:var(--c3)}nav a:nth-child(4){--ac:var(--c4)}nav a:nth-child(5){--ac:var(--c5)}
+section h2,section h3{color:var(--ac)}
+.ex{background:var(--ex);border-left:5px solid var(--exb);padding:10px 14px;margin:12px 0;border-radius:4px}
+.tip{border:2px dashed var(--ac);padding:10px 14px;margin:14px 0;border-radius:6px}
+.tip b,.ex b{font-family:'Bricolage Grotesque',sans-serif}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.93rem;margin:10px 0}
+th{background:var(--ac);color:#fff;text-align:left}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) th{color:#111}}
+th,td{padding:7px 10px;border:1px solid var(--ln);vertical-align:top}
+code,pre{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.85rem;background:var(--bg);border:1px solid var(--ln);border-radius:4px}
+code{padding:1px 5px}pre{padding:10px;overflow-x:auto}
+pre.mermaid{background:transparent;border:0;text-align:center;font-size:14px}
+.fig{margin:14px 0;overflow-x:auto}
+li{margin:4px 0}
+</style></head><body><main>
+<h1>Unit 3: Programmable Networks and NFV</h1>
+<p class="lead">A first-time reader’s guide. Every hard term is explained in plain words, with an everyday example. Yellow boxes are examples; dashed boxes are exam tips. Read top to bottom once and you will have all five topics.</p>
+<nav><a href="#t1">I Programmability</a><a href="#t2">II NFV</a><a href="#t3">III NetApps and Slicing</a><a href="#t4">IV ONOS</a><a href="#t5">V OPNFV</a></nav>
+
+<!-- ============ TOPIC I ============ -->
+<section id="t1">
+<h2>Topic I: Network Programmability</h2>
+<p><b>Network programmability</b> means running a network using software and <b>APIs</b> (a way for one program to give orders to another) instead of typing commands into every device by hand.</p>
+
+<h3>1. The problem with old networks</h3>
+<p>Every router or switch has two jobs: the <b>control plane</b> (the brain: decides where traffic should go, using protocols like OSPF and BGP) and the <b>data plane</b> (the muscle: actually forwards packets). In old networks each box has both, and you set each box up one by one using a vendor-specific <b>CLI</b> (command-line interface).</p>
+<div class="ex"><b>Example:</b> Imagine a city where every traffic signal decides alone, and to change a rule a worker must visit each signal. That is a traditional network. Programmable networks are like one control room that sees the whole city and updates all signals at once.</div>
+<p>Problems: slow and error-prone changes; vendor lock-in; no global view (each device sees only its neighbours); new protocols need new firmware or hardware; cloud data centres change too fast for manual work.</p>
+
+<h3>2. SDN: Software Defined Networking</h3>
+<p>SDN (defined by the Open Networking Foundation, ONF) pulls the control plane out of the boxes and puts it in one software <b>controller</b> that controls many simple forwarding devices. It has three planes:</p>
+<ul><li><b>Application plane:</b> apps saying what the network should do (routing, firewall, load balancing, monitoring).</li>
+<li><b>Control plane:</b> the SDN controller (ONOS, OpenDaylight, Ryu, Floodlight). It holds the global view and turns app requests into device rules.</li>
+<li><b>Data plane:</b> physical and virtual switches (Open vSwitch, white-box switches) that just forward packets.</li></ul>
+<div class="fig"><pre class="mermaid">flowchart TB
+A["Application plane: firewall, routing, load balancer, monitoring"] -- "Northbound API (REST, gRPC, intents)" --> C["Control plane: SDN controller (ONOS, ODL, Ryu)"]
+C -- "Southbound API (OpenFlow, NETCONF, P4Runtime, gNMI)" --> D["Data plane: switches"]
+C <-. "East-west API" .-> P["Peer controller"]</pre></div>
+<table><tr><th>Interface</th><th>Between</th><th>Plain meaning</th></tr>
+<tr><td>Northbound</td><td>Apps and controller</td><td>Apps ask “what I want” (REST, gRPC, intents)</td></tr>
+<tr><td>Southbound</td><td>Controller and devices</td><td>Controller installs rules and reads state (OpenFlow, NETCONF, P4Runtime, gNMI, OVSDB)</td></tr>
+<tr><td>East-west</td><td>Controller and controller</td><td>Keeps a cluster or several domains in sync</td></tr></table>
+<p><b>Key principles:</b> separate control from data plane; logically centralised control; open standard interfaces; network abstraction; programmability through APIs.</p>
+<div class="tip"><b>Exam tip:</b> Draw the three planes with the two APIs between them. This one diagram answers most “explain SDN” questions.</div>
+
+<h3>3. OpenFlow: the first southbound protocol</h3>
+<p>Proposed at Stanford in 2008, now run by ONF. The controller talks to each switch over the <b>OpenFlow channel</b>: a TCP connection on port <b>6653</b> (older versions used 6633), optionally secured with TLS.</p>
+<p>An OpenFlow switch has: <b>flow tables</b> (a pipeline of tables, from OpenFlow 1.1), a <b>group table</b> (shared actions like multicast and fast failover) and a <b>meter table</b> (per-flow rate limits for QoS, from 1.3).</p>
+<table><tr><th>Flow entry field</th><th>Meaning</th></tr>
+<tr><td>Match fields</td><td>What to look for: ingress port, MAC, VLAN, IP, TCP/UDP ports</td></tr>
+<tr><td>Priority</td><td>Which entry wins if several match</td></tr>
+<tr><td>Counters</td><td>Packets and bytes matched</td></tr>
+<tr><td>Instructions</td><td>What to do: forward, drop, change headers, go to another table</td></tr>
+<tr><td>Timeouts</td><td>Idle and hard timeout after which the entry is removed</td></tr>
+<tr><td>Cookie</td><td>A tag set by the controller to identify entries</td></tr></table>
+<p><b>How a packet is handled:</b> it is matched against table 0; the highest-priority match runs its instructions (maybe moving on to later tables). If nothing matches, the <b>table-miss</b> entry decides, usually “send to controller” or “drop”.</p>
+<table><tr><th>Message</th><th>Direction</th><th>Meaning</th></tr>
+<tr><td>Hello, Features-Request/Reply</td><td>Both</td><td>Set up the link and learn the switch’s abilities</td></tr>
+<tr><td>Packet-In</td><td>Switch to controller</td><td>“No rule matched, what do I do?”</td></tr>
+<tr><td>Flow-Mod</td><td>Controller to switch</td><td>Add, change or delete a flow entry</td></tr>
+<tr><td>Packet-Out</td><td>Controller to switch</td><td>“Send this packet out of this port”</td></tr>
+<tr><td>Stats / Multipart</td><td>Controller reads</td><td>Read counters for monitoring</td></tr>
+<tr><td>Port-Status, Flow-Removed</td><td>Switch reports</td><td>Report changes</td></tr></table>
+<div class="fig"><pre class="mermaid">sequenceDiagram
+participant H as Host
+participant S as Switch
+participant C as Controller
+H->>S: first packet of new flow
+S->>C: Packet-In (no rule matches)
+C->>S: Flow-Mod (install rule)
+C->>S: Packet-Out (send this packet)
+H->>S: next packets
+S-->>H: forwarded by rule, no controller needed</pre></div>
+<p><b>Reactive vs proactive:</b></p>
+<table><tr><th>Mode</th><th>How</th><th>Good / bad</th></tr>
+<tr><td>Reactive</td><td>Rules installed when the first packet arrives (Packet-In)</td><td>Flexible, but first-packet delay and extra controller load</td></tr>
+<tr><td>Proactive</td><td>Rules pushed in advance</td><td>No delay, works if the controller is briefly down, but you must know traffic in advance</td></tr></table>
+<div class="ex"><b>Example:</b> Reactive is a receptionist who phones the manager each time a new visitor arrives. Proactive is giving the receptionist a list of approved visitors in the morning.</div>
+
+<h3>4. Model-driven programmability</h3>
+<p>Instead of typing CLI text, devices are configured using <b>data models</b>. A good way to remember it: <b>YANG says what</b> can be configured; <b>NETCONF, RESTCONF and gNMI say how</b> it is carried.</p>
+<table><tr><th>Name</th><th>Carried over</th><th>Use</th></tr>
+<tr><td>NETCONF (RFC 6241)</td><td>SSH, XML</td><td>Configure devices with a candidate copy, validation, commit and rollback</td></tr>
+<tr><td>YANG (RFC 7950)</td><td>A modelling language</td><td>Describes the settings and state of a device (OpenConfig, IETF models)</td></tr>
+<tr><td>RESTCONF (RFC 8040)</td><td>HTTPS, JSON or XML</td><td>Web-style (REST) access to YANG data</td></tr>
+<tr><td>gNMI / gRPC</td><td>HTTP/2, Protocol Buffers</td><td>Configuration and fast streaming telemetry (live measurements)</td></tr>
+<tr><td>P4Runtime</td><td>gRPC</td><td>Fills the tables of P4 switches while they run</td></tr></table>
+<div class="tip"><b>Remember the pairs:</b> NETCONF + YANG for configuration, gNMI for telemetry, OpenFlow / P4Runtime for forwarding rules.</div>
+
+<h3>5. P4: programming the data plane itself</h3>
+<p>OpenFlow can only match headers it already knows. <b>P4</b> (Programming Protocol-independent Packet Processors, 2014) lets you define how the switch itself reads and processes packets, even brand-new header types.</p>
+<div class="fig"><pre class="mermaid">flowchart LR
+I(["Packet in"]) --> P["Parser: read headers"] --> G["Ingress match-action"] --> T["Traffic manager"] --> E["Egress match-action"] --> D["Deparser: rebuild packet"] --> O(["Packet out"])
+R["Controller fills tables via P4Runtime"] -.-> G</pre></div>
+<p>A P4 program has a <b>parser</b> (which headers exist, how to extract them), <b>match-action tables</b> (what to match, what to do) and a <b>deparser</b> (put the packet back together). It runs on a P4 <b>target</b>: BMv2 software switch, Intel Tofino ASIC or a SmartNIC. Uses: in-band network telemetry (INT), custom load balancing, new tunnelling protocols.</p>
+<div class="ex"><b>Example:</b> OpenFlow is choosing from a fixed menu. P4 is writing your own recipe.</div>
+
+<h3>6. Automation and intent-based networking</h3>
+<ul><li><b>Python libraries:</b> Netmiko (SSH to devices), NAPALM (same commands for many vendors), ncclient (NETCONF), requests (REST).</li>
+<li><b>Ansible:</b> agentless automation using YAML “playbooks” (a to-do list the tool runs on many devices).</li>
+<li><b>NetDevOps (CI/CD for networks):</b> configs stored in Git, tested and deployed automatically.</li>
+<li><b>Intent-based networking (IBN):</b> you state the goal, such as “isolate guest Wi-Fi from finance servers”; the system works out the config, deploys it and keeps checking it.</li></ul>
+<p><b>Benefits:</b> speed and automation, fewer human errors, consistent policy, vendor independence, fine-grained traffic control, faster innovation.</p>
+</section>
+
+<!-- ============ TOPIC II ============ -->
+<section id="t2">
+<h2>Topic II: Network Function Virtualization (NFV)</h2>
+<p>A <b>network function</b> is a job done in the network: firewall, router, load balancer, NAT, DPI (deep packet inspection), EPC (the 4G core), IMS (voice). <b>NFV</b> moves these jobs from dedicated hardware boxes into software, called <b>VNFs</b> (Virtual Network Functions), running on ordinary servers (COTS = commercial off-the-shelf).</p>
+<div class="ex"><b>Example:</b> Old way: buy a separate gadget for each job (camera, calculator, radio). NFV is a smartphone: one device, many apps.</div>
+<p><b>Origin:</b> in October 2012, thirteen telecom operators published a white paper. ETSI then created the NFV Industry Specification Group (ISG), which defines the architecture.</p>
+<p><b>Why needed:</b> hardware appliances meant high cost, power and space; long delays to launch services; quick end-of-life; hard to scale for peaks.</p>
+<p><b>Benefits:</b> lower CAPEX (buying cost) and OPEX (running cost); new services in minutes; elastic scaling; open multi-vendor ecosystem; easier testing and upgrades; resilience through healing and migration.</p>
+<table><tr><th>NFV</th><th>SDN</th></tr>
+<tr><td>Virtualise network functions</td><td>Separate control from data plane</td></tr>
+<tr><td>Targets middleboxes and services</td><td>Targets packet forwarding and routing</td></tr>
+<tr><td>Runs on servers and cloud</td><td>Runs on switches plus a controller</td></tr>
+<tr><td>Standard body: ETSI</td><td>ONF, IETF</td></tr>
+<tr><td colspan="2">Independent but complementary: SDN connects and chains the VNFs.</td></tr></table>
+
+<h3>ETSI NFV architecture</h3>
+<ol><li><b>VNFs and EMs:</b> the software functions; an Element Manager does FCAPS (Fault, Configuration, Accounting, Performance, Security) for them.</li>
+<li><b>NFVI</b> (NFV Infrastructure): everything VNFs run on: hardware (compute, storage, network), a virtualization layer (hypervisor like KVM, or containers) and virtual resources.</li>
+<li><b>MANO</b> (Management and Orchestration):
+<ul><li><b>NFVO</b> (Orchestrator): manages whole network services and resources across VIMs.</li>
+<li><b>VNFM</b> (VNF Manager): lifecycle of individual VNFs.</li>
+<li><b>VIM</b> (Virtualized Infrastructure Manager): controls NFVI resources, e.g. OpenStack or Kubernetes.</li>
+<li><b>Repositories:</b> NS catalogue, VNF catalogue, NFV instances, NFVI resources.</li></ul></li>
+<li><b>OSS/BSS:</b> the operator’s operations and business systems.</li></ol>
+<div class="ex"><b>Example:</b> A restaurant. NFVO is the owner planning the whole menu service, VNFM is the chef managing each dish, VIM is the store manager handing out ingredients and kitchen space.</div>
+<div class="fig"><pre class="mermaid">flowchart TB
+O["OSS / BSS"] -- Os-Ma-nfvo --> NO["NFVO"]
+subgraph MANO
+NO -- Or-Vnfm --> VM["VNFM"]
+NO -- Or-Vi --> VI["VIM"]
+VM -- Vi-Vnfm --> VI
+end
+V["VNFs + EMs"] -- Ve-Vnfm --> VM
+V -- Vn-Nf --> N["NFVI: virtual compute, storage, network over hardware"]
+VI -- Nf-Vi --> N</pre></div>
+<p><b>Descriptors:</b> a <b>VNFD</b> describes one VNF (resources, connection points); an <b>NSD</b> describes a service made of several VNFs and their links. TOSCA templates are common.</p>
+
+<h3>VNF lifecycle</h3>
+<div class="fig"><pre class="mermaid">flowchart LR
+A["Onboard"] --> B["Instantiate"] --> C["Configure"] --> D["Scale"] --> E["Heal"] --> F["Update"] --> G["Terminate"]</pre></div>
+<ol><li><b>Onboarding:</b> VNF package (VNFD, images, scripts) is checked and stored in the catalogue.</li>
+<li><b>Instantiation:</b> VNFM asks the VIM (via NFVO) for resources and starts the VNF.</li>
+<li><b>Configuration:</b> EM or VNFM applies service settings.</li>
+<li><b>Scaling:</b> scale out/in (more or fewer copies) or up/down (bigger or smaller copy).</li>
+<li><b>Healing:</b> failed instances restarted or replaced.</li>
+<li><b>Update:</b> new versions with little disruption.</li>
+<li><b>Termination:</b> resources released.</li></ol>
+
+<h3>Service Function Chaining (SFC)</h3>
+<p>Traffic often must pass through several functions in a fixed order. SFC (RFC 7665) steers packets along that path. The <b>NSH</b> (Network Service Header, RFC 8300) is a label on the packet carrying the path ID and position; SDN controllers program the forwarding between VNFs.</p>
+<div class="fig"><pre class="mermaid">flowchart LR
+S(["Subscriber"]) --> CL["Classifier adds NSH"] --> F["vFirewall"] --> DP["vDPI"] --> N["vNAT"] --> I(["Internet"])</pre></div>
+<div class="ex"><b>Example:</b> Airport: check-in, then security, then passport control, always in that order.</div>
+
+<h3>Making VNFs fast</h3>
+<p>Software on normal CPUs is slower than special chips (ASICs), so we use: <b>DPDK</b> (packets handled in user space, skipping the slow kernel path); <b>SR-IOV</b> (a network card shares itself directly with VMs); <b>CPU pinning, huge pages, NUMA awareness</b> (dedicated cores and nearby memory for steady speed); <b>hardware offload</b> (SmartNICs, FPGAs).</p>
+<h3>VNF vs CNF, MANO tools, use cases</h3>
+<p>A <b>VNF</b> runs in a virtual machine. A <b>CNF</b> (cloud-native function) runs in containers on Kubernetes: starts faster, scales easier, and is the direction of 5G cores. MANO tools: ETSI <b>OSM</b>, <b>ONAP</b> (Linux Foundation), OpenStack <b>Tacker</b>.</p>
+<p><b>Use cases:</b> vCPE (virtual home/business gateway), vEPC and 5G core, vIMS, vFirewall/vRouter, vCDN, virtual RAN. <b>Challenges:</b> matching hardware speed, complex orchestration, multi-vendor compatibility, “five nines” reliability, security of shared infrastructure, staff skills.</p>
+</section>
+
+<!-- ============ TOPIC III ============ -->
+<section id="t3">
+<h2>Topic III: NetApp Development and Network Slicing</h2>
+<h3>1. What is a NetApp?</h3>
+<p>The word has two meanings. Keep them separate in exams.</p>
+<ul><li><b>SDN NetApp:</b> a program on top of an SDN controller using its northbound API: reactive forwarding, firewall, load balancer, monitoring, segment routing (on ONOS, OpenDaylight, Ryu).</li>
+<li><b>5G NetApp:</b> a vertical app (car, factory, health, media) that uses 5G <b>exposure APIs</b>: 3GPP <b>NEF</b> (Network Exposure Function), <b>CAPIF</b> (Common API Framework, TS 23.222) and ETSI <b>MEC</b> (Multi-access Edge Computing) APIs, to ask for QoS, device location or a slice. European 5G-PPP projects popularised this.</li></ul>
+<div class="fig"><pre class="mermaid">flowchart TB
+A["Vertical NetApps: remote health, smart factory, connected car"] --> X["Exposure layer: CAPIF, NEF, MEC APIs"]
+X --> M["Edge MEC hosts"]
+X --> C["5G core: AMF, SMF, UPF, PCF, NSSF"]
+C --- R["RAN (gNB)"]</pre></div>
+<h3>2. NetApp development lifecycle</h3>
+<ol><li><b>Requirements and design:</b> which events, data and APIs are needed.</li>
+<li><b>Development:</b> Java for ONOS, Python for Ryu, REST for NEF.</li>
+<li><b>Packaging:</b> ONOS .oar bundle, container image or Helm chart.</li>
+<li><b>Testing:</b> Mininet (emulated network), 5G testbeds, automated tests.</li>
+<li><b>Onboarding:</b> register the app on the controller or marketplace.</li>
+<li><b>Deploy and operate:</b> monitor, log, update with CI/CD.</li></ol>
+<h3>3. Example: reactive L2 learning switch (the “hello world” of SDN)</h3>
+<ol><li>A host sends a frame, the switch has no rule and sends a Packet-In.</li>
+<li>The app remembers “source MAC is on this port” in a MAC table.</li>
+<li>Destination known? Send a Flow-Mod (match that MAC, output to that port) plus a Packet-Out for this packet.</li>
+<li>Destination unknown? Packet-Out that floods the frame to all ports.</li></ol>
+<p>Later packets match the rule and never reach the controller. Pattern of most SDN apps: <b>listen to events, decide, push rules.</b></p>
+<div class="ex"><b>Example:</b> A new student in a hostel asks everyone “who is Ravi?”. Once Ravi answers, you remember his room and go straight there next time.</div>
+
+<h3>4. Network slicing</h3>
+<p>A <b>network slice</b> is a private, end-to-end logical network (across RAN, transport and core) built on shared physical equipment, each slice tailored to a service or customer.</p>
+<div class="ex"><b>Example:</b> One highway with a dedicated ambulance lane, a bus lane and a normal lane. Same road, different guaranteed behaviour.</div>
+<table><tr><th>Slice type</th><th>SST</th><th>Need</th><th>Examples</th></tr>
+<tr><td>eMBB (enhanced Mobile Broadband)</td><td>1</td><td>Very high speed</td><td>4K/8K video, AR/VR</td></tr>
+<tr><td>URLLC (Ultra-Reliable Low-Latency)</td><td>2</td><td>About 1 ms delay, very reliable</td><td>Remote surgery, factory automation</td></tr>
+<tr><td>MIoT / mMTC (massive IoT)</td><td>3</td><td>Huge numbers of low-power devices</td><td>Smart meters, sensors</td></tr>
+<tr><td>V2X (Vehicle-to-Everything)</td><td>4</td><td>Low delay, reliable, mobile</td><td>Connected vehicles</td></tr></table>
+<p>Later 3GPP releases add more values; operators can define their own.</p>
+<h3>5. Identifying slices in 5G</h3>
+<ul><li><b>S-NSSAI</b> identifies one slice = <b>SST</b> (Slice/Service Type, 8 bits) + optional <b>SD</b> (Slice Differentiator, 24 bits, tells apart two slices of the same type, e.g. two eMBB slices for two companies).</li>
+<li><b>NSSAI</b> is a list of S-NSSAIs: <i>requested</i> (device asks), <i>allowed</i> (network grants), <i>configured</i>.</li>
+<li>A device can use several slices at once.</li></ul>
+<h3>6. Slice management</h3>
+<div class="fig"><pre class="mermaid">flowchart TB
+Q["Customer service request"] --> CS["CSMF: turns the request into slice requirements"]
+CS --> NS["NSMF: manages the end-to-end slice"]
+NS --> R["RAN NSSMF"] --> R2["gNBs, O-RAN controllers"]
+NS --> T["Transport NSSMF"] --> T2["SDN controllers: VLAN, VRF, SR"]
+NS --> K["Core NSSMF"] --> K2["NFV MANO then 5G core functions"]</pre></div>
+<p><b>5G core functions:</b> <b>NSSF</b> picks the slice(s) for a device; <b>AMF</b> (access and mobility) is usually shared by slices; <b>SMF/UPF</b> (sessions and user traffic) are often dedicated per slice; <b>NEF</b> exposes slice abilities to NetApps.</p>
+<p><b>Slice lifecycle (3GPP TS 28.530):</b> preparation (design, templates) then commissioning (create and configure) then operation (activate, monitor, modify) then decommissioning (release resources).</p>
+<p><b>Role of SDN and NFV:</b> NFV gives each slice its own functions (e.g. a UPF near the edge for URLLC). SDN gives separate transport paths, bandwidth and QoS per slice using VLANs, VRFs, segment routing or flow rules. MEC runs delay-sensitive functions at the edge. <b>FlowVisor</b> was an early OpenFlow tool that sat between switches and several controllers, giving each its own “slice” of flow space.</p>
+<p><b>Isolation types:</b> resource (dedicated or shared CPU, spectrum), traffic (separate forwarding via VLAN/VRF/SDN), performance (QoS guarantees), management (each tenant sees only its slice). <b>Challenges:</b> end-to-end orchestration, strong isolation without waste, multi-operator slices, SLA monitoring, security between slices, cost of dedicated resources.</p>
+<div class="tip"><b>Exam tip:</b> definition, then slice types with SST values, then the CSMF/NSMF/NSSMF diagram, then role of SDN and NFV.</div>
+</section>
+
+<!-- ============ TOPIC IV ============ -->
+<section id="t4">
+<h2>Topic IV: ONOS Deployment</h2>
+<p><b>ONOS</b> (Open Network Operating System) is an open-source SDN controller from ONF, first released (Avocet) in December 2014; releases are named after birds. Written in Java on <b>Apache Karaf</b> (an OSGi container, so apps load and unload while running).</p>
+<p><b>Design goals:</b> high availability (cluster, no single point of failure); scalability and performance; protocol independence (core is not tied to OpenFlow; devices are reached through plug-in “providers”); modularity.</p>
+<h3>Architecture (5 layers)</h3>
+<div class="fig"><pre class="mermaid">flowchart TB
+A["Applications: fwd, proxyarp, segment routing, your NetApps"] --> N["Northbound: REST, gRPC, GUI, CLI, Intent framework"]
+N --> K["Distributed core + Atomix stores: device, link, host, topology, flow rule, intent, cluster"]
+K --> S["Southbound providers: OpenFlow, P4Runtime, NETCONF, gNMI, OVSDB, BGP, SNMP"]
+S --> D["Devices: Open vSwitch, white-box switches, ROADMs, routers"]</pre></div>
+<table><tr><th>Subsystem</th><th>Job</th></tr>
+<tr><td>Device</td><td>Tracks switches and ports</td></tr>
+<tr><td>Link</td><td>Finds links using LLDP/BDDP probes</td></tr>
+<tr><td>Host</td><td>Tracks end hosts (MAC, IP, location)</td></tr>
+<tr><td>Topology</td><td>Graph of the network; computes paths</td></tr>
+<tr><td>Flow rule</td><td>Installs and monitors flow rules</td></tr>
+<tr><td>Packet</td><td>Packet-in/out handling for apps</td></tr>
+<tr><td>Intent</td><td>Turns goals into flow rules and keeps them true</td></tr>
+<tr><td>Cluster / Mastership</td><td>Who is in the cluster and which node controls which switch</td></tr></table>
+
+<h3>Deploying ONOS step by step</h3>
+<ol><li><b>Prerequisite:</b> Ubuntu VM with Java 11 (for ONOS 2.x), or Docker.</li>
+<li><b>Run ONOS:</b><pre>docker run -t -d -p 8181:8181 -p 8101:8101 -p 6653:6653 --name onos onosproject/onos</pre>
+(Tarball alternative: install Java 11, extract, run <code>bin/onos-service start</code>.)</li>
+<li><b>CLI:</b> <code>ssh -p 8101 karaf@localhost</code> (password <code>karaf</code>).</li>
+<li><b>Activate apps:</b> <code>app activate org.onosproject.openflow</code> and <code>app activate org.onosproject.fwd</code></li>
+<li><b>GUI:</b> <code>http://localhost:8181/onos/ui</code> (user <code>onos</code>, password <code>rocks</code>).</li>
+<li><b>Mininet (emulated network):</b><pre>sudo mn --topo tree,2 --mac --controller remote,ip=&lt;ONOS-IP&gt;,port=6653 --switch ovs,protocols=OpenFlow13</pre></li>
+<li><b>Test:</b> <code>mininet&gt; pingall</code></li></ol>
+<div class="tip"><b>Ports to remember:</b> GUI/REST 8181, CLI 8101, OpenFlow 6653.</div>
+<table><tr><th>CLI command</th><th>Shows</th></tr>
+<tr><td>devices</td><td>Connected switches</td></tr><tr><td>links</td><td>Discovered links</td></tr><tr><td>hosts</td><td>Learned hosts (MAC, IP, attachment point)</td></tr><tr><td>flows</td><td>Installed flow rules</td></tr><tr><td>apps -a -s</td><td>Active apps</td></tr></table>
+<p><b>Troubleshooting (no devices in GUI):</b> is the OpenFlow app active? Right controller IP and port 6653? Mininet using OpenFlow 1.3? Use <code>log:tail</code> and the GUI. Pressing H in the GUI toggles hosts.</p>
+
+<h3>Clustering and high availability</h3>
+<p>Run <b>3 or 5</b> ONOS nodes. Since ONOS 1.14, shared state lives in a separate <b>Atomix</b> cluster using the <b>Raft</b> consensus method (an odd number of nodes means a majority can always agree). Each switch has one <b>master</b> node and standby nodes. If the master fails, mastership moves and forwarding continues.</p>
+<div class="fig"><pre class="mermaid">flowchart TB
+SA["Switch A: master node 1, standby node 2"] --- N1["ONOS node 1"]
+SB["Switch B: master node 2"] --- N2["ONOS node 2"]
+SC["Switch C: master node 3"] --- N3["ONOS node 3"]
+N1 & N2 & N3 --> AT["Atomix cluster (Raft): shared state"]</pre></div>
+<div class="ex"><b>Example:</b> If node 1 dies, Switch A’s standby (node 2) takes over. Like a substitute teacher stepping in.</div>
+
+<h3>Intent framework</h3>
+<p>An <b>intent</b> is what you want, not how to do it. ONOS compiles it into flow rules, installs them, and <b>recompiles automatically</b> if a link fails. Types: host-to-host, point-to-point, single-point-to-multipoint, multipoint-to-single-point, path.</p>
+<pre>onos&gt; add-host-intent 00:00:00:00:00:01/None 00:00:00:00:00:02/None
+onos&gt; intents</pre>
+<div class="ex"><b>Example:</b> Telling a taxi “take me to the airport” (intent) rather than giving every turn. If a road is blocked, the driver picks another route.</div>
+<h3>REST API</h3>
+<table><tr><th>Request</th><th>Purpose</th></tr>
+<tr><td>GET /onos/v1/devices</td><td>List devices</td></tr><tr><td>GET /onos/v1/links</td><td>List links</td></tr><tr><td>GET /onos/v1/hosts</td><td>List hosts</td></tr><tr><td>GET /onos/v1/flows</td><td>List flows</td></tr>
+<tr><td>POST /onos/v1/flows/{deviceId}</td><td>Add a flow rule (JSON body)</td></tr><tr><td>POST /onos/v1/intents</td><td>Submit an intent</td></tr><tr><td>POST /onos/v1/applications/{name}/active</td><td>Activate an app</td></tr></table>
+<p>Example: <code>curl -u onos:rocks http://&lt;onos-ip&gt;:8181/onos/v1/devices</code></p>
+<h3>Developing an ONOS app</h3>
+<ol><li>Generate a project with <code>onos-create-app</code> (Maven archetype).</li><li>Write a Java component using PacketService, FlowRuleService, HostService, IntentService.</li><li>Build: <code>mvn clean install</code> gives an .oar file.</li><li>Install: <code>onos-app &lt;onos-ip&gt; install! target/&lt;app&gt;.oar</code></li><li>Check logs: <code>log:tail</code></li></ol>
+</section>
+
+<!-- ============ TOPIC V ============ -->
+<section id="t5">
+<h2>Topic V: OPNFV</h2>
+<p><b>OPNFV</b> (Open Platform for NFV) was a Linux Foundation project launched in September 2014 to build a carrier-grade, open-source <i>reference platform</i> for NFV. It wrote no new stack. It <b>integrated</b> existing projects, <b>tested</b> them together, and pushed fixes <b>upstream</b> (to the original projects, without forking).</p>
+<div class="ex"><b>Example:</b> A mechanic who takes engine, gearbox and wheels from different makers, assembles a car, test-drives it, and sends bug reports back to each maker.</div>
+<p><b>Goals:</b> an integrated, tested NFVI and VIM; carrier-grade features (high availability, fault management, performance) added upstream; common test tools and verification; interoperability and faster adoption.</p>
+<p><b>Scope:</b> NFVI and VIM (later MANO integration). VNFs themselves were out of scope.</p>
+<table><tr><th>Layer</th><th>Upstream projects</th></tr>
+<tr><td>VIM</td><td>OpenStack, later Kubernetes</td></tr>
+<tr><td>SDN control</td><td>OpenDaylight, ONOS, OpenContrail</td></tr>
+<tr><td>Data plane</td><td>Open vSwitch, DPDK, FD.io/VPP</td></tr>
+<tr><td>Virtualization</td><td>KVM, QEMU, libvirt</td></tr>
+<tr><td>Storage</td><td>Ceph</td></tr>
+<tr><td>OS</td><td>Ubuntu, CentOS</td></tr></table>
+<p><b>Releases</b> (named after rivers, A to K): Arno (June 2015), Brahmaputra, Colorado, Danube, Euphrates, Fraser, Gambia, Hunter, Iruya, Jerma, Kali.</p>
+<h3>Installers, scenarios, Pharos</h3>
+<ul><li><b>Apex:</b> Red Hat TripleO. <b>Compass4NFV:</b> bare-metal provisioning (Huawei). <b>Fuel/MCP:</b> Mirantis. <b>JOID:</b> Juju + MAAS (Canonical). <b>Daisy4NFV:</b> OpenStack Kolla.</li></ul>
+<p>A <b>scenario</b> names a tested combination as <i>VIM-SDN controller-feature-mode</i>:</p>
+<table><tr><th>Scenario</th><th>Meaning</th></tr>
+<tr><td>os-nosdn-nofeature-ha</td><td>OpenStack, no SDN controller, no extra feature, high availability</td></tr>
+<tr><td>os-odl-nofeature-ha</td><td>OpenStack + OpenDaylight, HA</td></tr>
+<tr><td>os-onos-sfc-noha</td><td>OpenStack + ONOS + service function chaining, single controller</td></tr>
+<tr><td>k8-nosdn-nofeature-noha</td><td>Kubernetes, no SDN, non-HA</td></tr></table>
+<p><b>Pharos:</b> the standard lab hardware specification (jump host, controller and compute nodes, networks) hosted at member labs worldwide for CI testing.</p>
+<h3>CI/CD pipeline and testing projects</h3>
+<div class="fig"><pre class="mermaid">flowchart LR
+U["Upstream code"] --> B["Build (Jenkins / XCI)"] --> D["Deploy scenario with installer on Pharos hardware"] --> T["Test: Functest, Yardstick..."] --> R["Dashboard and release"]
+R -. "bugs fixed upstream" .-> U</pre></div>
+<table><tr><th>Test project</th><th>Purpose</th></tr>
+<tr><td>Functest</td><td>Functional tests of the deployed platform (OpenStack Tempest, vIMS, vPing)</td></tr>
+<tr><td>Yardstick</td><td>Infrastructure performance against ETSI test specs</td></tr>
+<tr><td>Bottlenecks</td><td>Finds limits under stress</td></tr>
+<tr><td>VSPERF</td><td>Virtual switch speed (OVS, VPP)</td></tr>
+<tr><td>StorPerf</td><td>Storage performance</td></tr>
+<tr><td>QTIP</td><td>Platform benchmarking</td></tr>
+<tr><td>Dovetail</td><td>Compliance tests for the OVP</td></tr></table>
+<h3>Feature projects</h3>
+<table><tr><th>Project</th><th>Feature</th></tr>
+<tr><td>Doctor</td><td>Fault management: detects host failures fast and tells VNF managers (fed into OpenStack Nova and Aodh)</td></tr>
+<tr><td>Promise</td><td>Reserve resources for planned VNFs</td></tr>
+<tr><td>Copper</td><td>Policy-based deployment checks</td></tr>
+<tr><td>SFC</td><td>Service chaining with NSH on ODL or ONOS</td></tr>
+<tr><td>Barometer</td><td>NFVI telemetry (collectd)</td></tr>
+<tr><td>High Availability</td><td>Requirements and gap analysis for resilient NFV</td></tr></table>
+<p><b>OVP (OPNFV Verification Program):</b> vendors run Dovetail against their NFVI/VIM products; passing earns an “OPNFV Verified” listing, so operators trust it will interoperate.</p>
+<h3>Evolution to Anuket</h3>
+<p>In 2021 OPNFV merged with <b>CNTT</b> (Cloud iNfrastructure Telco Task Force) to form <b>Anuket</b> under LF Networking. It publishes a <b>Reference Model (RM)</b>, <b>RA1</b> (reference architecture on OpenStack), <b>RA2</b> (on Kubernetes), reference implementations and conformance tests.</p>
+<table><tr><th>Body</th><th>Role</th></tr><tr><td>ETSI NFV ISG</td><td>Standards and architecture</td></tr><tr><td>OPNFV / Anuket</td><td>Integration, testing, reference platform</td></tr><tr><td>ONAP / OSM</td><td>Orchestration (MANO)</td></tr><tr><td>OpenStack, Kubernetes, ODL, ONOS</td><td>Upstream components</td></tr></table>
+<div class="tip"><b>Exam tip:</b> OPNFV = integrate + test + upstream. Name 3 testing projects and 2 feature projects for a full answer.</div>
+</section>
+</main>
+<!--claude-mermaid-runtime-begin:3847-->
+<style>.mermaid-diagram{margin-block:4px}.mermaid-diagram svg{display:block;margin:0 auto;max-width:100%;height:auto}</style>
+<script src="/_runtime/mermaid-11.16.1.min.js"></script>
+<script>(function(){
+var CFG={"palettes":{"light":{"surface":"#f4efe4","text":"#42392e","line":"#8a7f6d","border":"#7a6c52","bg":"#fffdf8"},"dark":{"surface":"#262b34","text":"#f2f3f5","line":"#a8adb8","border":"#9aa4b8","bg":"#1f232b"}}};
+if(typeof mermaid==='undefined')return;
+var pres=Array.prototype.slice.call(document.querySelectorAll('pre.mermaid')).filter(function(p){if(p.hasAttribute('data-claude-mermaid-claimed'))return false;p.setAttribute('data-claude-mermaid-claimed','1');return true;});
+if(!pres.length)return;
+var mq=window.matchMedia?window.matchMedia('(prefers-color-scheme: dark)'):null;
+var root=document.documentElement;
+function source(el){
+var out='';
+for(var n=el.firstChild;n;n=n.nextSibling){
+if(n.nodeType===3)out+=n.data;
+else if(n.nodeName==='BR')out+='<br>';
+else if(n.nodeType===1)out+=(out.slice(-1)==='<'&&n.textContent[0]==='>'?'<'+n.localName+'>':'')+source(n);
+}
+return out;
+}
+var items=pres.map(function(pre){
+var mount=document.createElement('div');mount.className='mermaid-diagram';
+return {pre:pre,mount:mount,src:source(pre),text:pre.textContent};
+});
+var seq=0;
+var renderGen=0;
+var lastKey='';
+function pageBg(fallback){
+var els=[document.body,document.documentElement];
+for(var i=0;i<els.length;i++){
+var c=els[i]&&getComputedStyle(els[i]).backgroundColor;
+if(c&&c!=='transparent'&&c!=='rgba(0, 0, 0, 0)')return c;
+}
+return fallback;
+}
+function render(){
+var theme=root.getAttribute('data-theme');
+var dark=theme==='dark'||(!!(mq&&mq.matches)&&theme!=='light');
+var pal=dark?CFG.palettes.dark:CFG.palettes.light;
+var bg=pageBg(pal.bg);
+var key=(dark?'d':'l')+'|'+bg;
+if(key===lastKey)return;
+lastKey=key;
+var gen=++renderGen;
+var font=getComputedStyle(document.body).fontFamily||'sans-serif';
+var nat={useMaxWidth:false};
+mermaid.initialize({
+startOnLoad:false,securityLevel:'strict',theme:'base',
+flowchart:nat,sequence:nat,er:nat,state:nat,class:nat,pie:nat,
+gantt:nat,journey:nat,timeline:nat,gitGraph:nat,mindmap:nat,xyChart:nat,
+quadrantChart:nat,sankey:nat,c4:nat,requirement:nat,block:nat,
+packet:nat,kanban:nat,architecture:nat,radar:nat,
+themeVariables:{background:bg,mainBkg:pal.surface,primaryColor:pal.surface,
+primaryTextColor:pal.text,lineColor:pal.line,primaryBorderColor:pal.border,
+nodeBorder:pal.border,clusterBorder:pal.border,edgeLabelBackground:bg,
+clusterBkg:'rgba(127,127,127,0.07)',titleColor:pal.text,
+darkMode:dark,rowOdd:bg,rowEven:'rgba(127,127,127,0.07)',
+attributeBackgroundColorOdd:bg,attributeBackgroundColorEven:'rgba(127,127,127,0.07)',
+fontSize:'16px',fontFamily:font},
+themeCSS:'.node rect, .node circle, .node polygon, .node path, .cluster rect { stroke-width: 2px; }'
+});
+items.forEach(function(it){
+var id='claude-mermaid-'+seq++;
+mermaid.render(id,it.src).catch(function(e){
+if(it.src===it.text)throw e;
+return mermaid.render(id,it.text);
+}).then(function(r){
+if(gen!==renderGen)return;
+var prev=it.pre.previousElementSibling;
+if(prev&&prev.className==='mermaid-diagram'&&prev!==it.mount)return;
+it.mount.innerHTML=r.svg;
+if(!it.mount.parentNode)it.pre.parentNode.insertBefore(it.mount,it.pre);
+it.pre.style.display='none';
+},function(){
+var scratch=document.getElementById(id);
+if(scratch)scratch.parentNode.removeChild(scratch);
+scratch=document.getElementById('d'+id);
+if(scratch)scratch.parentNode.removeChild(scratch);
+if(gen!==renderGen)return;
+if(it.mount.parentNode)it.mount.parentNode.removeChild(it.mount);
+it.pre.style.display='';
+});
+});
+}
+render();
+if(mq&&mq.addEventListener)mq.addEventListener('change',render);
+if(typeof MutationObserver!=='undefined')new MutationObserver(render).observe(root,{attributes:true,attributeFilter:['data-theme']});
+})();</script>
+<!--claude-mermaid-runtime-end-->
+<script>
+if (window.self === window.top) {
+  var b = document.createElement('a');
+  b.href = '../index.html';
+  b.className = 'hub-floating-btn';
+  b.innerHTML = '← Back to Study Portal';
+  b.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;background:#0969da;color:#ffffff;font-family:system-ui,-apple-system,sans-serif;font-size:13px;font-weight:700;padding:10px 18px;border-radius:99px;box-shadow:0 4px 14px rgba(0,0,0,0.35);text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s ease;cursor:pointer;';
+  b.onmouseenter = function(){ b.style.transform='translateY(-2px)'; b.style.boxShadow='0 6px 20px rgba(9,105,218,0.5)'; };
+  b.onmouseleave = function(){ b.style.transform='none'; b.style.boxShadow='0 4px 14px rgba(0,0,0,0.35)'; };
+  document.body.appendChild(b);
+}
+</script>
+</body></html>

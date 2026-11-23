@@ -1,0 +1,486 @@
+﻿<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SDN Unit 2 – Simple Study Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Nunito:wght@400;600;700&family=Fira+Code&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--fg:#1a1d29;--card:#f4f6fb;--mut:#5b6275;--bd:#dde2ee;--t1:#1d4ed8;--t2:#0f766e;--t3:#c2410c;--t4:#6d28d9;--t5:#be123c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12141c;--fg:#e8eaf2;--card:#1c2030;--mut:#a3aac0;--bd:#2c3247;--t1:#6c9bff;--t2:#2dd4bf;--t3:#fb923c;--t4:#a78bfa;--t5:#fb7185}}
+:root[data-theme="dark"]{--bg:#12141c;--fg:#e8eaf2;--card:#1c2030;--mut:#a3aac0;--bd:#2c3247;--t1:#6c9bff;--t2:#2dd4bf;--t3:#fb923c;--t4:#a78bfa;--t5:#fb7185}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.65 'Nunito',sans-serif}
+main{max-width:860px;margin:auto;padding:16px}
+h1,h2,h3{font-family:'Poppins',sans-serif;line-height:1.25}
+h1{font-size:2rem;margin:.3em 0}h2{font-size:1.5rem;color:var(--c);border-bottom:3px solid var(--c);padding-bottom:6px;margin-top:2em}
+h3{font-size:1.1rem;color:var(--c);margin:1.5em 0 .3em}
+section{--c:var(--t1)}#t2{--c:var(--t2)}#t3{--c:var(--t3)}#t4{--c:var(--t4)}#t5{--c:var(--t5)}
+.hero{background:var(--card);border-radius:14px;padding:18px;border:1px solid var(--bd)}
+nav{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}nav a{padding:6px 12px;border-radius:20px;color:#fff;text-decoration:none;font-weight:700;font-size:.9rem}
+.box,.ex,.tip{border-radius:10px;padding:10px 14px;margin:12px 0}
+.box{background:var(--card);border-left:5px solid var(--c)}
+.ex{border:2px dashed var(--c)}.ex::before{content:"🧩 Example: ";font-weight:700;color:var(--c)}
+.tip{background:var(--c);color:#fff}.tip a{color:#fff}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.93rem;margin:10px 0}
+th{background:var(--c);color:#fff;text-align:left}th,td{padding:7px 9px;border:1px solid var(--bd);vertical-align:top}tr:nth-child(even) td{background:var(--card)}
+code,pre{font-family:'Fira Code',monospace;font-size:.82rem}code{background:var(--card);padding:1px 5px;border-radius:4px}
+pre{background:#0f172a;color:#e2e8f0;padding:12px;border-radius:10px;overflow-x:auto}
+pre.mermaid{background:var(--card);color:var(--fg);text-align:center}
+ul,ol{padding-left:22px}li{margin:4px 0}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}.g>div{background:var(--card);border-top:4px solid var(--c);border-radius:10px;padding:8px 12px}
+.g b{color:var(--c)}
+</style></head><body><main>
+<div class="hero"><h1>SDN Abstractions – Unit 2 Made Simple</h1>
+<p>Read once, top to bottom. Every hard word is explained in plain language, followed by an everyday example. Five topics, five colours.</p>
+<nav><a style="background:var(--t1)" href="#t1">I · OpenFlow</a><a style="background:var(--t2)" href="#t2">II · Controllers</a><a style="background:var(--t3)" href="#t3">III · Controller types</a><a style="background:var(--t4)" href="#t4">IV · Custom topologies</a><a style="background:var(--t5)" href="#t5">V · Interfaces</a></nav>
+<div class="box" style="--c:var(--t1)"><b>The big idea in one line:</b> In normal networks every switch thinks for itself. In SDN the switches become “dumb but fast workers” and one smart <b>controller</b> (the brain) tells them what to do.
+<div class="ex" style="--c:var(--t1)">Old network = every traffic policeman at every junction decides alone. SDN = one control room watches the whole city and sends instructions to all policemen.</div></div>
+<b>Words you’ll see everywhere</b>
+<ul><li><b>Switch</b> – a device that moves data packets from one place to another.</li><li><b>Packet</b> – a small piece of data (like one envelope in the post).</li><li><b>Flow</b> – a stream of packets between the same two things (one video call = one flow).</li><li><b>Controller</b> – the software brain of SDN.</li><li><b>Southbound</b> = controller ↔ switches (down). <b>Northbound</b> = controller ↔ apps (up). <b>East–west</b> = controller ↔ other controllers (sideways).</li></ul></div>
+
+<section id="t1"><h2>Topic I – How SDN Works &amp; the OpenFlow Protocol</h2>
+<h3>1. Working principle</h3>
+<p>Every SDN switch has a <b>flow table</b> – a list of rules saying “if a packet looks like <i>this</i>, do <i>that</i>”. The controller writes the rules. Switches just follow them, very fast, in hardware.</p>
+<pre class="mermaid">sequenceDiagram
+participant A as Host A
+participant S as Switch (flow table)
+participant C as Controller
+participant B as Host B
+A->>S: 1 First packet arrives
+S->>S: 2 Look up table - no match (table miss)
+S->>C: 3 Packet-In (what do I do?)
+C->>S: 4 Flow-Mod (new rule)
+C->>S: 5 Packet-Out (release the packet)
+S->>B: 6 Forward
+A->>S: Later packets match the rule
+S->>B: Forwarded directly, controller not asked</pre>
+<ol><li>A packet arrives at a switch port.</li><li>Switch compares its header fields with table rules, highest priority first.</li><li>Match found → do the rule’s actions and update counters (fast, in the switch).</li><li>No match = <b>table miss</b> → switch sends the packet (or its header) to the controller as <b>Packet-In</b>.</li><li>Controller decides using its global view, sends <b>Flow-Mod</b> (install rule) and <b>Packet-Out</b> (release the waiting packet).</li><li>Next packets of this flow match the new rule and never bother the controller.</li></ol>
+<div class="ex">A new employee (packet) reaches a company gate. The guard (switch) has no instruction for him, so he phones the manager (controller). The manager says “let him in, and let all his colleagues in too” (Flow-Mod). From then on the guard doesn’t phone again.</div>
+<h3>Reactive, proactive, hybrid</h3>
+<div class="tw"><table><tr><th>Mode</th><th>Meaning</th><th>Good</th><th>Bad</th></tr>
+<tr><td>Reactive</td><td>Rule installed after first packet arrives (Packet-In)</td><td>Flexible; table holds only active flows</td><td>First packet is delayed; controller overloaded by many new flows; needs controller alive</td></tr>
+<tr><td>Proactive</td><td>Rules pushed <i>before</i> traffic comes (often wildcard rules)</td><td>No delay; works even if controller is lost</td><td>Must know traffic in advance; may waste table space</td></tr>
+<tr><td>Hybrid</td><td>Coarse proactive rules + reactive exceptions</td><td>Balance of speed and flexibility</td><td>More complex program</td></tr></table></div>
+<div class="ex">Reactive = asking the guide every time you enter a new room. Proactive = being handed the whole building map at the entrance.</div>
+
+<h3>2. The three SDN abstractions (Scott Shenker)</h3>
+<p>An <b>abstraction</b> means hiding messy details behind a simple view – like using a car’s steering wheel without knowing how the engine works.</p>
+<div class="g"><div><b>Forwarding abstraction</b><br>Programs say how to forward without knowing vendor hardware. Realised by OpenFlow’s match + action rules.</div><div><b>Distribution abstraction</b><br>The network OS hides the hassle of many distributed devices (collecting state, failures) and gives a <b>global network view</b> – a graph of switches, links, hosts.</div><div><b>Specification abstraction</b><br>Apps state <i>what</i> they want on a simple view (e.g. “one big switch”). A virtualisation layer maps it to the real network.</div></div>
+<pre class="mermaid">flowchart TD
+A["Applications - specification abstraction"] --> V["Network virtualisation layer (abstract view to global view)"]
+V --> N["Network OS - distribution abstraction (global view)"]
+N --> S["Switches - forwarding abstraction (OpenFlow match + action)"]</pre>
+
+<h3>3. OpenFlow</h3>
+<p>OpenFlow is the first standard <b>southbound</b> protocol – the language the controller uses to talk to switches. Proposed at Stanford in 2008, now maintained by the <b>ONF</b> (Open Networking Foundation). It defines (a) what a switch looks like inside and (b) the messages exchanged over the <b>OpenFlow channel</b> – a TCP connection to port <b>6653</b> (older: 6633), optionally secured with <b>TLS</b>.</p>
+<h3>3.1 Parts of an OpenFlow switch</h3>
+<ul><li><b>Flow tables</b> – one table in v1.0; a <b>pipeline</b> of tables 0…n from v1.1.</li><li><b>Group table</b> – shared lists of actions (“buckets”) reused by many flows.</li><li><b>Meter table</b> – per-flow speed limits for QoS (v1.3).</li><li><b>OpenFlow channel(s)</b> – link(s) to controller(s).</li><li><b>Ports</b> – physical, logical (tunnels, link aggregation) and reserved.</li></ul>
+<h3>3.2 A flow entry (one rule) – remember M-P-C-I-T-C</h3>
+<div class="tw"><table><tr><th>Field</th><th>Meaning</th></tr>
+<tr><td>Match fields</td><td>What to compare: ingress port, MAC, VLAN, IP, TCP/UDP port, metadata… any field can be wildcarded (“don’t care”)</td></tr>
+<tr><td>Priority</td><td>If many rules match, highest priority wins</td></tr>
+<tr><td>Counters</td><td>Packets, bytes, duration</td></tr>
+<tr><td>Instructions</td><td>What to do with matching packets</td></tr>
+<tr><td>Timeouts</td><td><b>Idle</b>: remove if unused for N seconds. <b>Hard</b>: remove after N seconds no matter what</td></tr>
+<tr><td>Cookie</td><td>Opaque tag chosen by controller to find/filter entries</td></tr>
+<tr><td>Flags</td><td>e.g. SEND_FLOW_REM – tell controller when entry is removed</td></tr></table></div>
+<p><b>OpenFlow 1.0 match = fixed 12-tuple:</b> ingress port, source MAC, destination MAC, EtherType, VLAN ID, VLAN priority, source IP, destination IP, IP protocol, IP ToS, source L4 port, destination L4 port. From v1.2 an extensible <b>OXM</b> (Type-Length-Value) match supports 40+ fields.</p>
+<div class="ex">Rule: Match = dest IP 10.0.0.4 + TCP port 80, Priority = 100, Action = output port 3, Idle timeout = 30 s. “Web traffic to host 4 goes out of port 3; forget the rule if unused for 30 s.”</div>
+<h3>3.3 Pipeline processing</h3>
+<pre class="mermaid">flowchart LR
+P["Packet in + ingress port"] --> T0["Table 0"] --> T1["Table 1"] -->|Goto-Table| Tn["Table n"] --> E["Execute action set"] --> O["Packet out"]
+T0 -.miss.-> C["Controller"]
+T1 -.-> M["Meter table"]
+E -.-> G["Group table"]</pre>
+<p>The packet starts at table 0. The best matching entry runs its instructions. <b>Goto-Table</b> can only move forward, never back. Actions can be collected into an <b>action set</b> that runs at the end. If no entry matches, the <b>table-miss entry</b> (priority 0, matches everything) decides: send to controller, drop, or go to next table. With no table-miss entry (v1.3), the packet is dropped.</p>
+<h3>3.4 Instructions and actions</h3>
+<div class="tw"><table><tr><th>Instruction</th><th>Effect</th></tr><tr><td>Apply-Actions</td><td>Do the actions now</td></tr><tr><td>Write-Actions</td><td>Add to action set (run at end)</td></tr><tr><td>Clear-Actions</td><td>Empty the action set</td></tr><tr><td>Write-Metadata</td><td>Store a note for later tables</td></tr><tr><td>Goto-Table</td><td>Continue in a later table</td></tr><tr><td>Meter</td><td>Pass through a rate limiter</td></tr></table></div>
+<p><b>Common actions:</b> Output to a port, Drop, Set-Field (rewrite MAC/IP/port/VLAN), Push/Pop VLAN or MPLS tag, Set-Queue (QoS), Group, Decrement TTL.</p>
+<h3>3.5 Reserved ports</h3>
+<div class="tw"><table><tr><th>Port</th><th>Meaning</th></tr><tr><td>CONTROLLER</td><td>Send to controller as Packet-In</td></tr><tr><td>FLOOD</td><td>All ports except ingress (and STP-blocked ports)</td></tr><tr><td>ALL</td><td>All ports except ingress</td></tr><tr><td>IN_PORT</td><td>Send back out the arrival port</td></tr><tr><td>TABLE</td><td>(Packet-Out only) run through flow tables</td></tr><tr><td>LOCAL</td><td>The switch’s own network stack</td></tr><tr><td>NORMAL</td><td>Use the traditional non-OpenFlow pipeline (hybrid switches)</td></tr></table></div>
+<h3>3.6 Group types</h3>
+<ul><li><b>All</b> – run every bucket → multicast/broadcast.</li><li><b>Select</b> – run one bucket picked by hash → load balancing.</li><li><b>Indirect</b> – one bucket, shared next hop for many flows.</li><li><b>Fast failover</b> – run first bucket whose watched port is up → instant protection without asking the controller.</li></ul>
+<div class="ex">Fast failover = a road with a built-in diversion sign: if the main road is blocked, traffic switches to the side road immediately, no phone call to the control room.</div>
+<h3>4. OpenFlow messages</h3>
+<div class="g"><div><b>Controller → switch</b><br>Features-Request, Get/Set-Config, Modify-State (Flow-Mod, Group-Mod, Port-Mod, Meter-Mod), Read-State (Multipart/Stats), Packet-Out, Barrier, Role-Request</div><div><b>Asynchronous (switch → controller)</b><br>Packet-In, Flow-Removed, Port-Status, Error – the switch reports on its own</div><div><b>Symmetric (either side)</b><br>Hello, Echo request/reply, Experimenter (vendor extras)</div></div>
+<h3>4.1 Connection set-up</h3>
+<ol><li>Switch opens TCP (or TLS) to controller port 6653.</li><li><b>Hello</b> both ways – each says its highest version; the lower common one is used.</li><li>Controller sends <b>Features-Request</b>; switch replies with its <b>DPID</b> (datapath ID = switch’s ID number), buffers, tables, capabilities. (Ports via multipart request in 1.3.)</li><li>Controller sends <b>Set-Config</b> and usually installs a table-miss rule and proactive rules.</li><li><b>Echo</b> messages repeat to check the link is alive.</li></ol>
+<h3>4.2 If the controller is lost</h3>
+<ul><li><b>Fail-secure</b>: keep using existing rules until they time out; packets needing the controller are dropped.</li><li><b>Fail-standalone</b>: act like an ordinary learning switch (NORMAL).</li></ul>
+<h3>4.3 Many controllers (v1.2+)</h3>
+<p>Roles: <b>Equal</b> (full access), <b>Master</b> (full access, only one), <b>Slave</b> (read-only, gets only Port-Status). Role-Request changes roles → quick failover between controllers.</p>
+<h3>5. OpenFlow versions</h3>
+<div class="tw"><table><tr><th>Ver</th><th>Released</th><th>Main additions</th></tr>
+<tr><td>1.0</td><td>Dec 2009</td><td>Single table, 12-tuple, basic actions (most used early)</td></tr>
+<tr><td>1.1</td><td>Feb 2011</td><td>Multiple tables/pipeline, group table, MPLS &amp; VLAN push/pop, instructions</td></tr>
+<tr><td>1.2</td><td>Dec 2011</td><td>OXM match, IPv6, multiple controllers with roles</td></tr>
+<tr><td>1.3</td><td>Jun 2012</td><td>Meters, explicit table-miss entry, auxiliary connections, PBB, event filtering – long-term support</td></tr>
+<tr><td>1.4</td><td>Oct 2013</td><td>Bundles (atomic multi-changes), flow monitoring, optical ports, eviction</td></tr>
+<tr><td>1.5</td><td>Dec 2014</td><td>Egress tables, packet-type-aware pipeline, scheduled bundles</td></tr></table></div>
+<p><b>Related:</b> OpenFlow only handles forwarding rules. Configuring the switch itself (which controller, port settings) is done by <b>OF-CONFIG</b> (NETCONF/YANG based) or <b>OVSDB</b> for Open vSwitch.</p>
+<div class="tip">If asked about “OpenFlow 1.3”, mention meters and the table-miss entry.</div></section>
+
+<section id="t2"><h2>Topic II – SDN Controllers: Concepts, VMware, Nicira</h2>
+<h3>1. What is a controller?</h3>
+<p>Software that centralises network control. It’s called a <b>Network Operating System (NOS)</b> because, like Windows or Linux, it manages resources (switches, links, flow tables), hides low-level details and gives services to apps. It sits between apps (above, <b>northbound</b>) and devices (below, <b>southbound</b>). In Nadeau and Gray’s idealised framework it gives a logically centralised view, accepts app requests and turns them into device instructions.</p>
+<h3>2. What every controller does</h3>
+<div class="g"><div><b>End-user device discovery</b><br>Learns hosts: MAC, IP, switch port – from ARP, DHCP or first Packet-In.</div><div><b>Network device discovery</b><br>Notices switches/routers connecting; reads features, ports, tables.</div><div><b>Topology management</b><br>Finds links by sending <b>LLDP</b> frames out of each port (Packet-Out) and seeing them come back as Packet-In on the neighbour; builds and updates the graph.</div><div><b>Flow management</b><br>Keeps flow database, computes paths, installs/changes/removes rules, collects stats.</div></div>
+<div class="ex">Like a city map app: it first finds all houses (hosts), all junctions (switches), all roads (links), then plans routes (flows).</div>
+<pre class="mermaid">flowchart TD
+A["Applications: Firewall, Routing, Monitoring, Load balancer"] --> N["Northbound API: REST, Java/Python, intents"]
+N --> K["Core services: topology, inventory, host tracker, path computation, statistics, flow manager, clustering and HA"]
+K --> D["State store / data model (MD-SAL, distributed stores)"]
+D --> S["Southbound plug-ins: OpenFlow, OVSDB, NETCONF, BGP-LS, PCEP, SNMP"]
+S --> W["Physical and virtual switches"]</pre>
+<h3>2.1 Internal parts</h3>
+<ul><li><b>Northbound API</b> – REST over HTTP, Java/Python APIs, intent interfaces.</li><li><b>Core services</b> – topology manager, inventory, host tracker, path computation, statistics, rules manager.</li><li><b>State store</b> – the network view; ODL uses <b>MD-SAL</b> with YANG models, ONOS uses distributed stores.</li><li><b>Southbound plug-ins</b> – OpenFlow, OVSDB, NETCONF, BGP-LS, PCEP, SNMP.</li><li><b>High availability / clustering</b> – several instances share state so one failing doesn’t stop the network.</li><li><b>Event system</b> – apps subscribe to events (switch-connected, Packet-In, link-down).</li></ul>
+<h3>2.2 How to choose a controller</h3>
+<div class="tw"><table><tr><th>Aspect</th><th>Ask</th></tr><tr><td>Scalability</td><td>How many switches, hosts, new flows/sec?</td></tr><tr><td>Availability</td><td>Clustering and failover?</td></tr><tr><td>Southbound</td><td>Only OpenFlow or also NETCONF, OVSDB, BGP, PCEP?</td></tr><tr><td>Northbound</td><td>REST, language APIs, intents?</td></tr><tr><td>Language</td><td>Python = quick prototyping; Java = large platforms</td></tr><tr><td>Performance</td><td>Flow set-up latency; Packet-In throughput</td></tr><tr><td>Community/licence</td><td>Actively maintained? Open source (Apache, GPL) or commercial?</td></tr></table></div>
+<h3>3. VMware</h3>
+<p>VMware came to SDN from <b>server virtualisation</b> (many virtual machines on one server, so networking <i>inside</i> the server matters).</p>
+<ul><li><b>vSphere Distributed Switch (vDS)</b> – one logical switch spanning many ESXi hosts. Set VLANs/policies once in vCenter, applied everywhere; a VM keeps its policy when it moves (vMotion).</li><li><b>vCloud Director and vShield</b> – isolated tenant networks, firewalls, NAT in software.</li><li><b>VXLAN</b> – (proposed 2011 with Cisco and others) wraps Layer-2 frames inside UDP, allowing about 16 million virtual networks over an IP network.</li></ul>
+<p>Early VMware did not use OpenFlow on physical switches; it controlled the <b>virtual switches at the edge</b> and treated the physical network as plain IP transport.</p>
+<h3>4. Nicira</h3>
+<p>Founded 2007 by Martin Casado, Nick McKeown, Scott Shenker (the people behind Ethane and OpenFlow). It created <b>NOX</b> (first OpenFlow controller), <b>Open vSwitch (OVS)</b> and the distributed controller <b>Onix</b>. Its product <b>NVP</b> (Network Virtualization Platform, 2011) was among the first commercial SDN deployments (AT&amp;T, eBay, Rackspace).</p>
+<pre class="mermaid">flowchart TD
+C["NVP controller cluster"] -->|OpenFlow + OVSDB| H1["Hypervisor 1: Open vSwitch, VMs of tenants A,B"]
+C -->|OpenFlow + OVSDB| H2["Hypervisor 2: Open vSwitch, VMs of tenant A"]
+C --> G["Gateway to physical network"]
+H1 <-->|STT / GRE tunnel| H2
+H1 -.-> F["Any IP fabric - physical switches unchanged"]
+H2 -.-> F
+G -.-> F</pre>
+<ul><li>OVS in each hypervisor = programmable edge switch.</li><li>Controller cluster computes forwarding state per virtual network; pushes it via <b>OpenFlow</b> (flows) and <b>OVSDB</b> (config, tunnels).</li><li><b>Overlay</b> tunnels (STT or GRE) carry virtual networks, so the physical network only needs IP connectivity.</li><li><b>Gateways</b> link virtual networks to physical VLANs/Internet.</li><li>Tenants get isolated L2/L3 networks created via API in seconds.</li></ul>
+<div class="ex">Overlay = a private tunnel network drawn on top of the public roads. Roads (physical switches) stay unchanged; each company gets its own invisible private road system.</div>
+<h3>4.2 VMware buys Nicira → NSX</h3>
+<p>July 2012: VMware acquired Nicira for about US$1.26 billion. 2013: NVP + vCloud Networking and Security = <b>VMware NSX</b> (logical switches, distributed routing, distributed firewall, load balancing in the hypervisor). Seen as the moment SDN became mainstream in industry.</p>
+<div class="tw"><table><tr><th></th><th>VMware pre-2012</th><th>Nicira NVP</th><th>VMware NSX</th></tr><tr><td>Control point</td><td>vCenter, vDS</td><td>Distributed controller cluster</td><td>NSX controller cluster + manager</td></tr><tr><td>Southbound</td><td>Proprietary to ESXi</td><td>OpenFlow + OVSDB to OVS</td><td>Proprietary / OVSDB</td></tr><tr><td>Data plane</td><td>vDS in ESXi</td><td>OVS (KVM, Xen, ESXi)</td><td>vSphere and KVM switches</td></tr><tr><td>Overlay</td><td>VXLAN</td><td>STT, GRE</td><td>VXLAN, later Geneve</td></tr></table></div>
+<h3>5. OpenFlow-related controllers</h3>
+<div class="tw"><table><tr><th>Controller</th><th>Language</th><th>By</th><th>OpenFlow</th><th>Use</th></tr>
+<tr><td>NOX</td><td>C++ (Python bindings)</td><td>Nicira 2008</td><td>1.0</td><td>First NOS; research</td></tr>
+<tr><td>POX</td><td>Python</td><td>Nicira/Stanford (Murphy McCauley)</td><td>1.0</td><td>Teaching, prototyping</td></tr>
+<tr><td>Beacon</td><td>Java</td><td>Stanford (David Erickson)</td><td>1.0</td><td>Fast research; base of Floodlight</td></tr>
+<tr><td>Trema</td><td>Ruby, C</td><td>NEC</td><td>1.0 (1.3 later)</td><td>Rapid development, test framework</td></tr>
+<tr><td>Ryu</td><td>Python</td><td>NTT</td><td>1.0–1.5</td><td>Research/production, many protocols</td></tr>
+<tr><td>Floodlight</td><td>Java</td><td>Big Switch</td><td>1.0–1.4</td><td>Enterprise, REST API + GUI</td></tr>
+<tr><td>OpenDaylight</td><td>Java</td><td>Linux Foundation 2013</td><td>1.0, 1.3+</td><td>Multi-vendor production</td></tr>
+<tr><td>ONOS</td><td>Java</td><td>ON.Lab/ONF 2014</td><td>1.0–1.5+</td><td>Carrier-grade, distributed</td></tr></table></div>
+<p><b>Mininet</b> is <i>not</i> a controller. It is the test lab that creates emulated OVS switches and hosts on your computer; they connect to any controller using <code>--controller remote</code>. Developers test there before real hardware.</p>
+<pre>sudo mn --topo tree,depth=2,fanout=2 --switch ovsk,protocols=OpenFlow13 \
+ --controller remote,ip=192.168.56.101,port=6653</pre>
+<div class="tip">Memory: POX/Ryu = Python · Trema = Ruby · Floodlight/ODL/ONOS = Java · NOX = C++.</div></section>
+
+<section id="t3"><h2>Topic III – The Different Controllers</h2>
+<p>Controllers differ in <b>philosophy</b>: some program every flow with OpenFlow, some use routing protocols, some add APIs inside existing devices.</p>
+<h3>1. NOX</h3>
+<p>First OpenFlow controller (Gude et al., 2008, Nicira). Introduced the <b>network operating system</b> idea. C++ core, optional Python, event-driven (handlers for datapath-join, packet-in), OpenFlow 1.0. Apps: learning switch, routing, access control. Development stopped around 2012.</p>
+<h3>2. POX</h3>
+<p>Python-only sibling of NOX by Murphy McCauley. Runs anywhere with Python, no compiling, pre-installed in the Mininet VM – the most common teaching controller. Features come as <b>components</b> that raise and listen to <b>events</b>.</p>
+<pre class="mermaid">flowchart TD
+A["POX components: forwarding.l2_learning, openflow.discovery, host_tracker"] <-->|raise / listen to events| B["POX core: event system, component launcher"]
+B <--> C["openflow.of_01 (OpenFlow 1.0, TCP 6633)"]
+C <--> D["Open vSwitch / Mininet switches"]</pre>
+<div class="tw"><table><tr><th>Component</th><th>Function</th></tr><tr><td>forwarding.hub</td><td>Floods every packet (acts like a hub)</td></tr><tr><td>forwarding.l2_learning</td><td>Learning switch; installs exact-match flows reactively</td></tr><tr><td>forwarding.l3_learning</td><td>Learns IP-to-MAC, routes between hosts</td></tr><tr><td>openflow.discovery</td><td>Finds links with LLDP</td></tr><tr><td>openflow.spanning_tree</td><td>Disables flooding on some ports to avoid loops</td></tr><tr><td>host_tracker</td><td>Tracks host locations</td></tr><tr><td>misc.of_tutorial</td><td>Skeleton to write your own</td></tr></table></div>
+<pre>./pox.py log.level --DEBUG openflow.discovery forwarding.l2_learning
+
+# Hub component
+from pox.core import core
+import pox.openflow.libopenflow_01 as of
+def _handle_PacketIn(event):
+    msg = of.ofp_packet_out(data=event.ofp)          # reply carrying the packet
+    msg.actions.append(of.ofp_action_output(port=of.OFPP_FLOOD))  # send out all ports
+    event.connection.send(msg)                       # send to the switch
+def launch():
+    core.openflow.addListenerByName("PacketIn", _handle_PacketIn)  # run on every Packet-In</pre>
+<h3>3. Trema</h3>
+<p>From NEC; write controllers in <b>Ruby</b> (C core). Special feature: built-in network emulator, test framework and debugging tools. A controller is a Ruby class inheriting <code>Controller</code> with handlers like <code>switch_ready(datapath_id)</code> and <code>packet_in(datapath_id, message)</code>. NEC’s ProgrammableFlow shared its heritage.</p>
+<h3>4. Ryu</h3>
+<p>“Ryu” = “flow” in Japanese. Component-based Python framework from NTT, Apache licence. Supports OpenFlow 1.0, 1.2–1.5 plus NETCONF, OF-CONFIG, OVSDB and a BGP speaker. Clean documentation, integrated with OpenStack Neutron.</p>
+<pre>from ryu.base import app_manager
+from ryu.controller import ofp_event
+from ryu.controller.handler import MAIN_DISPATCHER, set_ev_cls
+from ryu.ofproto import ofproto_v1_3
+
+class Hub(app_manager.RyuApp):
+    OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
+    @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)  # run on Packet-In
+    def packet_in(self, ev):
+        msg = ev.msg; dp = msg.datapath
+        ofp, parser = dp.ofproto, dp.ofproto_parser
+        actions = [parser.OFPActionOutput(ofp.OFPP_FLOOD)]
+        out = parser.OFPPacketOut(datapath=dp, buffer_id=msg.buffer_id,
+            in_port=msg.match['in_port'], actions=actions,
+            data=msg.data if msg.buffer_id == ofp.OFP_NO_BUFFER else None)
+        dp.send_msg(out)
+# run: ryu-manager --verbose ryu.app.simple_switch_13 ryu.app.ofctl_rest</pre>
+<h3>5. Big Switch Networks and Floodlight</h3>
+<p>Apache-licensed Java controller released 2012, derived from Beacon; open-source core of Big Switch’s commercial Big Network Controller. Modular (each function is a module loaded at start), REST API on port 8080, web GUI, OpenFlow 1.0–1.4 on port 6653.</p>
+<div class="tw"><table><tr><th>Module</th><th>Function</th></tr><tr><td>Topology manager / link discovery</td><td>LLDP link discovery, topology graph</td></tr><tr><td>Device manager</td><td>Tracks hosts (MAC, IP, attachment point)</td></tr><tr><td>Forwarding</td><td>Reactive shortest-path (default)</td></tr><tr><td>Static Flow Pusher</td><td>Proactively add rules through REST</td></tr><tr><td>Firewall / Load balancer / ACL</td><td>Example apps via REST</td></tr><tr><td>Virtual network filter</td><td>Simple L2 virtualisation</td></tr></table></div>
+<h3>6. Layer-3 centric controllers</h3>
+<p>Service-provider (ISP) networks care mostly about <b>routing</b> – IP routes, MPLS paths, VPNs. These controllers centralise that state and use <b>routing/management protocols (BGP, PCEP, XMPP, NETCONF), not OpenFlow</b>.</p>
+<ul><li><b>L3VPN controllers</b> – hold each customer’s Layer-3 VPN model (sites, VRFs, route targets), configure Provider Edge (PE) routers via NETCONF/YANG, BGP distributes routes. Adding a site = one API call instead of configuring many routers.</li></ul>
+<pre class="mermaid">flowchart LR
+P["PCE server: TE database + path computation"] <-->|PCEP request/reply| H["Head-end router (PCC)"]
+P -.BGP-LS topology.- R2["Router"]
+H -->|RSVP-TE LSP follows computed path| R1["Router"] --> R2 --> T["Tail-end router"]</pre>
+<ul><li><b>PCE server</b> (RFC 4655) – computes constrained paths (bandwidth, latency, diversity) for MPLS Traffic Engineering. Routers (<b>PCC</b>) ask using <b>PCEP</b> (RFC 5440). Learns topology via IGP or BGP-LS. <b>Stateful PCE</b> also knows existing LSPs and re-optimises; <b>active stateful PCE</b> creates/changes LSPs itself.</li><li><b>Juniper Contrail / OpenContrail</b> (later Tungsten Fabric) – controls <b>vRouters</b> in server hypervisors with <b>XMPP</b>, links to gateway routers with BGP; overlays use MPLS over GRE/UDP or VXLAN. Shows routing protocols can be the SDN control plane.</li></ul>
+<div class="ex">PCE = a GPS server. Routers ask “best route from A to B with enough bandwidth?”, the server answers (PCEP), and the route is set up.</div>
+<h3>7. Plexxi</h3>
+<p>Founded 2010; application-aware data-centre network. Switches joined in an optical ring called <b>LightRail</b> (WDM, wavelength-division multiplexing) so physical connections can change by software. <b>Plexxi Control</b> collects <b>affinities</b> – declarations of which application endpoints talk and what they need (bandwidth, low latency, isolation, path diversity) – then computes the topology and forwarding. “Affinity networking” = application-driven SDN that optimises the <i>physical topology</i>, not just rules. Acquired by HPE in 2018.</p>
+<div class="ex">Big-data servers X and Y tell the network “we need a fast private path”. The fabric re-wires its optical links to give them one.</div>
+<h3>8. Cisco onePK</h3>
+<p><b>One Platform Kit</b> (2012, part of Cisco ONE): an SDK exposing APIs <i>inside</i> IOS, IOS-XE, IOS-XR, NX-OS. It doesn’t remove the control plane; apps <b>read and modify</b> it. Apps in C, Java, Python run on the device, a blade, or an external server. This is the <b>hybrid / API-driven</b> SDN model. Cisco later moved to <b>ACI</b> and NETCONF/YANG.</p>
+<div class="tw"><table><tr><th>Service set</th><th>Capabilities</th></tr><tr><td>Element</td><td>Device properties, interfaces, stats, events</td></tr><tr><td>Discovery</td><td>Topology, neighbours (CDP)</td></tr><tr><td>Routing</td><td>Read RIB, add/remove routes, route-change events</td></tr><tr><td>Data path</td><td>Copy, intercept, modify, inject packets</td></tr><tr><td>Policy</td><td>Classify traffic; ACL, QoS</td></tr><tr><td>Utility/Developer</td><td>Syslog, AAA, location, debugging</td></tr></table></div>
+<h3>9. All controllers compared</h3>
+<div class="tw"><table><tr><th>Controller</th><th>Southbound</th><th>Model</th><th>Strength</th></tr><tr><td>NOX/POX</td><td>OpenFlow 1.0</td><td>Pure OpenFlow, reactive</td><td>Simple, teaching</td></tr><tr><td>Trema</td><td>OpenFlow</td><td>Pure OpenFlow</td><td>Test framework</td></tr><tr><td>Ryu</td><td>OF 1.0–1.5, NETCONF, OVSDB, BGP</td><td>OpenFlow + multi-protocol</td><td>Protocol coverage, Python</td></tr><tr><td>Floodlight</td><td>OF 1.0–1.4</td><td>Pure OpenFlow</td><td>REST API, GUI</td></tr><tr><td>Nicira NVP/NSX</td><td>OpenFlow, OVSDB</td><td>Overlay at edge</td><td>Network virtualisation</td></tr><tr><td>PCE/Contrail</td><td>PCEP, BGP, XMPP</td><td>Layer-3 centric</td><td>Service-provider routing</td></tr><tr><td>Plexxi</td><td>Proprietary + optical</td><td>Application affinity</td><td>Topology optimisation</td></tr><tr><td>Cisco onePK</td><td>Device API</td><td>Hybrid</td><td>Uses installed base</td></tr></table></div></section>
+
+<section id="t4"><h2>Topic IV – Building Custom Topologies</h2>
+<p><b>Topology</b> = the shape of a network (which devices connect to which). <b>Mininet</b> lets you describe one in Python and run it on your laptop; then you connect it to a controller and watch it work.</p>
+<h3>1. Same 5 steps for every controller</h3>
+<ol><li>Start the controller; check it listens (port 6633 old / 6653 new).</li><li>Write a custom topology with Mininet’s <code>Topo</code> class.</li><li>Start Mininet with <code>--controller remote,ip=&lt;IP&gt;,port=&lt;port&gt;</code> and the OpenFlow version the controller supports.</li><li>Generate traffic (<code>pingall</code>) so the controller learns hosts.</li><li>Verify switches, links, hosts, flows in CLI, REST or GUI.</li></ol>
+<h3>2. The custom topology</h3>
+<pre class="mermaid">flowchart TD
+Ctl["Remote controller: POX / ODL / Floodlight / ONOS"] -.OpenFlow.- s2
+s1((s1)) --- s2((s2)) --- s3((s3))
+s1 --- s3
+h1["h1 10.0.0.1"] --- s1
+h2["h2 10.0.0.2"] --- s1
+h3["h3 10.0.0.3"] --- s3
+h4["h4 10.0.0.4"] --- s3</pre>
+<pre># custom.py
+from mininet.topo import Topo
+class CustomTopo(Topo):
+    def build(self):
+        s1 = self.addSwitch('s1'); s2 = self.addSwitch('s2'); s3 = self.addSwitch('s3')
+        h1 = self.addHost('h1'); h2 = self.addHost('h2')
+        h3 = self.addHost('h3'); h4 = self.addHost('h4')
+        self.addLink(h1, s1); self.addLink(h2, s1)
+        self.addLink(h3, s3); self.addLink(h4, s3)
+        self.addLink(s1, s2); self.addLink(s2, s3); self.addLink(s1, s3)
+topos = {'custom': (lambda: CustomTopo())}</pre>
+<div class="box"><b>Loop warning:</b> the three switch-to-switch links form a triangle (a loop). A broadcast (ARP) would circle forever – a <b>broadcast storm</b>. Use a controller with topology discovery/spanning tree, or <code>pingall</code> fails.</div>
+<pre># Parameterised: chain of n switches
+class LinearN(Topo):
+    def build(self, n=4):
+        prev = None
+        for i in range(1, n + 1):
+            s = self.addSwitch('s%d' % i); h = self.addHost('h%d' % i)
+            self.addLink(h, s)
+            if prev: self.addLink(prev, s)
+            prev = s
+topos = {'linearn': LinearN}
+# sudo mn --custom linearn.py --topo linearn,6 --controller remote</pre>
+<h3>3. POX</h3>
+<pre># terminal 1
+cd ~/pox
+./pox.py log.level --DEBUG openflow.discovery openflow.spanning_tree --no-flood --hold-down forwarding.l2_learning host_tracker
+# terminal 2  (POX = OpenFlow 1.0 only, port 6633)
+sudo mn --custom custom.py --topo custom --mac --switch ovsk,protocols=OpenFlow10 --controller remote,ip=127.0.0.1,port=6633
+mininet> pingall
+mininet> sh ovs-ofctl dump-flows s1</pre>
+<ul><li><code>openflow.discovery</code> sends LLDP to find links (“link detected” in log).</li><li><code>spanning_tree --no-flood --hold-down</code> blocks flooding on one triangle link → no storm.</li><li><code>l2_learning</code> installs exact-match flows reactively; <code>dump-flows</code> shows them with counters.</li></ul>
+<h3>4. OpenDaylight (ODL)</h3>
+<p>Linux Foundation, Java, built on <b>Apache Karaf</b> (a container where functions are <b>features</b> you install on demand). Core = <b>MD-SAL</b> (data described in YANG, exposed via <b>RESTCONF</b>). First release Hydrogen, 2014.</p>
+<pre class="mermaid">flowchart TD
+U["DLUX web UI / RESTCONF (port 8181)"] <--> M["MD-SAL: YANG data store, RPCs, notifications"]
+M <--> K["Karaf features: forwarding rules mgr, topology manager, L2 switch"]
+K <--> S["Southbound: OpenFlow, OVSDB, NETCONF, BGP-LS, PCEP"]</pre>
+<pre>unzip karaf-&lt;version&gt;.zip &amp;&amp; cd karaf-&lt;version&gt;   # needs Java (OpenJDK 11/17)
+./bin/karaf
+opendaylight-user@root&gt; feature:install odl-openflowplugin-flow-services-rest odl-l2switch-switch-ui odl-restconf
+# up to Oxygen also: feature:install odl-dlux-core odl-dluxapps-topology
+opendaylight-user@root&gt; feature:list -i        # verify
+sudo mn --custom custom.py --topo custom --mac --switch ovsk,protocols=OpenFlow13 --controller remote,ip=&lt;ODL-IP&gt;,port=6653
+mininet&gt; pingall</pre>
+<ul><li>GUI: <code>http://&lt;ODL-IP&gt;:8181/index.html</code>, login admin/admin; Topology tab shows 3 switches and (after pingall) 4 hosts. Newer releases removed DLUX – use RESTCONF.</li><li>REST: <code>curl -u admin:admin http://&lt;IP&gt;:8181/restconf/operational/network-topology:network-topology</code> (newer: <code>/rests/data/…</code>).</li><li><b>l2switch</b> feature = host tracking, ARP handling, loop removal, reactive forwarding.</li></ul>
+<h3>5. Floodlight</h3>
+<pre>sudo apt install openjdk-8-jdk ant git
+git clone https://github.com/floodlight/floodlight.git
+cd floodlight &amp;&amp; git submodule init &amp;&amp; git submodule update
+ant            # newer: mvn package -DskipTests
+java -jar target/floodlight.jar
+sudo mn --custom custom.py --topo custom --mac --switch ovsk,protocols=OpenFlow13 --controller remote,ip=&lt;FL-IP&gt;,port=6653</pre>
+<p>GUI <code>http://&lt;FL-IP&gt;:8080/ui/index.html</code> – three clicks: <b>Topology</b> (graph), <b>Switches</b> (DPIDs, ports, flows), <b>Hosts</b> (MAC, IP, attachment point). REST:</p>
+<pre>curl http://&lt;IP&gt;:8080/wm/core/controller/switches/json
+curl http://&lt;IP&gt;:8080/wm/topology/links/json
+curl http://&lt;IP&gt;:8080/wm/device/
+curl -X POST -d '{"switch":"00:00:00:00:00:00:00:01","name":"f1","priority":"32768","in_port":"1","active":"true","actions":"output=2"}' http://&lt;IP&gt;:8080/wm/staticflowpusher/json</pre>
+<h3>6. ONOS</h3>
+<p>From ON.Lab (now ONF); distributed Java controller for carrier-grade availability; apps activated on demand.</p>
+<pre>docker run -t -d -p 8181:8181 -p 8101:8101 -p 6653:6653 --name onos onosproject/onos
+ssh -p 8101 onos@localhost        # password: rocks
+onos&gt; app activate org.onosproject.openflow
+onos&gt; app activate org.onosproject.fwd     # reactive forwarding
+sudo mn --custom custom.py --topo custom --mac --switch ovsk,protocols=OpenFlow13 --controller remote,ip=&lt;ONOS-IP&gt;,port=6653</pre>
+<div class="tw"><table><tr><th>ONOS CLI</th><th>Shows</th></tr><tr><td>devices</td><td>Connected switches (of:0000000000000001…)</td></tr><tr><td>links</td><td>Discovered links (each direction)</td></tr><tr><td>hosts</td><td>Hosts with MAC, IP, location</td></tr><tr><td>flows</td><td>Installed rules per device</td></tr><tr><td>apps -a -s</td><td>Active apps</td></tr><tr><td>add-host-intent h1 h4</td><td>Ask for connectivity via an intent</td></tr></table></div>
+<p>GUI: <code>http://&lt;ONOS-IP&gt;:8181/onos/ui</code> (onos/rocks); press <b>H</b> for hosts, <b>L</b> for labels. Layers: apps → northbound (REST, Java, CLI 8101, GUI 8181) → distributed core (device, link, host, flow-rule, intent; cluster via Atomix) → southbound (OpenFlow, NETCONF, P4Runtime, gNMI, OVSDB).</p>
+<h3>7. Click modular router</h3>
+<p>From MIT (Kohler, Morris, Chen, Jannotti, Kaashoek, 2000). A router is built from small packet-processing blocks called <b>elements</b> (FromDevice, Classifier, CheckIPHeader, LookupIPRoute, Queue, ToDevice) joined in a graph written in the Click language. To change behaviour, rewrite the graph, not the code. It shows <b>data-plane</b> programmability and influenced Open vSwitch and P4.</p>
+<pre class="mermaid">flowchart LR
+F["FromDevice(eth0)"] --> C["Classifier (IP / ARP / other)"]
+C --> I["CheckIPHeader + LookupIPRoute"] --> Q["Queue"] --> T["ToDevice(eth1)"]
+C -->|ARP| A["ARPResponder"]</pre>
+<pre>FromDevice(eth0) -&gt; Queue(1000) -&gt; ToDevice(eth1);</pre>
+<div class="ex">Click = LEGO. Each brick does one packet job; you snap bricks together to make a router.</div>
+<h3>8. Comparison and ports</h3>
+<div class="tw"><table><tr><th></th><th>POX</th><th>OpenDaylight</th><th>Floodlight</th><th>ONOS</th></tr><tr><td>Language</td><td>Python</td><td>Java (Karaf)</td><td>Java</td><td>Java (Karaf)</td></tr><tr><td>OpenFlow</td><td>1.0</td><td>1.0, 1.3</td><td>1.0–1.4</td><td>1.0–1.5</td></tr><tr><td>OF port</td><td>6633</td><td>6633/6653</td><td>6653</td><td>6653</td></tr><tr><td>GUI/REST</td><td>None (POXDesk addon)</td><td>8181 (RESTCONF, DLUX older)</td><td>8080 /ui/index.html</td><td>8181 /onos/ui</td></tr><tr><td>Login</td><td>–</td><td>admin/admin</td><td>–</td><td>onos/rocks</td></tr><tr><td>Northbound</td><td>Python API</td><td>RESTCONF, Java</td><td>REST, Java</td><td>REST, Java, intents</td></tr><tr><td>Clustering</td><td>No</td><td>Yes</td><td>Limited</td><td>Yes (native)</td></tr><tr><td>Best for</td><td>Learning</td><td>Multi-protocol enterprise/SP</td><td>REST experiments</td><td>Carrier-grade, research</td></tr></table></div>
+<h3>9. Troubleshooting</h3>
+<ul><li>Switches don’t connect → check IP, port, firewall, OpenFlow version; <code>sudo ovs-vsctl show</code> should say <code>is_connected: true</code>.</li><li><code>pingall</code> fails (loop) → enable spanning tree/topology discovery.</li><li>Hosts invisible → generate traffic first.</li><li>Leftover state after crash → <code>sudo mn -c</code>.</li><li>POX works with OpenFlow10 but not 13 → POX speaks only OpenFlow 1.0.</li></ul>
+<div class="tip">Lab answer formula: start controller → custom topology → mn command → verify (GUI/CLI) – with port numbers.</div></section>
+
+<section id="t5"><h2>Topic V – Interfaces: North, South, East, West</h2>
+<pre class="mermaid">flowchart TD
+A["Applications / orchestrators / OSS-BSS"] <-->|Northbound: REST, RESTCONF, intents| C["SDN controller"]
+L["Legacy network (BGP/IGP)"] <-->|eastbound| C
+C <-->|westbound| P["Peer SDN controller"]
+C <-->|Southbound: OpenFlow, NETCONF, OVSDB| S["Switches, routers, virtual switches"]</pre>
+<div class="ex">Controller = a restaurant kitchen. North = customers’ orders (apps). South = instructions to cooks (devices). East–west = talking to other kitchens.</div>
+<h3>1. Southbound (SBI)</h3>
+<p>Connects controller to network devices. Carries instructions down (rules, config) and events/stats up (Packet-In, port status, counters). ONF calls it <b>CDPI</b> (Control-Data Plane Interface). Two groups: <b>control/forwarding</b> protocols (OpenFlow, P4Runtime) and <b>management/configuration</b> protocols (NETCONF, OVSDB, OF-CONFIG, SNMP).</p>
+<div class="tw"><table><tr><th>Protocol</th><th>What it does</th><th>Use</th></tr>
+<tr><td>OpenFlow</td><td>Install match–action flow entries</td><td>Per-flow forwarding</td></tr>
+<tr><td>OVSDB (RFC 7047)</td><td>JSON-RPC; configure Open vSwitch: bridges, ports, VXLAN/GRE tunnels, QoS queues</td><td>Overlays (NVP, ODL, OpenStack)</td></tr>
+<tr><td>NETCONF (RFC 6241) + YANG (RFC 7950)</td><td>XML/SSH; candidate config, validate, commit, rollback; YANG = data model</td><td>Multi-vendor router/switch config</td></tr>
+<tr><td>OF-CONFIG</td><td>NETCONF-based; set controller addresses, ports, queues, certificates of OpenFlow switches</td><td>Setting up OF switches</td></tr>
+<tr><td>P4Runtime</td><td>gRPC API to fill tables of P4 switches</td><td>Programmable data planes</td></tr>
+<tr><td>gNMI</td><td>Config + streaming telemetry via gRPC/Protocol Buffers</td><td>Modern telemetry</td></tr>
+<tr><td>BGP-LS</td><td>Sends IGP topology + TE info to controller</td><td>SP topology collection</td></tr>
+<tr><td>PCEP (RFC 5440)</td><td>PCE computes/creates MPLS-TE LSPs</td><td>Traffic engineering</td></tr>
+<tr><td>SNMP, CLI (SSH)</td><td>Legacy management</td><td>Non-SDN devices</td></tr>
+<tr><td>XMPP, OpFlex, LISP</td><td>Contrail vRouters; Cisco ACI policy; locator/ID mapping</td><td>Vendor SDN systems</td></tr></table></div>
+<p>Many plug-ins let a controller manage new SDN switches <i>and</i> old routers – vital for gradual migration (ODL, ONOS).</p>
+<h3>2. Northbound (NBI)</h3>
+<p>Lets apps, orchestrators (OpenStack) and OSS/BSS use controller services (topology, host locations, path set-up, stats) without knowing devices. <b>Not standardised</b> – every controller has its own API. ONF’s Northbound Interface working group (2013) pushed <b>intent-based</b> interfaces instead.</p>
+<div class="tw"><table><tr><th>Type</th><th>Examples</th><th>Notes</th></tr>
+<tr><td>REST (HTTP+JSON)</td><td>Floodlight /wm/…, ONOS /onos/v1/…, Ryu ofctl_rest</td><td>Language-independent, most common</td></tr>
+<tr><td>Model-driven</td><td>ODL RESTCONF/NETCONF</td><td>API generated from YANG models</td></tr>
+<tr><td>Native language</td><td>Java OSGi (ODL, ONOS, Floodlight); Python (Ryu, POX)</td><td>Fastest; app runs inside controller</td></tr>
+<tr><td>gRPC</td><td>ONOS, newer platforms</td><td>Efficient binary RPC, streaming</td></tr>
+<tr><td>Intent-based</td><td>ONOS intents, ODL NIC, ONF Boulder</td><td>Say the goal; controller compiles and maintains it</td></tr></table></div>
+<h3>Levels of abstraction</h3>
+<pre class="mermaid">flowchart TD
+I["Intent / policy: video from branch to DC under 50 ms"] -->|translated by controller| S["Service level: create VPN, apply QoS class"]
+S -->|translated| N["Network level: compute path, reserve bandwidth"]
+N -->|translated| D["Device level: install flow/config on each switch"]</pre>
+<p>Higher level = app knows less, controller translates more. With an intent, if a link fails the controller recompiles it and repairs the path automatically.</p>
+<div class="ex">Device level = telling a taxi “turn left, then right”. Intent = “take me to the airport in 30 minutes”.</div>
+<h3>SDN programming languages</h3>
+<p><b>Frenetic, Pyretic</b> (composable policies in Python), <b>NetKAT</b> (formal algebra for verification), <b>Procera</b> (event-driven policies), <b>Maple</b> (algorithmic policies); <b>P4</b> is for the data plane. They let you combine modules (monitoring + routing) without conflicting rules.</p>
+<pre>curl -u onos:rocks http://&lt;IP&gt;:8181/onos/v1/devices
+curl -u onos:rocks -X POST -H 'Content-Type: application/json' http://&lt;IP&gt;:8181/onos/v1/intents \
+ -d '{"type":"HostToHostIntent","appId":"org.onosproject.cli","one":"00:00:00:00:00:01/-1","two":"00:00:00:00:00:04/-1"}'
+curl http://&lt;IP&gt;:8080/stats/flow/1      # Ryu ofctl_rest</pre>
+<h3>3. East–west</h3>
+<p>One controller can’t give enough reliability or scale, and big networks split into administrative <b>domains</b>, so controllers must talk to each other.</p>
+<pre class="mermaid">flowchart LR
+subgraph Cluster["ONOS / ODL cluster (one logical controller)"]
+I1["Instance 1 (leader)"] <-->|Raft| I2["Instance 2"] <-->|Raft| I3["Instance 3"]
+end
+I2 <-->|SDNi / BGP| X["Controller of another domain"]</pre>
+<ul><li><b>Inside a cluster:</b> ONOS shares a distributed core; strong-consistency data (mastership, intents) uses <b>Raft</b> via Atomix; topology uses faster <b>eventually consistent</b> stores. Each switch has one master + backups; if the master dies, a backup takes over. ODL uses <b>Akka clustering</b> with Raft replication (typically 3 members). Cluster protocols are internal, not standardised.</li><li><b>Between domains:</b> <b>SDNi</b> (IETF draft, in ODL) shares reachability, topology, capabilities; <b>BGP</b> (everyone speaks it); <b>ALTO</b> shares network-cost maps; <b>hierarchical</b> designs put a parent orchestrator above domain controllers.</li><li><b>East vs west:</b> common usage: <b>westbound</b> = to other SDN controllers; <b>eastbound</b> = to legacy non-SDN networks (BGP etc.). Some authors reverse this – state your definition in answers.</li></ul>
+<div class="tw"><table><tr><th>Design issue</th><th>Explanation</th></tr><tr><td>Consistency</td><td>Strong (consensus) = safe but slower; eventual = faster but views may briefly differ</td></tr><tr><td>Scalability</td><td>Split switches among instances</td></tr><tr><td>Availability</td><td>Mastership hand-over; avoid split-brain</td></tr><tr><td>Interoperability</td><td>No standard → multi-vendor federation is hard</td></tr><tr><td>Security/trust</td><td>Authenticate peers; limit what is revealed</td></tr></table></div>
+<h3>4. Summary</h3>
+<div class="tw"><table><tr><th>Interface</th><th>Connects</th><th>Standard?</th><th>Examples</th></tr><tr><td>Northbound</td><td>Apps ↔ controller</td><td>No (REST de facto; intents)</td><td>REST, RESTCONF, Java/Python, gRPC</td></tr><tr><td>Southbound</td><td>Controller ↔ devices</td><td>Yes</td><td>OpenFlow, OVSDB, NETCONF, P4Runtime, PCEP</td></tr><tr><td>East–west</td><td>Controller ↔ controller</td><td>Partly (BGP); clusters proprietary</td><td>Raft/Atomix, Akka, SDNi, BGP</td></tr></table></div>
+<div class="tip">Exam line: “The northbound API is not standardised; REST is the de facto choice; ONF pushed intent-based interfaces.”</div></section>
+<p style="color:var(--mut);text-align:center;margin-top:2em">End of Unit 2 · Good luck! 🎓</p>
+</main>
+<!--claude-mermaid-runtime-begin:3847-->
+<style>.mermaid-diagram{margin-block:4px}.mermaid-diagram svg{display:block;margin:0 auto;max-width:100%;height:auto}</style>
+<script src="/_runtime/mermaid-11.16.1.min.js"></script>
+<script>(function(){
+var CFG={"palettes":{"light":{"surface":"#f4efe4","text":"#42392e","line":"#8a7f6d","border":"#7a6c52","bg":"#fffdf8"},"dark":{"surface":"#262b34","text":"#f2f3f5","line":"#a8adb8","border":"#9aa4b8","bg":"#1f232b"}}};
+if(typeof mermaid==='undefined')return;
+var pres=Array.prototype.slice.call(document.querySelectorAll('pre.mermaid')).filter(function(p){if(p.hasAttribute('data-claude-mermaid-claimed'))return false;p.setAttribute('data-claude-mermaid-claimed','1');return true;});
+if(!pres.length)return;
+var mq=window.matchMedia?window.matchMedia('(prefers-color-scheme: dark)'):null;
+var root=document.documentElement;
+function source(el){
+var out='';
+for(var n=el.firstChild;n;n=n.nextSibling){
+if(n.nodeType===3)out+=n.data;
+else if(n.nodeName==='BR')out+='<br>';
+else if(n.nodeType===1)out+=(out.slice(-1)==='<'&&n.textContent[0]==='>'?'<'+n.localName+'>':'')+source(n);
+}
+return out;
+}
+var items=pres.map(function(pre){
+var mount=document.createElement('div');mount.className='mermaid-diagram';
+return {pre:pre,mount:mount,src:source(pre),text:pre.textContent};
+});
+var seq=0;
+var renderGen=0;
+var lastKey='';
+function pageBg(fallback){
+var els=[document.body,document.documentElement];
+for(var i=0;i<els.length;i++){
+var c=els[i]&&getComputedStyle(els[i]).backgroundColor;
+if(c&&c!=='transparent'&&c!=='rgba(0, 0, 0, 0)')return c;
+}
+return fallback;
+}
+function render(){
+var theme=root.getAttribute('data-theme');
+var dark=theme==='dark'||(!!(mq&&mq.matches)&&theme!=='light');
+var pal=dark?CFG.palettes.dark:CFG.palettes.light;
+var bg=pageBg(pal.bg);
+var key=(dark?'d':'l')+'|'+bg;
+if(key===lastKey)return;
+lastKey=key;
+var gen=++renderGen;
+var font=getComputedStyle(document.body).fontFamily||'sans-serif';
+var nat={useMaxWidth:false};
+mermaid.initialize({
+startOnLoad:false,securityLevel:'strict',theme:'base',
+flowchart:nat,sequence:nat,er:nat,state:nat,class:nat,pie:nat,
+gantt:nat,journey:nat,timeline:nat,gitGraph:nat,mindmap:nat,xyChart:nat,
+quadrantChart:nat,sankey:nat,c4:nat,requirement:nat,block:nat,
+packet:nat,kanban:nat,architecture:nat,radar:nat,
+themeVariables:{background:bg,mainBkg:pal.surface,primaryColor:pal.surface,
+primaryTextColor:pal.text,lineColor:pal.line,primaryBorderColor:pal.border,
+nodeBorder:pal.border,clusterBorder:pal.border,edgeLabelBackground:bg,
+clusterBkg:'rgba(127,127,127,0.07)',titleColor:pal.text,
+darkMode:dark,rowOdd:bg,rowEven:'rgba(127,127,127,0.07)',
+attributeBackgroundColorOdd:bg,attributeBackgroundColorEven:'rgba(127,127,127,0.07)',
+fontSize:'16px',fontFamily:font},
+themeCSS:'.node rect, .node circle, .node polygon, .node path, .cluster rect { stroke-width: 2px; }'
+});
+items.forEach(function(it){
+var id='claude-mermaid-'+seq++;
+mermaid.render(id,it.src).catch(function(e){
+if(it.src===it.text)throw e;
+return mermaid.render(id,it.text);
+}).then(function(r){
+if(gen!==renderGen)return;
+var prev=it.pre.previousElementSibling;
+if(prev&&prev.className==='mermaid-diagram'&&prev!==it.mount)return;
+it.mount.innerHTML=r.svg;
+if(!it.mount.parentNode)it.pre.parentNode.insertBefore(it.mount,it.pre);
+it.pre.style.display='none';
+},function(){
+var scratch=document.getElementById(id);
+if(scratch)scratch.parentNode.removeChild(scratch);
+scratch=document.getElementById('d'+id);
+if(scratch)scratch.parentNode.removeChild(scratch);
+if(gen!==renderGen)return;
+if(it.mount.parentNode)it.mount.parentNode.removeChild(it.mount);
+it.pre.style.display='';
+});
+});
+}
+render();
+if(mq&&mq.addEventListener)mq.addEventListener('change',render);
+if(typeof MutationObserver!=='undefined')new MutationObserver(render).observe(root,{attributes:true,attributeFilter:['data-theme']});
+})();</script>
+<!--claude-mermaid-runtime-end-->
+<script>
+if (window.self === window.top) {
+  var b = document.createElement('a');
+  b.href = '../index.html';
+  b.className = 'hub-floating-btn';
+  b.innerHTML = '← Back to Study Portal';
+  b.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;background:#0969da;color:#ffffff;font-family:system-ui,-apple-system,sans-serif;font-size:13px;font-weight:700;padding:10px 18px;border-radius:99px;box-shadow:0 4px 14px rgba(0,0,0,0.35);text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s ease;cursor:pointer;';
+  b.onmouseenter = function(){ b.style.transform='translateY(-2px)'; b.style.boxShadow='0 6px 20px rgba(9,105,218,0.5)'; };
+  b.onmouseleave = function(){ b.style.transform='none'; b.style.boxShadow='0 4px 14px rgba(0,0,0,0.35)'; };
+  document.body.appendChild(b);
+}
+</script>
+</body></html>

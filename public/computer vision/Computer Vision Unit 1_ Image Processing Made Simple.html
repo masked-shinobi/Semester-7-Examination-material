@@ -1,0 +1,221 @@
+﻿<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Computer Vision Unit 1: Image Processing Made Simple</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f4ef;--card:#fff;--ink:#22252e;--mut:#575d6c;--tint:#eceff4;--bd:#dcdfe6;--a:#2e6fd0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14161c;--card:#1d2029;--ink:#eceef3;--mut:#a7adbd;--tint:#2a2e3a;--bd:#363a48}}
+:root[data-theme="dark"]{--bg:#14161c;--card:#1d2029;--ink:#eceef3;--mut:#a7adbd;--tint:#2a2e3a;--bd:#363a48}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 1.02rem/1.65 Nunito,system-ui,sans-serif}
+main{max-width:860px;margin:0 auto;padding:18px 16px 60px}
+h1,h2,h3{font-family:Lora,Georgia,serif;line-height:1.25}
+h1{font-size:2rem;margin:.3em 0 .2em}h2{font-size:1.6rem;margin:0 0 .4em;color:var(--a)}h3{font-size:1.15rem;margin:1.3em 0 .3em}
+p{margin:.5em 0}.mut{color:var(--mut)}
+nav{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 26px}
+nav a{padding:.35em .8em;border-radius:99px;background:var(--a);color:#fff;text-decoration:none;font-weight:700;font-size:.88rem}
+section{background:var(--card);border:1px solid var(--bd);border-left:8px solid var(--a);border-radius:12px;padding:20px 20px 14px;margin:0 0 26px}
+.ex,.key,.tip{border-radius:10px;padding:10px 14px;margin:12px 0}
+.ex{background:color-mix(in srgb,var(--a) 10%,var(--card));border:1px dashed var(--a)}
+.key{background:color-mix(in srgb,var(--a) 16%,var(--card));font-weight:600}
+.tip{background:var(--tint)}
+.ex>b:first-child,.key>b:first-child{color:var(--a)}
+ul{padding-left:1.2em;margin:.4em 0}li{margin:.25em 0}
+.row{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
+.gx{display:inline-grid;gap:2px;margin:6px 8px 6px 0;vertical-align:top}
+.gx i{font:700 .78rem Nunito,sans-serif;font-style:normal;min-width:2.5em;text-align:center;padding:.45em .3em;border-radius:4px;background:var(--tint)}
+.gx i.h{outline:3px solid var(--a);outline-offset:-1px}
+.cap{font-size:.8rem;color:var(--mut);display:block;text-align:center}
+.fig{display:inline-block;text-align:center;margin:4px 8px 4px 0}
+.flow{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.flow b{background:var(--a);color:#fff;padding:.4em .75em;border-radius:8px;font-size:.85rem}
+.flow b:not(:last-child)::after{content:" \2192";}
+.tw{overflow-x:auto;margin:10px 0}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{border:1px solid var(--bd);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:color-mix(in srgb,var(--a) 18%,var(--card))}
+svg{max-width:100%;height:auto}svg text{fill:var(--ink);font:600 11px Nunito,sans-serif}
+.sw{display:inline-block;width:2.2em;height:2.2em;border-radius:4px;border:1px solid var(--bd);vertical-align:middle;margin-right:4px}
+#s0{--a:#2e6fd0}#s1{--a:#d9531e}#s2{--a:#2a8f5a}#s3{--a:#8a4fd0}#s4{--a:#c23b76}#s5{--a:#b7810a}#s6{--a:#13808f}#s7{--a:#2e6fd0}
+@media(prefers-color-scheme:dark){#s5{--a:#e0a526}#s3{--a:#a97ae6}#s0,#s7{--a:#5b9bff}#s1{--a:#f27a4a}#s2{--a:#4fc283}#s4{--a:#ee6a9f}#s6{--a:#3bbccd}}
+</style></head><body><main>
+<h1>Computer Vision, Unit 1: Image Processing Foundations</h1>
+<p class="mut">A beginner-friendly study guide. Every idea is explained in plain words, then shown with a small example. Boxes: <b>Example</b> (worked numbers), <b>Key idea</b> (remember this).</p>
+<nav><a href="#s0">1 Basics</a><a href="#s1">2 Filtering</a><a href="#s2">3 Thresholding</a><a href="#s3">4 Edges</a><a href="#s4">5 Corners</a><a href="#s5">6 Morphology</a><a href="#s6">7 Texture</a><a href="#s7">8 Big picture</a></nav>
+
+<section id="s0"><h2>1. Basics: what is an image, and why process it?</h2>
+<h3>An image is a grid of numbers</h3>
+<p>You see a picture. A computer sees a grid of tiny squares called <b>pixels</b>, and each pixel holds a number for its brightness or colour.</p>
+<ul><li><b>Grayscale</b>: black = 0, white = 255, grays in between.</li><li><b>Colour (RGB)</b>: each pixel has three numbers: Red, Green, Blue.</li></ul>
+<div class="ex"><b>Example:</b> a 3×3 grayscale image as the computer sees it (darker cell = smaller number):<br><span class="gx" data-m='[[0,50,100],[150,200,255],[100,100,100]]'></span>
+<div class="row"><span><span class="sw" style="background:#f00"></span>[255,0,0] Red</span><span><span class="sw" style="background:#0f0"></span>[0,255,0] Green</span><span><span class="sw" style="background:#00f"></span>[0,0,255] Blue</span><span><span class="sw" style="background:#ff0"></span>[255,255,0] Yellow</span><span><span class="sw" style="background:#808080"></span>[128,128,128] Gray</span></div></div>
+<h3>Why do we need image processing?</h3>
+<p>Raw images can be noisy (random speckles), blurred, too dark or bright, or full of useless detail. We process images to <b>enhance quality</b>, <b>extract useful information</b> (edges, shapes, textures) and <b>prepare for later tasks</b> such as face detection.</p>
+<p><b>If we skip it:</b> the computer may misread the image, miss important details, detection or tracking may fail, and storage is wasted on unnecessary data. Example: finding a face in a blurry photo may give a wrong answer or none.</p>
+<div class="key">Image processing = taking an image in, doing operations on it, and getting out either a better image or useful data (edges, objects, features).</div>
+<p>Everyday examples: removing noise from a photo, finding object edges, changing brightness/contrast, converting colour to black and white, finding corners or shapes.</p>
+<h3>The 7 families of techniques</h3>
+<div class="tw"><table><tr><th>Technique</th><th>What it does</th><th>Examples</th></tr>
+<tr><td>Enhancement</td><td>Makes the image look better or highlights features</td><td>Contrast stretching, histogram equalization, sharpening</td></tr>
+<tr><td>Restoration</td><td>Removes damage from capture or transmission</td><td>Gaussian denoising, deblurring</td></tr>
+<tr><td>Filtering</td><td>Maths over pixels to boost or suppress features. Low-pass = smooth; high-pass = sharpen edges</td><td>Mean, Gaussian</td></tr>
+<tr><td>Thresholding</td><td>Turns an image black and white</td><td>Separate object from background</td></tr>
+<tr><td>Edge detection</td><td>Finds boundaries</td><td>Sobel, Prewitt, Canny, Laplacian</td></tr>
+<tr><td>Morphology</td><td>Shape operations, mainly on black and white images</td><td>Dilation, erosion, opening, closing</td></tr>
+<tr><td>Feature extraction</td><td>Captures corners, lines, textures, blobs</td><td>Harris, SIFT, HOG</td></tr></table></div></section>
+
+<section id="s1"><h2>2. Classical filtering</h2>
+<p>A <b>filter</b> changes each pixel using the pixels around it (its <b>neighbourhood</b>). A small grid of weights called a <b>kernel</b> (or mask) slides over the image. At each spot: multiply the kernel numbers with the pixels under it, add them up, and write the result to the centre pixel. This is called <b>convolution</b>. Filters are used for smoothing, sharpening and edge detection.</p>
+<div class="flow"><b>Place kernel on pixel</b><b>Multiply pixel × weight</b><b>Add all results</b><b>Write to centre pixel</b><b>Slide one step</b></div>
+<h3>Mean (average) filter: smoothing</h3>
+<p>Replace each pixel with the average of its 3×3 neighbourhood. This softens noise.</p>
+<div class="ex"><b>Example:</b> the centre pixel of <span class="gx" data-m='[[10,20,30],[40,50,60],[70,80,90]]' data-hl="1,1"></span> becomes (10+20+...+90)/9 = 450/9 = <b>50</b>.</div>
+<div class="ex"><b>Bigger example:</b> a 5×5 image with a bright spot in the middle. After averaging, the spot spreads out to its neighbours.<br>
+<div class="fig"><span class="gx" data-m='[[0,0,0,0,0],[0,50,50,50,0],[0,50,100,50,0],[0,50,50,50,0],[0,0,0,0,0]]'></span><span class="cap">Before</span></div>
+<div class="fig"><span class="gx" data-m='[[6,11,17,11,6],[11,28,39,28,11],[17,39,56,39,17],[11,28,39,28,11],[6,11,17,11,6]]' data-max="100"></span><span class="cap">After</span></div>
+<br>Centre: (50×8 + 100)/9 = 500/9 ≈ 56. Pixel (1,2): neighbours 0,0,0,50,50,50,50,100,50 give 350/9 ≈ 39. On big images the window slides over every pixel (borders need padding, i.e. extra pixels added around the edge).</div>
+<p><b>Salt-and-pepper noise</b> = random pure white (255, salt) and pure black (0, pepper) dots. Averaging reduces them but also blurs the picture. The <b>Box filter</b> is the same idea with equal weights.</p>
+<h3>Gaussian filter: smarter smoothing</h3>
+<p>Like the mean filter, but the centre pixel gets <b>more weight</b> and far pixels less (a bell-shaped kernel). It blurs and reduces Gaussian noise while keeping edges better than a plain mean.</p>
+<div class="row"><span class="gx" data-m='[[1,2,1],[2,4,2],[1,2,1]]' data-max="0"></span><span>all ÷ 16</span></div>
+<div class="ex"><b>Example 1:</b> a flat image of all 60s, with a black pixel (0) at (1,1). Neighbourhood is 60s with a 0 in the centre: (60+120+60+120+0+120+60+120+60)/16 = 720/16 = <b>45</b>. The black dot is pulled up from 0 to 45.<br>
+<b>Example 2:</b> a white pixel (255) at (3,3): (60+120+60+120+4×255+120+60+120+60)/16 = 1740/16 ≈ <b>109</b>. The white dot is pulled down from 255 to 109.<br>
+<b>Example 3:</b> neighbourhood <span class="gx" data-m='[[20,30,40],[50,60,70],[80,90,100]]'></span> gives 960/16 = <b>60</b>. The centre stays the same because the pattern rises smoothly.</div>
+<h3>Median filter: best for salt-and-pepper</h3>
+<p>No kernel numbers. Take a window, sort the values, pick the <b>middle</b> one, put it in the centre. Extreme dots (0 or 255) are never in the middle, so they vanish, and edges stay sharper than with the mean.</p>
+<div class="ex"><b>Example:</b> window <span class="gx" data-m='[[4,7,2],[3,9,6],[5,8,1]]'></span> sorted: 1,2,3,4,<b>5</b>,6,7,8,9. Median = 5, so the centre 9 becomes <b>5</b>.</div>
+<h3>Laplacian filter: edges and sharpening</h3>
+<p>Highlights places where brightness changes quickly (uses the second derivative, see section 4).</p>
+<span class="gx" data-m='[[0,-1,0],[-1,4,-1],[0,-1,0]]' data-max="0"></span>
+<h3>Sobel filter: edges with direction</h3>
+<p>Two kernels. <b>Gx</b> notices brightness change left to right (finds <i>vertical</i> edges). <b>Gy</b> notices change top to bottom (finds <i>horizontal</i> edges). Combine: strength = √(Gx² + Gy²), or the quicker |Gx| + |Gy|.</p>
+<div class="row"><div class="fig"><span class="gx" data-m='[[-1,0,1],[-2,0,2],[-1,0,1]]' data-max="0"></span><span class="cap">Gx</span></div><div class="fig"><span class="gx" data-m='[[-1,-2,-1],[0,0,0],[1,2,1]]' data-max="0"></span><span class="cap">Gy</span></div></div>
+<div class="ex"><b>Example:</b> left side dark (10), right side bright (200). Patch <span class="gx" data-m='[[10,10,200],[10,10,200],[10,10,200]]' data-max="255"></span> times Gx = (−10+200) + (−20+400) + (−10+200) = <b>760</b>, a big number, so a strong vertical edge. Gy on the same patch is about 0 because nothing changes up and down.</div>
+<h3>All the filter types</h3>
+<div class="tw"><table><tr><th>Category</th><th>Examples</th><th>Main use</th></tr>
+<tr><td>Linear (use convolution)</td><td>Mean, Gaussian, Laplacian, Sobel/Prewitt, Box</td><td>Smoothing, edges</td></tr>
+<tr><td>Non-linear (sort/min/max)</td><td>Median, Max/Min, Mode (most frequent value), Bilateral and Kuwahara (smooth while keeping edges)</td><td>Noise removal</td></tr>
+<tr><td>Frequency domain</td><td>Low-pass (smooth), high-pass (edges), band-pass (keep a range). Image goes through a Fourier transform, is filtered, then transformed back</td><td>Work with patterns of fine/coarse detail</td></tr>
+<tr><td>Edge detection</td><td>Sobel, Prewitt, Roberts, Canny, LoG (Laplacian of Gaussian)</td><td>Find edges</td></tr>
+<tr><td>Adaptive (change behaviour with local image)</td><td>Adaptive median, Wiener, anisotropic diffusion</td><td>Smart noise reduction</td></tr></table></div>
+<div class="key">Why filter first? It cleans noise and strengthens important features so later steps (thresholding, edges, detection) work better.</div></section>
+
+<section id="s2"><h2>3. Thresholding</h2>
+<p><b>Thresholding</b> turns a grayscale image into pure black and white by picking a cut-off value <b>T</b>: pixel ≥ T becomes white (255), pixel &lt; T becomes black (0). It separates an <b>object</b> from the <b>background</b>, simplifies the image and makes later steps cheaper. Used in OCR (reading text), document scanning, medical images, barcodes/QR codes, face region isolation.</p>
+<p><b>Typical workflow:</b> filter to remove noise, then threshold to extract the regions cleanly.</p>
+<h3>Type 1: Simple (global) thresholding</h3>
+<p>One T for the whole image, e.g. T = 127. Works only when lighting is even and object/background contrast is clear.</p>
+<div class="ex"><b>Example (T = 127):</b>
+<div class="fig"><span class="gx" data-m='[[45,130,200,90,150],[120,80,160,135,60],[255,125,100,180,40],[110,190,220,70,130],[30,140,170,85,95]]'></span><span class="cap">Input</span></div>
+<div class="fig"><span class="gx" data-m='[[0,255,255,0,255],[0,0,255,255,0],[255,0,0,255,0],[0,255,255,0,255],[0,255,255,0,0]]' data-max="255"></span><span class="cap">Output</span></div><br>First row: 45→0, 130→255, 200→255, 90→0, 150→255.</div>
+<h3>Type 2: Adaptive thresholding</h3>
+<p>T is calculated <b>separately for each small region</b> (using the local mean or a Gaussian-weighted local mean). Great for shadows or uneven light. You tune the block size and a constant C.</p>
+<h3>Type 3: Otsu’s method</h3>
+<p>Finds the best T <b>automatically</b>. It tries every T, splits pixels into two groups (dark, bright) and picks the T where the groups are most different (maximum <b>between-class variance</b>, which is the same as minimum within-class variance). Works best when the histogram has two peaks (bimodal).</p>
+<p>A <b>histogram</b> counts how many pixels have each brightness (0 to 255).</p>
+<div class="ex"><b>Example:</b> pixels 50, 52, 55, 200, 202, 205, 48, 50, 210. Two clusters: dark near 50 (5 pixels), bright near 200 (4 pixels).
+<svg viewBox="0 0 300 120" width="300" role="img" aria-label="Histogram with two peaks and the Otsu threshold between them"><line x1="20" y1="100" x2="290" y2="100" stroke="currentColor"/><rect x="40" y="30" width="22" height="70" fill="#8a8f9c"/><rect x="62" y="65" width="22" height="35" fill="#8a8f9c"/><rect x="215" y="65" width="22" height="35" fill="#8a8f9c"/><rect x="237" y="65" width="22" height="35" fill="#8a8f9c"/><line x1="140" y1="10" x2="140" y2="100" stroke="var(--a)" stroke-width="3" stroke-dasharray="5 4"/><text x="146" y="22">T = 100</text><text x="40" y="115">dark (~50)</text><text x="205" y="115">bright (~200)</text></svg><br>
+For T = 100: mean of dark group μ1 = 51, bright group μ2 = 204.25; weights w1 = 5/9 ≈ 0.56, w2 = 4/9 ≈ 0.44. Between-class variance = w1 × w2 × (μ1 − μ2)² ≈ 0.56 × 0.44 × 23557 ≈ <b>5815</b>. Repeat for other T values and keep the largest; here T = 100 separates the groups best.</div>
+<h3>Which one to use?</h3>
+<div class="tw"><table><tr><th></th><th>Simple</th><th>Adaptive</th><th>Otsu</th></tr>
+<tr><td>Threshold</td><td>Fixed, whole image</td><td>Different for each pixel/region</td><td>Auto from histogram</td></tr>
+<tr><td>Best for</td><td>Even lighting</td><td>Shadows, uneven light</td><td>Two-peak histogram</td></tr>
+<tr><td>Cost</td><td>Low</td><td>Medium</td><td>Medium</td></tr>
+<tr><td>Noise/light sensitivity</td><td>High</td><td>Lower</td><td>Moderate</td></tr>
+<tr><td>Manual tuning</td><td>Yes (T)</td><td>Yes (block size, C)</td><td>No</td></tr>
+<tr><td>Typical use</td><td>Scanned text, barcodes</td><td>Handwriting, shadowed photos</td><td>Documents, medical, fingerprints</td></tr></table></div>
+<div class="tip"><b>Filtering vs thresholding:</b> filtering works on neighbourhoods to enhance or suppress features (blur, sharpen, edges) and is usually done first. Thresholding works pixel by pixel and gives a binary image.</div></section>
+
+<section id="s3"><h2>4. Edge detection</h2>
+<p>Thresholding splits regions but does not show their outlines. An <b>edge</b> is a place where brightness changes suddenly. Edges often mark object boundaries, texture changes, surface-direction changes and shadow borders. We use them to find outlines, extract features, reduce data, and help segmentation, recognition and tracking.</p>
+<div class="tw"><table><tr><th>Thresholding</th><th>Edge detection</th></tr><tr><td>Separates object from background</td><td>Finds the outline</td></tr><tr><td>Compares intensity</td><td>Measures rate of intensity change</td></tr><tr><td>Output: black and white regions</td><td>Output: thin lines</td></tr><tr><td>Good for simple shapes</td><td>Essential for complex scenes</td></tr></table></div>
+<h3>The maths in plain words</h3>
+<ul><li><b>First derivative (gradient)</b> = how fast brightness changes. Big value → edge.</li><li><b>Second derivative</b> = how fast the change itself changes. It shows peaks at sudden changes (used by Laplacian).</li><li>Gradient strength G = √(Gx² + Gy²); Gx = change horizontally, Gy = change vertically. Direction gives edge orientation.</li></ul>
+<h3>Edge shapes (Figure 5.1)</h3>
+<div id="prof"></div>
+<ul><li><b>A Step:</b> instant jump, like black to white. Ideal, used for comparison.</li><li><b>B Slanted step:</b> a quick ramp. More realistic.</li><li><b>C Smooth step:</b> gentle rise, from blur or poor focus.</li><li><b>D Planar:</b> steady slope, like shading on a smooth surface.</li><li><b>E Roof:</b> rises then falls, a narrow ridge.</li><li><b>F Line:</b> a thin bright spike. Roof and line are special cases, not normally used in regular edge detection.</li></ul>
+<p>Real images look like B and C (noise, blur, lighting). A and D are extremes.</p>
+<h3>Operators (the “mini filters”)</h3>
+<p>An <b>operator</b> is a small kernel that slides over the image and reports strong differences between neighbouring pixels.</p>
+<div class="tw"><table><tr><th>Operator</th><th>Size</th><th>Idea</th><th>Finds</th></tr><tr><td>Sobel</td><td>3×3</td><td>Gradient, extra weight on centre row/column</td><td>Horizontal and vertical</td></tr><tr><td>Prewitt</td><td>3×3</td><td>Like Sobel, simpler numbers</td><td>Horizontal and vertical</td></tr><tr><td>Roberts</td><td>2×2</td><td>Simple, fast, diagonal gradient</td><td>Diagonals</td></tr><tr><td>Laplacian</td><td>3×3</td><td>Second derivative</td><td>All directions</td></tr><tr><td>Canny</td><td>varies</td><td>Multi-step process</td><td>Fine edges, all directions</td></tr></table></div>
+<p><b>Sobel works locally:</b> it looks only at the 3×3 patch under the kernel, then slides on. In the example, a window with two dark columns (10) and one bright column (200) gives 760 (section 2). The edge sits between those columns.</p>
+<h3>General edge-detection steps</h3>
+<div class="flow"><b>Convert to grayscale</b><b>Apply kernel</b><b>Calculate gradient</b><b>Threshold weak edges</b></div>
+<h3>Canny edge detection (John F. Canny, 1986)</h3>
+<p>The most popular method: accurate, low error, clean thin edges.</p>
+<div class="flow"><b>1 Gaussian blur</b><b>2 Gradient (Sobel)</b><b>3 Non-maximum suppression</b><b>4 Double threshold</b><b>5 Hysteresis</b></div>
+<ol><li><b>Noise reduction:</b> Gaussian blur so noise is not mistaken for edges.</li><li><b>Gradient:</b> find edge strength and direction.</li><li><b>Non-maximum suppression:</b> keep only the strongest pixel across the edge, so edges become one pixel thin.</li><li><b>Double thresholding:</b> above the high threshold = strong edge; between low and high = weak edge; below low = thrown away.</li><li><b>Hysteresis tracking:</b> keep a weak edge only if it touches a strong edge. This avoids broken or false edges.</li></ol>
+<p><b>Parameters:</b> low threshold, high threshold, sigma σ (how much blur). <b>Strengths:</b> high accuracy, good localization (right position), minimal response (one edge, not many), clean maps, works on complex images. <b>Limits:</b> sensitive to parameter tuning and heavier than simple methods.</p>
+<div class="key">Edge detection keeps the important structure while cutting data. It is one of the first steps in detection, tracking and segmentation.</div></section>
+
+<section id="s4"><h2>5. Corner and interest point detection</h2>
+<p>Edges show shapes, but matching two photos needs points that are <b>distinctive and repeatable</b>.</p>
+<ul><li><b>Flat area:</b> little change in any direction.</li><li><b>Edge:</b> big change in <b>one</b> direction.</li><li><b>Corner:</b> big change in <b>two</b> directions. Test: slide a tiny window in any direction from a corner and the pixels change a lot.</li></ul>
+<svg viewBox="0 0 360 110" width="360" role="img" aria-label="Flat region, edge and corner"><g fill="none" stroke="var(--a)" stroke-width="2"><rect x="10" y="10" width="80" height="70"/><rect x="140" y="10" width="80" height="70"/><rect x="270" y="10" width="80" height="70"/></g><rect x="140" y="10" width="40" height="70" fill="#8a8f9c"/><rect x="270" y="10" width="40" height="35" fill="#8a8f9c"/><rect x="42" y="35" width="26" height="22" fill="none" stroke="var(--a)" stroke-width="3"/><rect x="152" y="35" width="26" height="22" fill="none" stroke="var(--a)" stroke-width="3"/><rect x="293" y="28" width="26" height="22" fill="none" stroke="var(--a)" stroke-width="3"/><text x="30" y="100">Flat: no change</text><text x="145" y="100">Edge: 1 direction</text><text x="275" y="100">Corner: 2 directions</text></svg>
+<p><b>Interest points</b> are a bigger family: corners, blobs, junctions, textured spots, anything distinctive enough to match between images. Uses: image stitching (panoramas), object recognition, tracking, 3D reconstruction. <b>Algorithms:</b> Harris, Shi-Tomasi, FAST, SIFT, SURF, ORB.</p>
+<div class="flow"><b>Image</b><b>Filter / reduce noise</b><b>Edge detection</b><b>Threshold weak responses</b><b>Corners / interest points</b></div>
+<h3>Template matching</h3>
+<p>Take a small patch (the <b>template</b>) containing a distinctive feature, slide it over the big image, and at each spot measure how similar the patch is (using SSD, sum of squared differences, or NCC, normalized cross-correlation). High similarity = a match. Simple, and works best when the pattern repeats almost exactly. Used for tracking, stereo matching, stitching, finding logos/letters, game bots that find a button, and image registration (aligning images).</p>
+<div class="ex"><b>Example:</b> main image and template:<br>
+<div class="fig"><span class="gx" data-m='[[10,10,20,10,10],[10,50,100,50,10],[20,100,255,100,20],[10,50,100,50,10],[10,10,20,10,10]]' data-hl="1,1;1,2;1,3;2,1;2,2;2,3;3,1;3,2;3,3"></span><span class="cap">Main image</span></div>
+<div class="fig"><span class="gx" data-m='[[50,100,50],[100,255,100],[50,100,50]]'></span><span class="cap">Template</span></div><br>
+Score = number of equal pixels. At top-left (0,0) only 2 of 9 match. Scores for every position:
+<div class="fig"><span class="gx" data-m='[[2,0,2],[0,9,0],[2,0,2]]' data-max="9"></span><span class="cap">Score at each top-left (row, col)</span></div><br>
+Position (1,1) scores <b>9/9</b>, a perfect match, so the bright corner is found at the centre.</div>
+<h3>Second-order derivative methods</h3>
+<p>First derivative finds edges. <b>Second derivative</b> measures curvature, which is high at corners and blobs. It uses the <b>Hessian matrix</b> H = [[Ixx, Ixy],[Iyx, Iyy]] (Ixx = second change in x, Iyy = in y, Ixy/Iyx = mixed). Look at its <b>eigenvalues</b> (two numbers describing change strength in the two main directions):</p>
+<ul><li>Both large → corner / interest point.</li><li>One large → edge.</li><li>Both small → flat region.</li></ul>
+<p>Examples: Hessian detector, Laplacian of Gaussian (LoG) for blobs, Harris-Laplace and SIFT DoG (difference of Gaussians) for scale-invariant points (found at different zoom levels). Such points are stable and repeatable for matching.</p></section>
+
+<section id="s5"><h2>6. Mathematical morphology</h2>
+<p>A set of shape-based operations, first made for black and white images and later extended to grayscale and colour. A small shape called a <b>structuring element (SE)</b>, e.g. a 3×3 square or a disk, probes the image.</p>
+<div class="tw"><table><tr><th>Operation</th><th>Plain meaning</th><th>Effect</th></tr><tr><td>Erosion</td><td>Pixel stays 1 only if <b>all</b> pixels under the SE are 1</td><td>Shrinks objects, removes tiny specks</td></tr><tr><td>Dilation</td><td>Pixel becomes 1 if <b>any</b> pixel under the SE is 1</td><td>Grows objects, fills small holes, joins nearby parts</td></tr><tr><td>Opening</td><td>Erosion, then dilation</td><td>Removes small objects, keeps main shape size</td></tr><tr><td>Closing</td><td>Dilation, then erosion</td><td>Fills small holes and gaps</td></tr></table></div>
+<h3>Dilation step by step</h3>
+<p>Place the SE on every pixel. If any 1 is under it, the centre pixel becomes 1.</p>
+<div class="ex"><b>Example:</b> a thin vertical line, dilated with a 3×3 square of ones:<br>
+<div class="fig"><span class="gx" data-m='[[0,0,0,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,0,0,0]]' data-max="1"></span><span class="cap">Before</span></div>
+<div class="fig"><span class="gx" data-m='[[0,1,1,1,0],[0,1,1,1,0],[0,1,1,1,0],[0,1,1,1,0],[0,1,1,1,0]]' data-max="1"></span><span class="cap">After</span></div><br>
+Pixel (1,2) is 1, so its whole 3×3 neighbourhood (rows 0 to 2, columns 1 to 3) turns 1. Pixel (2,2) fills rows 1 to 3, pixel (3,2) fills rows 2 to 4. The line is now three pixels wide and runs to the top and bottom edges.</div>
+<p><b>Properties:</b> expands white regions, bridges gaps, smooths edges, and the result depends on the SE shape and size. <b>Used in:</b> text recognition (repair broken letters), medical images (connect parts of organs), road/shape detection (join line segments), after edge detection (strengthen lines).</p>
+<h3>How it links to earlier topics</h3>
+<div class="tw"><table><tr><th>Earlier topic</th><th>Link to morphology</th></tr><tr><td>Filtering</td><td>Both reduce small noise; morphology does it on binary images</td></tr><tr><td>Thresholding</td><td>Gives the binary image morphology works on</td></tr><tr><td>Edge detection</td><td>Morphology refines and smooths edges afterwards</td></tr><tr><td>Corners / interest points</td><td>Can highlight or suppress features by shape</td></tr></table></div>
+<div class="key">Morphology cleans noisy thresholded or edge images, fills gaps in outlines, and improves accuracy before detection, segmentation or feature extraction.</div></section>
+
+<section id="s6"><h2>7. Texture</h2>
+<p><b>Texture</b> is how brightness or colour varies across an area: the pattern of a surface, like wood grain, fabric, bricks, sand, grass, water. Basic repeated units are <b>texels</b> (texture elements). The arrangement, size, orientation and spacing of texels define the texture.</p>
+<ul><li>It describes how intensity <b>changes</b>, not a single brightness value. A perfectly uniform surface has no texture.</li><li>Patterns can be regular (ordered) or random.</li><li>It can be coarse, fine, smooth or rough, and depends on intensity variation rather than colour.</li><li>Helps recognize, interpret and segment regions of an image.</li></ul>
+<h3>Approach 1: Autocorrelation</h3>
+<p>Compare the image with a shifted copy of itself. If the texture repeats, the match score rises again at regular shifts (peaks). The faster the score drops, the <b>coarser</b> the texture.</p>
+<svg viewBox="0 0 220 60" width="260" role="img" aria-label="Autocorrelation wave fading away from the centre"><polyline id="ac" fill="none" stroke="var(--a)" stroke-width="2"/><line x1="0" y1="30" x2="220" y2="30" stroke="currentColor" opacity=".4"/><text x="4" y="12">repeats, then fades (damping)</text></svg>
+<p><b>Weaknesses:</b> poor at telling some natural textures apart; repetition fades with distance; unreliable for isotropic textures (look the same in all directions).</p>
+<h3>Approach 2: Co-occurrence matrix (Haralick, 1973)</h3>
+<p>Count how often <b>pairs</b> of brightness levels appear next to each other, at a chosen distance and direction. Rows and columns are intensity levels; each cell is a count. It captures local variation and repeatability and became the standard in the 1970s.</p>
+<div class="ex"><b>Example:</b> in the sample matrix <span class="gx" data-m='[[5,4,1],[3,6,2],[0,1,7]]' data-max="7"></span> the cell at row 3, column 6 would mean “brightness 3 sits next to brightness 6” that many times. Statistics taken from it, such as <b>contrast</b>, <b>homogeneity</b> and <b>entropy</b> (randomness), are used for classification and segmentation.</div>
+<div class="tw"><table><tr><th></th><th>Autocorrelation</th><th>Co-occurrence matrix</th></tr><tr><td>Measures</td><td>Repetition / periodicity</td><td>Pairs of intensities, richer detail</td></tr><tr><td>Weakness</td><td>Fades; limited accuracy</td><td>Heavier to compute</td></tr><tr><td>Use</td><td>Coarse vs fine, spacing</td><td>Classification, segmentation</td></tr></table></div></section>
+
+<section id="s7"><h2>8. The big picture</h2>
+<div class="flow"><b>Filter: clean and enhance</b><b>Threshold: separate regions</b><b>Edges and corners: find structure</b><b>Morphology: tidy shapes</b><b>Texture: describe surfaces</b></div>
+<p>Each step feeds the next: filtering improves quality, thresholding segments, edge and corner detection locate key structures, morphology refines shapes, and texture analysis describes surfaces. Together they turn raw pixels into information for object detection, classification and pattern recognition in the upcoming units.</p></section>
+</main>
+<script>
+function C(v,x){if(!x)return'';var l=Math.max(5,Math.min(96,Math.round(v/x*90+5)));return'background:hsl(220 8% '+l+'%);color:'+(l>50?'#111':'#fff')}
+document.querySelectorAll('.gx').forEach(function(e){var m=JSON.parse(e.dataset.m),x=+(e.dataset.max||255),h=(e.dataset.hl||'').split(';');e.style.gridTemplateColumns='repeat('+m[0].length+',auto)';e.innerHTML=m.map(function(r,i){return r.map(function(v,j){return'<i style="'+C(v,x)+'"'+(h.indexOf(i+','+j)>-1?' class="h"':'')+'>'+v+'</i>'}).join('')}).join('')});
+var E=[['A Step','0,40 30,40 30,10 60,10'],['B Slanted','0,40 20,40 40,10 60,10'],['C Smooth','0,40 12,38 22,32 38,18 48,12 60,10'],['D Planar','0,40 60,10'],['E Roof','0,40 30,10 60,40'],['F Line','0,40 25,40 25,10 35,10 35,40 60,40']];
+document.getElementById('prof').innerHTML=E.map(function(p){return'<span class="fig"><svg viewBox="0 0 60 50" width="84"><polyline points="'+p[1]+'" fill="none" stroke="var(--a)" stroke-width="2.5"/></svg><span class="cap">'+p[0]+'</span></span>'}).join('');
+var pts=[];for(var x=0;x<=220;x+=2){pts.push(x+','+(30-26*Math.exp(-Math.abs(x-110)/45)*Math.cos((x-110)/6)).toFixed(1))}document.getElementById('ac').setAttribute('points',pts.join(' '));
+</script><script>
+if (window.self === window.top) {
+  var b = document.createElement('a');
+  b.href = '../index.html';
+  b.className = 'hub-floating-btn';
+  b.innerHTML = '← Back to Study Portal';
+  b.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;background:#0969da;color:#ffffff;font-family:system-ui,-apple-system,sans-serif;font-size:13px;font-weight:700;padding:10px 18px;border-radius:99px;box-shadow:0 4px 14px rgba(0,0,0,0.35);text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s ease;cursor:pointer;';
+  b.onmouseenter = function(){ b.style.transform='translateY(-2px)'; b.style.boxShadow='0 6px 20px rgba(9,105,218,0.5)'; };
+  b.onmouseleave = function(){ b.style.transform='none'; b.style.boxShadow='0 4px 14px rgba(0,0,0,0.35)'; };
+  document.body.appendChild(b);
+}
+</script>
+</body></html>

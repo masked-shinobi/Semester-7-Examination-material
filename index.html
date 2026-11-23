@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Semester 7 Examination Portal • Study Hub & Unit Navigator</title>
+  <meta name="description" content="Comprehensive examination study portal for Semester 7 covering Computer Vision, Fault-Tolerant Systems, and Software Defined Networks.">
+  <meta name="theme-color" content="#f8fafc">
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+</head>
+<body>
+
+  <!-- =========================================================================
+       SITE HEADER / TOP NAVIGATION (Mobile & Desktop Responsive)
+       ========================================================================= -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="header-top-bar">
+        <a href="#" class="logo-area" title="Reload Portal Hub">
+          <span class="logo-badge">🎓</span>
+          <div class="logo-text">
+            <h1>Sem 7 Exam Hub</h1>
+            <p>B.Tech Semester VII • Master Revision</p>
+          </div>
+        </a>
+
+        <!-- Header Action Buttons & Prominent Theme Switcher -->
+        <div class="header-actions">
+          <button id="cheatsheet-btn" class="btn-header" title="Open rapid exam formula and definitions cheat sheet">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            <span class="btn-text">Formulas</span>
+          </button>
+
+          <!-- Explicit Segmented Theme Switcher Toggle (Light & Dark) -->
+          <div class="theme-switch-control" role="group" aria-label="Theme Switcher">
+            <button id="theme-btn-light" class="theme-btn" title="Switch to Light Mode" data-set-theme="light">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+              <span>Light</span>
+            </button>
+            <button id="theme-btn-dark" class="theme-btn" title="Switch to Dark Mode" data-set-theme="dark">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+              <span>Dark</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Search Bar -->
+      <div class="header-search">
+        <div class="search-input-wrapper">
+          <span class="search-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </span>
+          <input type="text" id="search-input" class="search-input" placeholder="Search topics, algorithms, units... (Press '/' to search)" autocomplete="off">
+          <span class="search-shortcut-hint">/</span>
+          <button id="search-clear-btn" class="search-clear-btn" title="Clear search">✕</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       HERO BANNER & PROGRESS STATUS
+       ========================================================================= -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="hero-card">
+        <div class="hero-top-row">
+          <div class="hero-headline">
+            <h2>Final Examination Study Portal</h2>
+            <p>Access all 15 study units across Computer Vision, Fault-Tolerant Systems, and Software Defined Networks. Track revision progress, search key algorithms, and study in a distraction-free reader.</p>
+          </div>
+
+          <!-- Rapid Metrics -->
+          <div class="hero-stats-panel">
+            <div class="stat-box">
+              <div class="stat-value">3</div>
+              <div class="stat-label">Subjects</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-value">15</div>
+              <div class="stat-label">Units</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-value" id="overall-progress-text">0%</div>
+              <div class="stat-label">Revised</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Overall Progress Tracker -->
+        <div class="hero-progress-wrapper">
+          <div class="progress-header">
+            <span id="completed-count-text">0 / 15 Units Revised</span>
+            <button id="reset-progress-btn" style="font-size: 0.76rem; color: var(--text-muted); text-decoration: underline;">Reset Progress</button>
+          </div>
+          <div class="progress-bar-track">
+            <div id="overall-progress-bar" class="progress-bar-fill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       FILTER TABS & CONTROLS (Swipeable on Mobile)
+       ========================================================================= -->
+  <section class="container">
+    <div class="controls-bar">
+      <div class="filter-tabs">
+        <button class="tab-btn active" data-filter="all">
+          <span>All Units</span>
+          <span class="tab-badge">15</span>
+        </button>
+        <button class="tab-btn" data-filter="computer-vision">
+          <span>📷 Computer Vision</span>
+          <span class="tab-badge">5</span>
+        </button>
+        <button class="tab-btn" data-filter="fault-tolerance">
+          <span>🛡️ Fault Tolerance</span>
+          <span class="tab-badge">5</span>
+        </button>
+        <button class="tab-btn" data-filter="software-defined-networks">
+          <span>🌐 SDN</span>
+          <span class="tab-badge">5</span>
+        </button>
+        <button class="tab-btn" data-filter="bookmarked">
+          <span>★ Bookmarked</span>
+          <span class="tab-badge" id="badge-bookmarked">0</span>
+        </button>
+        <button class="tab-btn" data-filter="to-revise">
+          <span>⏳ Pending</span>
+        </button>
+      </div>
+
+      <div class="view-options">
+        <span class="view-label">💡 Tip: Press <kbd style="background:var(--bg-tertiary); padding:2px 5px; border-radius:4px; font-family:monospace;">/</kbd> to search or click any unit to study</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       SUBJECT UNITS CONTAINER (Dynamically Populated)
+       ========================================================================= -->
+  <main class="container">
+    <div id="subjects-container">
+      <!-- Populated by assets/js/app.js -->
+    </div>
+
+    <!-- Empty Search State -->
+    <div id="empty-state" class="empty-results-box">
+      <div class="empty-icon">🔍</div>
+      <h3>No matching units or topics found</h3>
+      <p>Try searching for algorithms like <em>Canny</em>, <em>Hough</em>, <em>OpenFlow</em>, <em>TMR</em>, <em>Checkpointing</em>, or <em>Mininet</em>.</p>
+    </div>
+  </main>
+
+  <!-- =========================================================================
+       INTEGRATED FULLSCREEN READER OVERLAY
+       ========================================================================= -->
+  <div id="reader-overlay" class="reader-overlay" role="dialog" aria-modal="true">
+    <!-- Reader Top Navigation Bar -->
+    <div class="reader-toolbar">
+      <div class="reader-left-tools">
+        <button id="back-to-hub-btn" class="btn-back-hub" title="Return to Dashboard (Hotkey: Esc)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          <span>All Units</span>
+        </button>
+
+        <div class="reader-unit-info">
+          <span id="reader-subject-pill" class="reader-subject-pill">CV</span>
+          <select id="reader-dropdown" class="reader-select-dropdown" title="Switch to another unit">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+      </div>
+
+      <!-- Navigation Arrows -->
+      <div class="reader-center-tools">
+        <button id="prev-unit-btn" class="nav-unit-btn" title="Previous Unit (Left Arrow)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          <span>Prev</span>
+        </button>
+        <button id="next-unit-btn" class="nav-unit-btn" title="Next Unit (Right Arrow)">
+          <span>Next</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+      </div>
+
+      <!-- Reader Right Controls -->
+      <div class="reader-right-tools">
+        <label class="mark-revised-toggle" style="background: var(--bg-tertiary); padding: 5px 8px; border-radius: 6px; border: 1px solid var(--border-color);">
+          <input type="checkbox" id="reader-revised-check">
+          <span>Revised</span>
+        </label>
+
+        <!-- Quick theme toggle in reader toolbar -->
+        <button id="reader-theme-toggle" class="btn-open-tab" title="Toggle Light/Dark Theme in Reader">
+          <span id="reader-theme-icon">☀️</span>
+        </button>
+
+        <button id="reader-direct-tab" class="btn-open-tab" title="Open unit in separate browser tab">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Embedded Unit Document Frame -->
+    <div class="reader-frame-container">
+      <iframe id="reader-iframe" class="reader-iframe" title="Unit Reading Content" src="about:blank"></iframe>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       CHEAT SHEET MODAL (Formulas & Key Concept Tables)
+       ========================================================================= -->
+  <div id="cheatsheet-modal" class="modal-backdrop">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>
+          <span>⚡ High-Yield Exam Formulas & Concept Summary</span>
+        </h3>
+        <button id="close-cheatsheet-btn" class="btn-close-modal" title="Close modal">✕</button>
+      </div>
+      <div class="modal-body" id="cheatsheet-content">
+        <!-- Rendered by app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       FOOTER
+       ========================================================================= -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-left">
+        <strong>Semester VII Examination Revision Portal</strong>
+        <span>•</span>
+        <span>All 15 Units Compiled</span>
+      </div>
+      <div class="footer-links">
+        <a href="#subject-computer-vision">Computer Vision</a>
+        <a href="#subject-fault-tolerance">Fault Tolerance</a>
+        <a href="#subject-software-defined-networks">SDN</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script>window.BASE_PATH_OVERRIDE = './public/';</script>
+  <script src="./assets/js/data.js"></script>
+  <script src="./assets/js/app.js"></script>
+</body>
+</html>

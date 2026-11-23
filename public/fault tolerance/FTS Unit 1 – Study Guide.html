@@ -1,0 +1,228 @@
+﻿<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fault Tolerant Systems – Unit 1 Study Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Nunito:wght@400;600;700&family=Fira+Code:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--tx:#1f2937;--mu:#5b6475;--bd:#e3e6ee;--c1:#2563eb;--c2:#dc2626;--c3:#d97706;--c4:#059669;--c5:#7c3aed;--c6:#db2777;--ex:#fff7e0;--exb:#f5c542;--df:#eef4ff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1420;--card:#171e2e;--tx:#e6e9f2;--mu:#9aa4b8;--bd:#2a3350;--c1:#6ea0ff;--c2:#ff7b7b;--c3:#f5b14a;--c4:#3ddba0;--c5:#b69cff;--c6:#ff8fc2;--ex:#2b2612;--exb:#8a7020;--df:#1a2540}}
+:root[data-theme="dark"]{--bg:#0f1420;--card:#171e2e;--tx:#e6e9f2;--mu:#9aa4b8;--bd:#2a3350;--c1:#6ea0ff;--c2:#ff7b7b;--c3:#f5b14a;--c4:#3ddba0;--c5:#b69cff;--c6:#ff8fc2;--ex:#2b2612;--exb:#8a7020;--df:#1a2540}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:17px/1.65 'Nunito',sans-serif}
+.w{max-width:860px;margin:0 auto;padding:18px}
+h1,h2,h3{font-family:'Poppins',sans-serif;line-height:1.25}
+h1{font-size:2rem;margin:.2em 0}
+.hero{background:linear-gradient(135deg,var(--c1),var(--c5));color:#fff;border-radius:18px;padding:26px;margin-bottom:18px}
+.hero p{margin:.3em 0;opacity:.95}
+.sec{background:var(--card);border:1px solid var(--bd);border-top:6px solid var(--k);border-radius:16px;padding:6px 20px 18px;margin:20px 0}
+.sec>h2{color:var(--k);font-size:1.45rem}
+h3{font-size:1.1rem;color:var(--k);margin:1.3em 0 .3em}
+.s1{--k:var(--c1)}.s2{--k:var(--c2)}.s3{--k:var(--c3)}.s4{--k:var(--c4)}.s5{--k:var(--c5)}.s6{--k:var(--c6)}
+.def,.ex,.key{border-radius:12px;padding:10px 14px;margin:10px 0}
+.def{background:var(--df);border-left:5px solid var(--c1)}
+.ex{background:var(--ex);border-left:5px solid var(--exb)}
+.key{background:var(--card);border:2px dashed var(--k)}
+.def b.t,.ex b.t,.key b.t{display:block;font:600 .8rem 'Poppins';text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
+.def b.t{color:var(--c1)}.ex b.t{color:var(--c3)}.key b.t{color:var(--k)}
+.f{font:500 1rem 'Fira Code',monospace;background:var(--df);padding:8px 12px;border-radius:8px;margin:8px 0;overflow-x:auto;white-space:nowrap}
+.tw{overflow-x:auto;margin:10px 0}
+table{border-collapse:collapse;width:100%;font-size:.93rem;min-width:520px}
+th{background:var(--k);color:#fff;font-family:'Poppins';font-weight:600;text-align:left}
+th,td{padding:7px 10px;border:1px solid var(--bd)}
+.chain{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch;margin:12px 0}
+.chain div{flex:1 1 130px;border-radius:12px;padding:8px 10px;color:#fff;text-align:center;font-weight:700}
+.chain small{display:block;font-weight:400;opacity:.92}
+.chain i{align-self:center;font-style:normal;font-size:1.4rem;color:var(--mu)}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.g>div{border:1px solid var(--bd);border-top:4px solid var(--k);border-radius:12px;padding:8px 12px}
+.g b{color:var(--k)}
+svg{max-width:100%;height:auto;display:block;margin:10px auto}
+svg text{fill:var(--tx);font-family:'Nunito',sans-serif;font-size:13px}
+.ax{stroke:var(--mu);fill:none}
+.toc a{display:inline-block;margin:3px;padding:4px 12px;border-radius:99px;background:rgba(255,255,255,.22);color:#fff;text-decoration:none;font-size:.9rem}
+ul{padding-left:1.2em}li{margin:.2em 0}
+.tag{display:inline-block;padding:0 8px;border-radius:6px;background:var(--k);color:#fff;font-size:.8rem;font-weight:700}
+</style></head><body><div class="w">
+
+<div class="hero"><h1>Fault Tolerant Systems · Unit 1</h1>
+<p>Introduction to Fault Tolerance – every concept in simple words, with examples and diagrams.</p>
+<p><b>Colour guide:</b> blue box = definition · yellow box = example · dashed box = remember this.</p>
+<div class="toc"><a href="#a">1 Fault tolerance</a><a href="#b">2 Fault · Error · Failure</a><a href="#c">3 Fault types</a><a href="#d">4 Basic measures</a><a href="#e">5 Dependable system</a><a href="#f">6 Four techniques</a><a href="#g">7 Dependability measures</a><a href="#h">8 Cheat sheet</a></div></div>
+
+<div class="sec s1" id="a"><h2>1 · What is Fault Tolerance?</h2>
+<div class="def"><b class="t">Definition</b>Fault tolerance is the ability of a system to <b>keep working correctly even when some of its parts fail</b>. The system notices the problem, isolates it, and continues giving service.</div>
+<p><b>Why do we need it?</b> Some systems cannot afford to stop: banking, air traffic control, medical equipment, nuclear plants, spacecraft, cloud computing, military. A failure there can mean lost money, lost data, stopped service, or even <b>danger to human life</b>.</p>
+<div class="ex"><b class="t">Example – aeroplane</b>It has 2 engines, 2 navigation systems and a backup radio. If one engine dies, the plane still flies on the other. That is fault tolerance.</div>
+<div class="ex"><b class="t">Example – ATM</b>Network cable gets disconnected → ATM detects it → switches to backup network → your transaction continues.</div>
+<div class="chain"><div style="background:var(--c2)">Fault happens</div><i>→</i><div style="background:var(--c3)">System detects it</div><i>→</i><div style="background:var(--c5)">Recovery</div><i>→</i><div style="background:var(--c4)">Service continues</div></div>
+</div>
+
+<div class="sec s2" id="b"><h2>2 · Fault, Error and Failure</h2>
+<p>Students mix these up. They are <b>three different stages</b> of one problem.</p>
+<div class="chain"><div style="background:var(--c3)">FAULT<small>the cause (something is broken)</small></div><i>→ produces →</i><div style="background:var(--c5)">ERROR<small>wrong state inside the system</small></div><i>→ leads to →</i><div style="background:var(--c2)">FAILURE<small>user sees wrong output</small></div></div>
+<div class="g">
+<div><b>Fault</b><br>A physical defect, flaw or mistake in hardware, software, network or human operation. It is the <b>root cause</b>. It may sit hidden and cause nothing yet. Ex: short circuit, broken pin, software bug.</div>
+<div><b>Error</b><br>A <b>wrong value or wrong condition inside</b> the system caused by a fault. Users usually cannot see it. If it is corrected in time, it never becomes a failure.</div>
+<div><b>Failure</b><br>The service given to the user is <b>wrong or stops</b>, i.e. it deviates from the system specification. Visible to users. Every failure is caused by one or more errors.</div></div>
+<div class="ex"><b class="t">Example 1 – Keyboard</b>Fault: a damaged key → Error: pressing “A” sends “S” to the computer → Failure: the assignment has wrong words and cannot be submitted.</div>
+<div class="ex"><b class="t">Example 2 – Bank transfer of ₹10,000</b>Fault: bug in the banking app → Error: database stores ₹1,000 → Failure: receiver gets only ₹1,000.</div>
+<div class="ex"><b class="t">Example 3 – Damaged RAM</b>Fault: RAM chip defective → Error: wrong data saved in memory → Failure: system crash or wrong result.</div>
+<div class="ex"><b class="t">From the slides – stuck adder</b>An adder circuit has an output line <b>stuck at 1</b> (fault). It causes an error <i>only when</i> that line should have been 0. If the correct answer was 1 anyway, nothing goes wrong.</div>
+<div class="ex"><b class="t">From the slides – sin(x) bug</b>A subroutine should compute sin(x) but, by a programming mistake, computes |sin(x)|. This causes an error <i>only when</i> the subroutine is used and the correct answer is negative. So <b>a fault does not always produce an error.</b></div>
+<div class="tw"><table><tr><th>Feature</th><th>Fault</th><th>Error</th><th>Failure</th></tr>
+<tr><td>Meaning</td><td>Cause of the problem</td><td>Incorrect internal state</td><td>Incorrect service/output</td></tr>
+<tr><td>Visible to user?</td><td>Usually hidden</td><td>Hidden inside</td><td>Yes</td></tr>
+<tr><td>Order</td><td>First</td><td>After fault</td><td>After error</td></tr>
+<tr><td>Can stop before next stage?</td><td>Yes</td><td>Yes, if corrected</td><td>–</td></tr>
+<tr><td>Example</td><td>Damaged RAM</td><td>Wrong data in memory</td><td>System crash</td></tr></table></div>
+<div class="key"><b class="t">Remember</b>Fault = something is <b>broken</b>. Error = something is <b>wrong inside</b>. Failure = the <b>user notices</b>.</div>
+</div>
+
+<div class="sec s3" id="c"><h2>3 · Fault Classification</h2>
+<div class="def"><b class="t">Definition</b>Fault classification means grouping faults by their <b>duration, origin, behaviour and location</b> (Israel Koren). It helps engineers pick the right detection and recovery method, reduce downtime and design better systems.</div>
+<h3>A. By duration</h3>
+<svg viewBox="0 0 640 210" role="img" aria-label="Permanent, transient and intermittent faults over time">
+<text x="8" y="28">Permanent</text><line class="ax" x1="110" y1="45" x2="620" y2="45"/><rect x="200" y="14" width="420" height="22" fill="#dc2626" opacity=".85" rx="4"/><text x="210" y="30" style="fill:#fff">fault stays until repaired</text>
+<text x="8" y="98">Transient</text><line class="ax" x1="110" y1="115" x2="620" y2="115"/><rect x="250" y="84" width="60" height="22" fill="#d97706" opacity=".9" rx="4"/><text x="320" y="100">short, then gone by itself</text>
+<text x="8" y="168">Intermittent</text><line class="ax" x1="110" y1="185" x2="620" y2="185"/>
+<rect x="170" y="154" width="40" height="22" fill="#7c3aed" rx="4"/><rect x="300" y="154" width="25" height="22" fill="#7c3aed" rx="4"/><rect x="400" y="154" width="55" height="22" fill="#7c3aed" rx="4"/><rect x="540" y="154" width="30" height="22" fill="#7c3aed" rx="4"/><text x="590" y="168" style="font-size:11px">…on/off</text></svg>
+<div class="g" style="--k:var(--c2)"><div><b>Permanent</b><br>Stays until the part is repaired or replaced. Never disappears alone. Easy to detect. Causes: burnt motherboard, damaged hard disk, failed CPU, broken power supply. Ex: hard disk physically damaged – restart does not help; a burned-out light bulb.</div>
+<div style="--k:var(--c3)"><b>Transient</b><br>Appears for a short time, then vanishes <i>without repair</i>; component works fully again. Hard to reproduce. Causes: power fluctuation, electromagnetic interference, cosmic radiation, voltage spikes, network congestion. Ex: PC restarts due to a power dip; noise during a phone call.</div>
+<div style="--k:var(--c5)"><b>Intermittent</b><br>Comes and goes repeatedly at irregular times; never fully goes away (flips between inactive and active). Very hard to diagnose. Causes: loose cable or RAM, overheating, weak solder joints. Ex: monitor goes blank now and then due to a loose cable.</div></div>
+<div class="tw"><table><tr><th>Feature</th><th>Permanent</th><th>Transient</th><th>Intermittent</th></tr>
+<tr><td>Duration</td><td>Continuous</td><td>Temporary</td><td>Repeats occasionally</td></tr><tr><td>Repair needed</td><td>Yes</td><td>No</td><td>Sometimes</td></tr><tr><td>Easy to detect</td><td>Yes</td><td>Difficult</td><td>Very difficult</td></tr><tr><td>Cause</td><td>Physical damage</td><td>Environment disturbance</td><td>Loose/unstable connection</td></tr></table></div>
+<div class="key"><b class="t">Memory trick</b>Permanent = <b>replace it</b>. Transient = <b>wait</b>, it goes. Intermittent = <b>comes and goes</b>.</div>
+<h3>B. Benign vs Malicious (by behaviour)</h3>
+<div class="g"><div><b>Benign</b><br>The unit just goes <b>dead</b>. Easiest to handle because everyone can see it stopped.</div>
+<div style="--k:var(--c2)"><b>Malicious</b><br>The unit gives <b>reasonable-looking but wrong output</b>, or even sends <i>different values to different receivers</i>. Much more dangerous. Ex: an aircraft altitude sensor tells one unit “1000 ft” and another unit “8000 ft”.</div></div>
+<h3>C. By origin</h3>
+<div class="g"><div><b>Hardware</b><br>Physical part fails: CPU failure, RAM damage, disk crash, power supply failure.</div><div><b>Software</b><br>Design or coding mistake: bug, infinite loop, buffer overflow, wrong algorithm.</div><div><b>Human</b><br>Mistake in operation/maintenance: deleting files by accident, wrong password, wrong configuration.</div><div><b>Network</b><br>Communication problem: router/switch failure, broken fibre cable, packet loss from congestion.</div></div>
+</div>
+
+<div class="sec s4" id="d"><h2>4 · Basic Measures of Fault Tolerance</h2>
+<p>Having fault tolerance is not enough – we must <b>measure how dependable</b> the system is: how often it fails, how long it runs, how fast it is repaired, how often it is available. Two groups:</p>
+<div class="chain"><div style="background:var(--c4)">Basic measures</div><i>→</i><div style="background:var(--c1)">Traditional (single systems)</div><div style="background:var(--c5)">Network (communication)</div></div>
+<h3>4.1 Traditional measures</h3>
+<div class="def"><b class="t">Failure rate (λ, “lambda”)</b>Average number of failures per unit of operating time. <b>Low is good.</b><div class="f">λ = Number of failures ÷ Operating time</div></div>
+<div class="ex"><b class="t">Example</b>Server runs 1000 hours, fails 5 times → λ = 5/1000 = 0.005 failures/hour.</div>
+<div class="def"><b class="t">MTTF – Mean Time To Failure</b>Average time a system works <i>before it fails</i> (used for parts that are replaced, not repaired). <b>High is good.</b><div class="f">MTTF = Total operating time ÷ Number of failures</div>Example: 1000 h, 5 failures → 200 hours.</div>
+<div class="def"><b class="t">MTTR – Mean Time To Repair</b>Average time needed to repair a failed system. <b>Low is good.</b><div class="f">MTTR = Total repair time ÷ Number of repairs</div>Example: 10 h repair in total over 5 repairs → 2 hours.</div>
+<div class="def"><b class="t">MTBF – Mean Time Between Failures</b>Average time between two consecutive failures. It includes working time <i>and</i> repair time. <b>High is good.</b><div class="f">MTBF = MTTF + MTTR</div>Example: 200 + 2 = 202 hours.</div>
+<svg viewBox="0 0 640 120" role="img" aria-label="Timeline of MTTF, MTTR and MTBF"><rect x="20" y="30" width="300" height="30" fill="#059669" rx="5"/><text x="95" y="50" style="fill:#fff">Working (MTTF)</text><rect x="320" y="30" width="80" height="30" fill="#dc2626" rx="5"/><text x="328" y="50" style="fill:#fff">Repair</text><rect x="400" y="30" width="220" height="30" fill="#059669" rx="5"/><text x="440" y="50" style="fill:#fff">Working again</text>
+<text x="322" y="22">Failure</text><text x="390" y="82">Repaired</text><line class="ax" x1="20" y1="100" x2="400" y2="100"/><text x="130" y="115">MTBF = MTTF + MTTR</text></svg>
+<div class="def"><b class="t">Reliability R(t)</b>Probability that the system works <b>continuously, without any failure</b>, during the time interval [0, t]. Value from 0 to 1. Important where even a <b>momentary break is costly</b>, e.g. aircraft control computers.</div>
+<div class="def"><b class="t">Availability</b>The fraction of time the system is <b>up and ready to serve</b>. Important where short downtime is tolerable but long downtime is costly, e.g. an airline reservation system.
+<div class="f">Availability = MTTF ÷ (MTTF + MTTR) = MTTF ÷ MTBF</div>Example: MTTF 99 h, MTTR 1 h → 99/100 = 0.99 = 99%.</div>
+<div class="def"><b class="t">Point availability</b>Probability that the system is up at one particular instant <i>t</i>.</div>
+<div class="ex"><b class="t">Low reliability but high availability?</b>Yes! A system fails every hour (MTBF = 1 h → low reliability) but comes back in just 1 second. Availability = 3599/3600 = <b>0.99972</b>. It fails often, but is almost always up.</div>
+<p><b>Downtime per year</b> (steady-state availability is often quoted this way):</p>
+<div class="tw"><table><tr><th>Availability %</th><td>90</td><td>99</td><td>99.9</td><td>99.99</td><td>99.999</td><td>99.9999</td></tr><tr><th>Downtime</th><td>36.5 days</td><td>3.65 days</td><td>8.76 hours</td><td>52 min</td><td>5 min</td><td>31 sec</td></tr></table></div>
+<p>Ways to improve: <b>reliability</b> – good hardware, software testing, redundancy, preventive maintenance, health monitoring. <b>Availability</b> – increase MTTF, reduce MTTR, redundant hardware, automatic failover, backups.</p>
+<div class="tw"><table><tr><th>Reliability</th><th>Availability</th></tr><tr><td>Chance of failure-free operation</td><td>Chance system is ready when needed</td></tr><tr><td>Considers operating time only</td><td>Considers operating + repair time</td></tr><tr><td>Higher = fewer failures</td><td>Higher = less downtime</td></tr></table></div>
+<table><tr><th>Measure</th><th>Desired value</th></tr><tr><td>Failure rate</td><td>Low</td></tr><tr><td>MTTF</td><td>High</td></tr><tr><td>MTTR</td><td>Low</td></tr><tr><td>MTBF</td><td>High</td></tr></table>
+<h3>4.2 Network measures</h3>
+<p>These look at the <b>network connecting the processors</b>, focusing on data transfer instead of single machines.</p>
+<div class="g"><div><b>Node &amp; line connectivity</b><br>Minimum number of nodes (or lines) that must fail before the network splits into disconnected parts. Gives a rough idea of vulnerability. <i>Limit:</i> only knows two states – connected / disconnected – and says nothing about how the network degrades.</div>
+<div><b>Packet loss</b><br>% of sent packets that never arrive. Packet loss = lost ÷ sent × 100. Ex: 20 of 1000 lost → 2%. Lower is better.</div>
+<div><b>Latency</b><br>Time a packet takes from source to destination. Ex: 30 ms. Lower is better.</div>
+<div><b>Throughput</b><br>Useful data actually delivered per second. Ex: 500 MB in 50 s = 10 MB/s. Higher is better.</div>
+<div><b>Bandwidth</b><br>Maximum capacity of the channel. Ex: a 100 Mbps line. <i>Bandwidth = maximum speed; throughput = real speed achieved.</i></div>
+<div><b>Network availability</b><br>% of time the network is working and reachable. Higher is better.</div></div>
+<div class="tw"><table><tr><th>Traditional</th><th>Network</th></tr><tr><td>Standalone systems</td><td>Communication networks</td></tr><tr><td>Failures and repairs</td><td>Data communication</td></tr><tr><td>MTTF, MTTR, MTBF</td><td>Packet loss, latency, throughput</td></tr></table></div>
+</div>
+
+<div class="sec s5" id="e"><h2>5 · Dependable System</h2>
+<div class="def"><b class="t">Definition</b>A <b>dependable system</b> gives correct, safe and continuous service that users can <b>justifiably trust</b>, even when faults occur. <b>Dependability</b> = the ability to deliver its intended level of service to users. The ultimate goal of fault tolerance is a dependable system.</div>
+<p>Dependability has <b>three parts</b> (from the slides): <b>Attributes</b> (what we want), <b>Impairments</b> (what harms it), <b>Means</b> (how we achieve it).</p>
+<svg viewBox="0 0 640 190" role="img" aria-label="Dependability tree"><rect x="240" y="8" width="160" height="32" rx="8" fill="#7c3aed"/><text x="278" y="29" style="fill:#fff;font-weight:700">Dependability</text>
+<g class="ax"><path d="M320 40V60M110 60H530M110 60V80M320 60V80M530 60V80"/></g>
+<rect x="30" y="80" width="160" height="30" rx="8" fill="#059669"/><text x="72" y="100" style="fill:#fff">Attributes</text><rect x="240" y="80" width="160" height="30" rx="8" fill="#dc2626"/><text x="272" y="100" style="fill:#fff">Impairments</text><rect x="450" y="80" width="160" height="30" rx="8" fill="#2563eb"/><text x="504" y="100" style="fill:#fff">Means</text>
+<text x="20" y="135" style="font-size:12px">reliability · availability</text><text x="20" y="152" style="font-size:12px">safety · integrity · maintainability</text><text x="262" y="135" style="font-size:12px">fault · error · failure</text><text x="400" y="135" style="font-size:12px">prevention · removal</text><text x="400" y="152" style="font-size:12px">forecasting · tolerance</text></svg>
+<h3>Attributes</h3>
+<div class="g"><div><b>Reliability</b><br>Continuous correct service without failure. Ex: online banking server runs a month without interruption.</div>
+<div><b>Availability</b><br>Ready to serve whenever needed. Ex: Google Search – failed servers are instantly replaced by backups.</div>
+<div><b>Safety</b><br>No injury, loss of life or environmental damage even when faults occur. Ex: flight control switches to a backup processor.</div>
+<div><b>Integrity</b><br>Data is protected from unauthorised change, corruption or loss. Ex: nobody can edit account balances illegally.</div>
+<div><b>Maintainability</b><br>Can be repaired quickly and easily. Ex: swapping a faulty server part in minutes.</div></div>
+<div class="def"><b class="t">Fail-safe vs fail-unsafe (safety)</b>For reliability all failures are equal. For safety they are split in two. Take an <b>alarm system</b>: if it <b>fails to ring when danger exists</b> → <b>fail-unsafe</b> (dangerous). If it <b>rings when there is no danger</b> → <b>fail-safe</b> (harmless false alarm).
+<div class="f">S(t) = P(works correctly OR stops in a fail-safe way during [0,t])</div></div>
+<div class="ex"><b class="t">Power-plant example</b>Sensor for turbine speed fails → system sends too much steam → turbine over-speeds → mechanical safety system shuts the turbine down. Damage prevented, but power generation stops. This is a <b>fail-safe failure</b>.</div>
+<h3>Impairments (recap)</h3>
+<p>Fault → Error → Failure, exactly as in section 2. <b>Faults cause errors, errors cause failures.</b></p>
+<h3>Features, importance, advantages, limits</h3>
+<div class="g"><div><b>A dependable system…</b><ul><li>gives correct service</li><li>detects faults quickly</li><li>keeps running during failures</li><li>recovers automatically</li><li>protects data</li><li>minimises downtime</li><li>is easy to repair</li></ul></div>
+<div style="--k:var(--c4)"><b>Advantages</b><ul><li>High reliability &amp; availability</li><li>Better safety &amp; data protection</li><li>Quick recovery</li><li>Lower maintenance cost</li><li>Happy customers, more trust</li></ul></div>
+<div style="--k:var(--c2)"><b>Limitations</b><ul><li>Higher development cost</li><li>More complex design</li><li>Extra hardware/software redundancy</li><li>More testing and maintenance</li></ul></div></div>
+<div class="ex"><b class="t">ATM as a dependable system</b>Works 24×7. If one server fails, a backup takes over at once, account data stays correct, cash transactions continue, and the failed server is repaired later. → Reliability (correct transactions), Availability (always accessible), Integrity (data protected), Maintainability (quick repair), Safety (no unsafe transactions).</div>
+</div>
+
+<div class="sec s6" id="f"><h2>6 · Four Techniques (Means) to Achieve Dependability</h2>
+<div class="g"><div style="--k:var(--c1)"><b>1. Fault Prevention</b><br>Stop faults from <b>entering</b> the system in the first place. Methods: good design, quality hardware, coding standards, training, documentation, design reviews. Ex: aircraft maker uses certified processors and strict coding rules. <i>Limit:</i> not all faults can be prevented.</div>
+<div style="--k:var(--c3)"><b>2. Fault Removal</b><br>Reduce faults that <b>already exist</b>, before or after deployment. Methods: testing, debugging, code inspection, verification, validation, corrective maintenance. Ex: bug found in testing is fixed before release. <i>Limit:</i> hidden faults may remain.</div>
+<div style="--k:var(--c5)"><b>3. Fault Forecasting</b><br><b>Estimate</b> how many faults exist, how many may occur in future, and their consequences. Methods: reliability analysis, failure-rate estimation, simulation, statistical models, risk assessment. Ex: cloud provider predicts disk failures and adds backup storage. <i>Limit:</i> only probabilities.</div>
+<div style="--k:var(--c4)"><b>4. Fault Tolerance</b><br>Keep working <b>correctly even when faults occur</b>. Done using <b>redundancy</b> (extra resources). <i>Limit:</i> higher cost and design complexity.</div></div>
+<h3>Types of redundancy (how fault tolerance is achieved)</h3>
+<div class="g" style="--k:var(--c4)"><div><b>Hardware</b><br>Duplicate/triplicate parts. Ex: dual power supplies.</div><div><b>Software</b><br>Several versions do the same job. Ex: N-version programming.</div><div><b>Information</b><br>Extra bits added to detect or correct errors.</div><div><b>Time</b><br>Repeat the operation to beat temporary faults. Ex: resend a lost packet.</div></div>
+<h3>What redundancy lets the system do</h3>
+<div class="chain" style="--k:var(--c6)"><div style="background:var(--c1)">Masking<small>only correct values reach the output</small></div><div style="background:var(--c3)">Detection<small>find that a fault occurred</small></div><div style="background:var(--c5)">Location<small>find where it is</small></div><div style="background:var(--c2)">Containment<small>stop it spreading</small></div><div style="background:var(--c4)">Recovery<small>reconfigure around it</small></div></div>
+<ul><li><b>Fault masking</b> – hide the fault so the output stays correct (like a spare tyre you never notice).</li>
+<li><b>Fault detection</b> – two ways: <b>acceptance tests</b> (when nothing is duplicated, check whether the result looks acceptable) and <b>comparison</b> (when parts are duplicated, compare their outputs; a mismatch means a fault).</li>
+<li><b>Fault location</b> – decide where the fault happened.</li>
+<li><b>Fault containment</b> – isolate the fault so its effect does not spread through the system.</li>
+<li><b>Recovery</b> – once the faulty part is identified, the system reconfigures itself to cut it off and returns to working state.</li></ul>
+<div class="tw"><table><tr><th>Technique</th><th>Goal</th><th>Example</th></tr><tr><td>Prevention</td><td>Avoid introducing faults</td><td>Coding standards</td></tr><tr><td>Removal</td><td>Eliminate existing faults</td><td>Testing, debugging</td></tr><tr><td>Forecasting</td><td>Predict future faults</td><td>Reliability analysis</td></tr><tr><td>Tolerance</td><td>Continue despite faults</td><td>Backup processors</td></tr></table></div>
+</div>
+
+<div class="sec s1" id="g"><h2>7 · Dependability Measures (with formulas)</h2>
+<p>Common measures: <b>failure rate, MTTF, MTTR, MTBF, fault coverage</b>. Also: reliability, availability, safety, integrity, maintainability.</p>
+<h3>Failure rate and the bathtub curve</h3>
+<div class="def"><b class="t">Failure rate z(t)</b>Expected number of failures per unit time. In <b>hardware</b> it follows a <b>bathtub curve</b> with 3 phases.</div>
+<svg viewBox="0 0 520 200" role="img" aria-label="Bathtub curve"><path class="ax" d="M50 15V165H490"/><path d="M50 30C70 140 90 140 120 140H350C400 140 430 110 480 40" fill="none" stroke="#2563eb" stroke-width="3"/><g class="ax" stroke-dasharray="4"><path d="M120 20V165M350 20V165"/></g>
+<text x="75" y="60">I</text><text x="225" y="60">II</text><text x="410" y="60">III</text><text x="10" y="20">z(t)</text><text x="495" y="182">t</text>
+<text x="55" y="185" style="font-size:11px">Infant mortality</text><text x="190" y="185" style="font-size:11px">Useful life (constant λ)</text><text x="370" y="185" style="font-size:11px">Wear-out</text></svg>
+<p><b>I Infant mortality</b> – weak parts fail early, rate drops. <b>II Useful life</b> – low, steady rate. <b>III Wear-out</b> – parts age, rate climbs.</p>
+<h3>Exponential failure law</h3>
+<p>During useful life (constant λ), reliability falls exponentially with time:</p><div class="f">R(t) = e^(−λt)</div>
+<svg viewBox="0 0 420 190" role="img" aria-label="Exponential reliability curve"><path class="ax" d="M50 15V160H400"/><path d="M50 25C110 90 180 125 380 150" fill="none" stroke="#dc2626" stroke-width="3"/><text x="22" y="30">1</text><text x="22" y="165">0</text><text x="8" y="15">R(t)</text><text x="395" y="178">t</text><text x="90" y="178">1/λ</text><text x="180" y="178">2/λ</text><text x="270" y="178">3/λ</text></svg>
+<div class="ex"><b class="t">Example</b>λ = 0.002/hour, t = 100 h → R = e^(−0.2) = 0.8187 → <b>81.87%</b> chance of no failure.</div>
+<h3>Failure rate of a system without redundancy</h3>
+<div class="f">λ = λ₁ + λ₂ + … + λₙ (add every component’s failure rate)</div>
+<div class="ex"><b class="t">Worked example (slides)</b>Circuit: 16 NAND gates (λ = 0.311×10⁻⁷/h each) + 3 flip-flops (0.412×10⁻⁷/h each). Failures independent.<br>(1) λ = 16×0.311×10⁻⁷ + 3×0.412×10⁻⁷ = <b>0.6212×10⁻⁶ per hour</b>.<br>(2) One year = 8760 h → R = e^(−0.6212×10⁻⁶ × 8760) = <b>0.9946</b> (≈ 99.46%).</div>
+<h3>Software failure rate</h3>
+<p>In software, failure rate usually <b>decreases</b> over time: I test/debug phase, II useful life, III obsolescence. Small bumps in phase II appear when <b>feature upgrades</b> add new bugs. The exponential law is mainly for hardware. Time-varying rates use the <b>Weibull distribution</b>:</p>
+<div class="f">z(t) = αλ(λt)^(α−1)</div>
+<ul><li>α = 1 → z(t) = λ (constant)</li><li>α &gt; 1 → rate <b>increases</b> with time</li><li>α &lt; 1 → rate <b>decreases</b> with time</li></ul>
+<svg viewBox="0 0 520 150" role="img" aria-label="Software failure rate curve"><path class="ax" d="M50 10V130H490"/><path d="M52 25C70 90 90 110 110 112L112 45C125 90 135 100 150 100L152 70C165 95 180 100 200 100H470" fill="none" stroke="#7c3aed" stroke-width="3"/><g class="ax" stroke-dasharray="4"><path d="M112 10V130M220 10V130"/></g><text x="75" y="30">I</text><text x="160" y="30">II</text><text x="350" y="30">III</text><text x="10" y="15">z(t)</text></svg>
+<h3>MTTF in detail</h3>
+<ul><li>MTTF = expected time to the <b>first</b> failure.</li><li>Test <i>n</i> identical parts, note each one’s time to fail tᵢ: <b>MTTF = (1/n) Σ tᵢ</b>.</li><li>Link to reliability: <b>MTTF = ∫ R(t) dt (0 to ∞) = 1/λ</b>.</li></ul>
+<div class="def"><b class="t">FIT – Failures In Time</b>Number of failures expected in one <b>billion (10⁹) hours</b>.<div class="f">FIT = 10⁹ ÷ MTTF</div></div>
+<div class="ex"><b class="t">Example</b>Motor, λ = 0.549×10⁻³/h. MTTF = 1/λ = <b>1822 hours</b>. FIT = 10⁹/1822 = <b>548,847</b>.</div>
+<h3>MTTR, repair rate and steady-state availability</h3>
+<p>Repair rate <b>μ</b> (mu) = expected repairs per unit time.</p>
+<div class="f">MTTR = 1/μ    MTBF = MTTF + MTTR</div>
+<div class="f">A(∞) = MTTF/(MTTF+MTTR) = μ/(μ+λ)</div>
+<div class="ex"><b class="t">Examples</b>MTTF 1000 h, MTTR 10 h → A = 1000/1010 = 0.9901 (99.01%). Five repairs taking 25 h → MTTR = 5 h; with MTTF = 1000 h, MTBF = 1005 h. 5000 h with 5 failures → MTTF = 1000 h.</div>
+<h3>Fault coverage</h3>
+<p>Coverage = <b>conditional probability</b>: “<i>given</i> that a fault exists, what is the chance the system handles it?” Four kinds:</p>
+<div class="g"><div><b>Detection coverage</b><br>P(system detects the fault)</div><div><b>Location coverage</b><br>P(system locates it)</div><div><b>Containment coverage</b><br>P(system contains it)</div><div><b>Recovery coverage</b><br>P(system recovers)</div></div>
+<table><tr><th>Measure</th><th>Meaning</th><th>Desired</th></tr><tr><td>Reliability</td><td>Failure-free operation</td><td>High</td></tr><tr><td>Availability</td><td>Operational when needed</td><td>High</td></tr><tr><td>Safety</td><td>No hazards on failure</td><td>High</td></tr><tr><td>Integrity</td><td>Data protected</td><td>High</td></tr><tr><td>Maintainability</td><td>Fast, easy repair</td><td>High</td></tr><tr><td>MTTF / MTBF</td><td>Time to / between failures</td><td>High</td></tr><tr><td>MTTR</td><td>Repair time</td><td>Low</td></tr></table>
+</div>
+
+<div class="sec s4" id="h"><h2>8 · Quick Revision Cheat Sheet</h2>
+<div class="tw"><table><tr><th>Concept</th><th>Formula</th></tr>
+<tr><td>Failure rate</td><td>λ = failures ÷ operating time</td></tr><tr><td>MTTF</td><td>total operating time ÷ failures = 1/λ</td></tr><tr><td>MTTR</td><td>total repair time ÷ repairs = 1/μ</td></tr><tr><td>MTBF</td><td>MTTF + MTTR</td></tr><tr><td>Reliability</td><td>R(t) = e^(−λt)</td></tr><tr><td>Availability</td><td>MTTF ÷ (MTTF + MTTR)</td></tr><tr><td>System λ (no redundancy)</td><td>sum of all λᵢ</td></tr><tr><td>FIT</td><td>10⁹ ÷ MTTF</td></tr><tr><td>Packet loss %</td><td>lost ÷ sent × 100</td></tr></table></div>
+<div class="key"><b class="t">Five lines to remember</b>1) Fault → Error → Failure. 2) Faults are permanent, transient or intermittent. 3) Reliability = no failure; availability = ready when needed. 4) Dependability = attributes + impairments + means. 5) Prevention, removal, forecasting and tolerance work together.</div>
+</div>
+</div><script>
+if (window.self === window.top) {
+  var b = document.createElement('a');
+  b.href = '../index.html';
+  b.className = 'hub-floating-btn';
+  b.innerHTML = '← Back to Study Portal';
+  b.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;background:#0969da;color:#ffffff;font-family:system-ui,-apple-system,sans-serif;font-size:13px;font-weight:700;padding:10px 18px;border-radius:99px;box-shadow:0 4px 14px rgba(0,0,0,0.35);text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s ease;cursor:pointer;';
+  b.onmouseenter = function(){ b.style.transform='translateY(-2px)'; b.style.boxShadow='0 6px 20px rgba(9,105,218,0.5)'; };
+  b.onmouseleave = function(){ b.style.transform='none'; b.style.boxShadow='0 4px 14px rgba(0,0,0,0.35)'; };
+  document.body.appendChild(b);
+}
+</script>
+</body></html>

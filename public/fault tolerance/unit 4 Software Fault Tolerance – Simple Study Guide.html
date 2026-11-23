@@ -1,0 +1,221 @@
+﻿<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Software Fault Tolerance – Simple Study Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600&family=Young+Serif&family=Fira+Code&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fbfaf7;--card:#fff;--ink:#1d2330;--mut:#5b6475;--line:#dcd9d0;--note:#fff6d6;--c:#0f766e;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171d;--card:#1d222b;--ink:#e8eaf0;--mut:#a3abbb;--line:#363c49;--note:#3a3416}}
+:root[data-theme="dark"]{--bg:#14171d;--card:#1d222b;--ink:#e8eaf0;--mut:#a3abbb;--line:#363c49;--note:#3a3416}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.7 'Lexend',system-ui,sans-serif}
+main{max-width:860px;margin:auto;padding:16px}
+h1,h2,h3{font-family:'Young Serif',Georgia,serif;font-weight:400;line-height:1.25}
+h1{font-size:2rem;margin:.3em 0}h2{font-size:1.5rem;margin:0 0 .6em;color:var(--c)}h3{font-size:1.1rem;margin:1.2em 0 .3em;border-left:5px solid var(--c);padding-left:10px}
+section{background:var(--card);border:1px solid var(--line);border-top:8px solid var(--c);border-radius:10px;padding:8px 20px 18px;margin:22px 0}
+.t{--c:#0f766e}.a{--c:#b45309}.v{--c:#7c3aed}.n{--c:#2563eb}.r{--c:#be185d}.g{--c:#15803d}.m{--c:#4f46e5}.o{--c:#c2410c}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .t{--c:#2dd4bf}:root:not([data-theme="light"]) .a{--c:#fbbf24}:root:not([data-theme="light"]) .v{--c:#a78bfa}:root:not([data-theme="light"]) .n{--c:#60a5fa}:root:not([data-theme="light"]) .r{--c:#f472b6}:root:not([data-theme="light"]) .g{--c:#4ade80}:root:not([data-theme="light"]) .m{--c:#818cf8}:root:not([data-theme="light"]) .o{--c:#fb923c}}
+.k{background:var(--note);border-left:5px solid #d4a017;border-radius:6px;padding:8px 12px;margin:10px 0}
+.ex{border:2px dashed var(--c);border-radius:8px;padding:8px 12px;margin:10px 0}
+.ex b:first-child,.k b:first-child{color:var(--c)}
+code,.f{font-family:'Fira Code',monospace;font-size:.88rem;background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:1px 6px}
+.f{display:block;padding:8px 12px;margin:8px 0;overflow-x:auto}
+.w{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border:1px solid var(--line);padding:6px 8px;text-align:left}th{background:var(--bg)}
+svg{display:block;margin:12px auto;max-width:100%;height:auto}svg text{fill:var(--ink);font:12px 'Lexend',sans-serif}svg .b{fill:var(--card);stroke:var(--c);stroke-width:2}svg .l{stroke:var(--c);stroke-width:2;fill:none}svg .d{fill:var(--c)}svg .x{fill:var(--c);opacity:.35}
+nav a{display:inline-block;margin:3px 4px 3px 0;padding:3px 10px;border-radius:99px;border:2px solid var(--c);color:var(--ink);text-decoration:none;font-size:.85rem}
+.cap{text-align:center;color:var(--mut);font-size:.85rem;margin-top:-6px}
+</style></head><body><main>
+<h1>Software Fault Tolerance</h1>
+<p style="color:var(--mut)">Unit 4 · 21CSE479T Fault Tolerant Systems · a plain-language study guide (read top to bottom once)</p>
+<nav><a class="t" href="#s1">1 Basics</a><a class="a" href="#s2">2 Acceptance tests</a><a class="t" href="#s3">3 Wrappers</a><a class="a" href="#s4">4 Rejuvenation</a><a class="v" href="#s5">5 Data diversity</a><a class="n" href="#s6">6 N-version</a><a class="r" href="#s7">7 Recovery block</a><a class="g" href="#s8">8 Assertions</a><a class="g" href="#s9">9 Exceptions</a><a class="m" href="#s10">10 Reliability models</a><a class="o" href="#s11">11 Remote calls</a></nav>
+
+<section id="s1" class="t"><h2>1. Why software needs fault tolerance</h2>
+<p><b>Fault tolerance</b> means the system keeps working correctly <i>even when something inside it is broken</i>. A <b>bug</b> (defect) is a mistake in the code.</p>
+<p><b>Two kinds of difficulty</b> make correct software hard:</p>
+<ul><li><b>Essential difficulty</b> – the problem itself is complex. The software must handle a huge number of states with tricky rules for moving between them, and it keeps changing (new features, new hardware, new operating systems).</li>
+<li><b>Accidental difficulty</b> – plain human mistakes in the code.</li></ul>
+<p>We first try hard to reduce bugs by testing. But testing can never remove every bug, so we add <b>fault-tolerance techniques</b> to limit the damage of the bugs that remain.</p>
+<div class="k"><b>Big picture:</b> Step 1 detect a problem (acceptance tests). Step 2 survive it, using one copy of the software made stronger (single-version), many copies (N-version), or backups (recovery block). Step 3 measure how reliable the software is (reliability models).</div></section>
+
+<section id="s2" class="a"><h2>2. Acceptance tests – noticing that something is wrong</h2>
+<p>To tolerate a fault you must first <b>detect</b> it. An <b>acceptance test</b> is simply a <b>“does this look reasonable?” check</b> on the output. Three common types:</p>
+<h3>a) Timing check</h3>
+<p>If you roughly know how long the code should take, set a <b>watchdog timer</b>. If the timer rings before the code finishes, assume a failure. It can run alongside other tests.</p>
+<h3>b) Verification of output</h3>
+<p>Some problems are <b>hard to solve but easy to check</b>.</p>
+<div class="ex"><b>Example:</b> a jigsaw puzzle takes ages to solve, but one glance tells you it is done. Same with: <b>square root</b> (square the answer, do you get the number back?), <b>factorization</b> (multiply the factors), <b>equations</b> (put the answer back into the equation).</div>
+<h3>c) Range check</h3>
+<p>When there is no neat way to verify, use what you know to set <b>allowed limits</b>. Anything outside is declared an error. Limits can be fixed, or a simple function of the inputs.</p>
+<div class="ex"><b>Example:</b> a satellite takes temperature pictures of the Earth. We set a sensible temperature range; a reading outside it is treated as an error.</div>
+<h3>Setting the limits: sensitivity vs specificity</h3>
+<div class="w"><table><tr><th>Term</th><th>Simple meaning</th><th>Formal meaning</th></tr>
+<tr><td><b>Sensitivity</b></td><td>How good the test is at <i>catching</i> wrong outputs</td><td>P(test says “error” | output really is wrong)</td></tr>
+<tr><td><b>Specificity</b></td><td>When the test shouts “error”, how often is it <i>truly</i> an error</td><td>P(output really wrong | test says “error”)</td></tr>
+<tr><td><b>False alarm</b></td><td>Test blames a perfectly good output</td><td>P(test says “error” | output is correct)</td></tr></table></div>
+<div class="k"><b>Think of a smoke alarm:</b> high sensitivity = it always rings for real fires. Low specificity or many false alarms = it also rings when you make toast. Tight limits catch more errors but cause more false alarms, so you must balance them.</div></section>
+
+<section id="s3" class="t"><h2>3. Single-version fault tolerance: one program, made tougher</h2>
+<h3>Wrappers</h3>
+<p>A <b>wrapper</b> is extra software placed <b>around</b> a program, like a security guard at a door. It checks everything going <b>in</b> and everything coming <b>out</b>. It can wrap application software, middleware, or even an OS kernel.</p>
+<svg viewBox="0 0 520 170" width="520" role="img" aria-label="Wrapper diagram"><rect class="b" x="150" y="10" width="220" height="150" rx="8" stroke-dasharray="6 4"/><text x="260" y="28" text-anchor="middle">Wrapper</text><rect class="b" x="185" y="45" width="150" height="40"/><text x="260" y="70" text-anchor="middle">Checks (acceptance test)</text><rect class="b" x="185" y="105" width="150" height="40"/><text x="260" y="130" text-anchor="middle">Wrapped program</text><path class="l" d="M220 5v40M220 85v20M300 105V85M300 45V5"/><text x="20" y="25">Inputs in</text><text x="390" y="25">Outputs out</text></svg>
+<p><b>Why wrappers became popular:</b> people started using <b>COTS</b> (Commercial Off-The-Shelf) software, meaning ready-made general-purpose components. For them an error is “an annoyance, not a calamity”, so they are not safe enough for high-reliability jobs. A wrapper blocks inputs that are out of range or known to cause errors, and passes outputs through an acceptance test. If the test fails, the system is told and decides what to do.</p>
+<p><b>Wrappers are specific</b> to the program and system they guard. Uses:</p>
+<ul><li><b>Buffer overflow.</b> C does not check array limits. A <i>buffer</i> is a small box of memory; writing a long string into it spills over and overwrites other memory (by accident or by an attacker). The wrapper checks the buffer is big enough before copying.</li>
+<li><b>Checking a scheduler.</b> <b>EDF (Earliest Deadline First)</b>: always run the ready task whose deadline is nearest. The wrapper checks the scheduler really picks that task and that a newly arrived task with an earlier deadline pre-empts (interrupts) the running one. (Some tasks cannot be interrupted at certain points.)</li>
+<li><b>Software with known bugs.</b> Suppose testing shows it fails for a set of inputs <b>S</b>. The wrapper checks each input: not in S → forward it; in S → raise an exception, or send it to custom backup code that handles S.</li>
+<li><b>Checking output.</b> Every output goes through an acceptance test: pass → release; fail → raise an exception.</li></ul>
+<div class="k"><b>A wrapper works well only if:</b> (1) the acceptance test is good; (2) you can see inside the component. A “black box” only shows outputs, so a scheduler wrapper is impossible without knowing task deadlines; (3) the component has been well tested, so you know which inputs fail.</div></section>
+
+<section id="s4" class="a"><h2>4. Software rejuvenation – “turn it off and on again”</h2>
+<p>When your PC hangs you reboot it. That is <b>software rejuvenation</b>. Over time a running process keeps grabbing memory and file locks without releasing them, and uncorrected errors pile up in its data, until it breaks. Rejuvenation <b>proactively stops it, cleans its state, and restarts it</b> before that happens.</p>
+<h3>Level: how much to restart</h3>
+<ul><li><b>Application level</b> – suspend one application, clean up (garbage collection, reset data structures), restart it.</li><li><b>Processor level</b> – reboot the whole processor; affects every application on it.</li></ul>
+<p>Choose the level where the resources are actually worn out.</p>
+<h3>Timing: when to restart</h3>
+<p><b>Time-based:</b> restart at fixed intervals. Too often wastes time; too rarely lets errors hurt. We balance this using a model. Notation:</p>
+<div class="w"><table><tr><td><code>Ñ(t)</code></td><td>expected number of errors in time t without rejuvenation</td></tr><tr><td><code>Ce</code></td><td>cost of each error</td></tr><tr><td><code>Cr</code></td><td>cost of each rejuvenation</td></tr><tr><td><code>P</code></td><td>time between rejuvenations</td></tr></table></div>
+<p>Total cost over one period, then cost per unit time:</p>
+<span class="f">C_rejuv(P) = Ñ(P)·Ce + Cr<br>C_rate(P) = C_rejuv(P)/P = (Ñ(P)·Ce + Cr)/P</span>
+<p>Three cases for how errors grow:</p>
+<div class="w"><table><tr><th>Error behaviour</th><th>Ñ(P)</th><th>Result</th></tr>
+<tr><td>Constant error rate λ</td><td>λP</td><td>C_rate = λCe + Cr/P. Smallest when P = ∞, so <b>never rejuvenate</b>. It only helps when errors increase with time.</td></tr>
+<tr><td>Errors grow with time (squared)</td><td>λP²</td><td>C_rate = λP·Ce + Cr/P. Set the slope to zero: <b>P* = √(Cr / (λCe))</b></td></tr>
+<tr><td>Errors grow faster (power n)</td><td>λPⁿ</td><td>C_rate = λPⁿ⁻¹Ce + Cr/P. <b>P* = (Cr / ((n−1)λCe))^(1/n)</b></td></tr></table></div>
+<div class="k"><b>Reading the graph (Fig. 2 in your slides):</b> it plots the best period P* against n for different Cr/Ce ratios (0.05 to 0.40, λ = 1). A costlier rejuvenation (bigger Cr/Ce) means you should restart less often.</div>
+<p><b>Prediction-based:</b> watch the system (memory used, file locks held…), predict when it will fail, and rejuvenate just before the predicted crash.</p>
+<div class="ex"><b>Example:</b> a process eats memory at a steady speed, so you can calculate when memory runs out and restart just before.</div>
+<p>This needs enough status information. Inside an OS it is easy to get; a normal add-on package can only use what the OS offers. Linux tools: <code>vmstat</code> (CPU, memory, paging, traps, I/O), <code>iostat</code> (CPU % at user/system level, usage per I/O device), <code>netstat</code> (network connections, routing tables, interfaces), <code>nfsstat</code> (network file server statistics). Collect data, spot trends, predict errors.</p></section>
+
+<section id="s5" class="v"><h2>5. Data diversity – “try a slightly different input”</h2>
+<p>The <b>input space</b> is every possible input a program can receive. Part of it is the <b>failure region</b> (inputs that make the program fail); the rest is safe. The program fails <i>if and only if</i> the input lies in the failure region. Real input spaces have many dimensions; we draw 2.</p>
+<svg viewBox="0 0 520 150" width="520" role="img" aria-label="Failure regions"><rect class="b" x="20" y="10" width="200" height="110"/><rect class="d" x="45" y="25" width="16" height="16"/><rect class="d" x="110" y="15" width="16" height="16"/><rect class="d" x="180" y="40" width="16" height="16"/><rect class="d" x="70" y="70" width="16" height="16"/><rect class="d" x="140" y="85" width="16" height="16"/><rect class="d" x="195" y="95" width="16" height="16"/><text x="120" y="140" text-anchor="middle">(a) many small islands</text><rect class="b" x="290" y="10" width="200" height="110"/><rect class="d" x="355" y="30" width="70" height="70"/><text x="390" y="140" text-anchor="middle">(b) one big block</text></svg>
+<p>Both have the <b>same fraction</b> of failing inputs. But in (a) a tiny nudge to the input moves it out of a black spot into a safe area; in (b) a small nudge doesn’t help. For case (a), we <b>perturb</b> (slightly change) the input and hope it lands in a safe region. This is <b>data diversity</b>.</p>
+<ul><li><b>Explicit perturbation:</b> add a small deviation to some inputs.</li><li><b>Implicit perturbation:</b> collect inputs in a way that makes them naturally slightly different.</li></ul>
+<div class="ex"><b>Example:</b> a controller reads pressure and temperature of a refrigerator every second as (p<sub>i</sub>, t<sub>i</sub>). Physics says one second’s values are close to the previous second’s. If (p<sub>i</sub>, t<sub>i</sub>) crashes the program, try (p<sub>i−1</sub>, t<sub>i</sub>) instead.</div>
+<h3>SIHFT – Software Implemented Hardware Fault Tolerance</h3>
+<p>Data diversity + <b>time redundancy</b> (do the work twice, at different times) can detect <b>hardware</b> faults using software only. It is a cheap option, ideal for COTS processors that have no error detection.</p>
+<p><b>Method (integer programs):</b> make a second program where every variable and constant is multiplied by a <b>diversity factor k</b>. Its final results should be exactly <b>k × the original results</b>. Run both on the same hardware; if the results don’t match, hardware is faulty. Hardware faults hit the two runs differently, depending on k.</p>
+<div class="ex"><b>Example – stuck-at-0 bus:</b> a bus is a set of wires; bit i is stuck at 0. If the data’s bit i is 1, it arrives wrong. With k = 2, that bit moves to wire i+1, which is fine, so the two runs differ and the fault is caught. It is missed only if bits i and i−1 are both 0, which has probability 0.25. With k = −1, most 0s turn into 1s, so the chance of missing it is much lower.</div>
+<ul><li><b>Choosing k:</b> big enough to detect faults often, small enough to avoid <b>overflow/underflow</b> (number too big or small to store). If the program uses bitwise XOR/AND, use k = 2<sup>l</sup> (l an integer), since multiplying then is a simple bit shift.</li>
+<li>Even k = −1 can overflow if a variable holds the most negative number (two’s complement). Fix: use a bigger integer type for that variable. <b>Range analysis</b> finds which variables need it. The transformation is simple and can be automated.</li>
+<li><b>Slide example (k = 2):</b> original: x=3, y=1, while (i&lt;5) {y = y*(x+i); i = i+2}. Transformed: x=6, y=2, while (i&lt;10) {y = y*(x+i)/2; i = i+4}. Final z is doubled.</li></ul>
+<h3>RESO – Recomputing with Shifted Operands</h3>
+<p>Like SIHFT, but the <b>hardware itself is modified</b>. Each arithmetic/logic unit first computes on the original operands, then <b>again on shifted operands</b> (k = 2<sup>l</sup> only). Overflow is easier to avoid because the hardware can simply have extra bits.</p>
+<svg viewBox="0 0 560 130" width="560" role="img" aria-label="RESO ALU"><text x="8" y="40">X</text><text x="8" y="90">Y</text><rect class="b" x="25" y="22" width="70" height="26"/><text x="60" y="40" text-anchor="middle">Shifter</text><rect class="b" x="25" y="72" width="70" height="26"/><text x="60" y="90" text-anchor="middle">Shifter</text><path class="b" d="M120 15L160 40V80L120 105z"/><text x="140" y="64" text-anchor="middle">ALU</text><rect class="b" x="185" y="45" width="70" height="26"/><text x="220" y="63" text-anchor="middle">Shifter</text><rect class="b" x="285" y="80" width="80" height="26"/><text x="325" y="98" text-anchor="middle">Register</text><rect class="b" x="395" y="80" width="80" height="26"/><text x="435" y="98" text-anchor="middle">Checker</text><path class="l" d="M95 35h25M95 85h25M160 58h25M255 58h300M270 58v35h15M365 93h30M475 93h30M325 58v22"/><text x="525" y="52">Z</text><text x="490" y="118">Error</text></svg>
+<p><b>Steps:</b> (1) add X and Y unshifted, store result Z in the register. (2) shift X and Y, add them. (3) shift that result back the opposite way. (4) the checker compares it with the register; a mismatch means a hardware fault.</p></section>
+
+<section id="s6" class="n"><h2>6. N-version programming – many teams, one vote</h2>
+<p><b>N independent teams</b> write software from the <b>same specification</b>. All N versions run in parallel and their outputs are <b>voted</b> on. Hope: independent teams are unlikely to make the same bug.</p>
+<svg viewBox="0 0 520 170" width="520" role="img" aria-label="N-version voting"><rect class="b" x="10" y="65" width="80" height="36"/><text x="50" y="88" text-anchor="middle">Input</text><rect class="b" x="190" y="10" width="100" height="32"/><text x="240" y="31" text-anchor="middle">Version 1</text><rect class="b" x="190" y="68" width="100" height="32"/><text x="240" y="89" text-anchor="middle">Version 2</text><rect class="b" x="190" y="126" width="100" height="32"/><text x="240" y="147" text-anchor="middle">Version 3</text><rect class="b" x="380" y="65" width="80" height="36"/><text x="420" y="88" text-anchor="middle">Voter</text><path class="l" d="M90 83H140V26H190M140 83V142H190M140 83H190M290 26H335V83H380M290 84H380M290 142H335V83"/><text x="465" y="88">→ majority</text></svg>
+<p><b>Probability:</b> if each version is buggy with the same probability q, independently, the chance that <b>at most m of N</b> versions are defective is:</p>
+<span class="f">p_ind(N,m,q) = Σ (i = 0 to m) C(N,i) · qⁱ · (1−q)^(N−i)</span>
+<p>(C(N,i) = “N choose i”, the number of ways to pick which i versions are bad.)</p>
+<h3>Problem 1: the consistent comparison problem</h3>
+<p>Even <b>correct</b> versions may not agree. Versions compute some value x and compare with a constant c. The comparison is <b>consistent</b> if all versions give x ≥ c, or all give x &lt; c. Because teams use different algorithms, x differs slightly, e.g.:</p>
+<span class="f">if (f(p,t) &lt; c) take action A1 else take action A2</span>
+<div class="ex"><b>Example:</b> c = 1.0000, N = 3. Outputs are 0.9999, 0.9998 and 1.0001. V1 and V2 are below c (do A1) and V3 is above (does A2), though all three are working correctly.</div>
+<p>It can happen however precise the versions are. No general fix exists: any algorithm that maps nearby n-bit integers (differing by less than 2<sup>k</sup>) to the same output must map <i>every</i> input to the same number, which is useless. It can occur wherever a variable is compared with a threshold.</p>
+<p><b>Why it matters:</b> the system can’t tell whether disagreement means errors or just this problem. Two failed versions with the same wrong answer (common bug) could outvote the correct ones.</p>
+<p><b>Fixes:</b></p>
+<ul><li><b>Agree on a consensus value</b> of x before comparing. Drawbacks: the order of comparisons must be fixed, which reduces diversity (more correlated errors), and fast versions wait for slow ones.</li>
+<li><b>Confidence signals:</b> if |x − c| &lt; δ (a preset small number), a version announces <b>low confidence</b>; the voter ignores it or gives it less weight. Drawback: other correct versions are probably also near c and are also devalued, so a wrong result far from c might outvote several correct ones.</li></ul>
+<p>How often the problem appears depends on the application. If calculations use only the latest inputs (no memory of past values), it is rare and quickly goes away.</p>
+<h3>Problem 2: version independence</h3>
+<p>Correlated (related) errors can raise error probability by <b>orders of magnitude</b>.</p>
+<div class="ex"><b>Example:</b> N = 3 tolerates one bad version. Each version outputs a wrong answer with q = 10<sup>−4</sup> (once in 10,000 runs). If independent, the system fails with probability q³ + 3q²(1−q) ≈ <b>3 × 10<sup>−8</sup></b>. Now suppose one shared bug in all three versions is triggered once per million runs. Then the system fails with probability over <b>10<sup>−6</sup></b>, more than <b>30 times worse</b>.</div>
+<p>The input space has regions with different failure chances (e.g. a numerically unstable region fails more). Using the total probability formula, with S<sub>i</sub> = region i:</p>
+<span class="f">P(Vj fails) = Σ P(Vj fails | S<sub>i</sub>) · P(input in S<sub>i</sub>)<br>P(V1 and V2 both fail) = Σ P(V1 fails | S<sub>i</sub>) · P(V2 fails | S<sub>i</sub>) · P(S<sub>i</sub>)</span>
+<div class="ex"><b>Example 1</b> (two regions, each 0.5 likely). Failure probabilities: V1 = 0.010 in S1, 0.001 in S2; V2 = 0.020 in S1, 0.003 in S2.<br>P(V1 fails) = 0.01×0.5 + 0.001×0.5 = 0.0055; P(V2 fails) = 0.0115. If independent: 0.0055 × 0.0115 = <b>6.33×10<sup>−5</sup></b>. Actual both-fail = 0.01×0.02×0.5 + 0.001×0.003×0.5 = <b>1.02×10<sup>−4</sup></b>, higher, because both are weak in S1 (<b>positively correlated</b>).</div>
+<div class="ex"><b>Example 2:</b> V1 = 0.010 / 0.001, V2 = 0.003 / 0.020. Both-fail = 0.01×0.003×0.5 + 0.001×0.02×0.5 = <b>2.5×10<sup>−5</sup></b>, about 5× lower than Example 1 and less than half the independent value. Now <b>negatively correlated</b>: V1 is strong where V2 is weak and vice versa, so they cover each other.</div>
+<p>Ideally versions are negatively correlated; realistically they are positively correlated since they solve the same problem. Historically, the goal has been to make them as <b>independent</b> as possible.</p>
+<h3>What ruins independence</h3>
+<ul><li><b>Common specifications</b> – a spec error is copied into every version.</li><li><b>Intrinsic difficulty</b> – some inputs are hard for everyone, so versions fail on the same inputs.</li><li><b>Common algorithms</b> – the algorithm itself may be unstable in some region, and all versions inherit it.</li><li><b>Cultural factors</b> – similarly trained programmers make similar mistakes and read vague specs the same wrong way.</li><li><b>Common platforms</b> – same hardware, OS or compiler; their bugs cause correlated failures (strictly not an application bug, but the user still sees a failure).</li></ul>
+<h3>How to gain independence</h3>
+<p><b>Incidental diversity:</b> a by-product of keeping teams apart. Teams may not talk to each other; questions go to a central authority who corrects the spec and informs all teams; inspectors must not leak information between versions.</p>
+<p><b>Forced diversity:</b> deliberately push teams to differ:</p>
+<ul><li><b>Diverse specifications</b> – many bugs (some say two-thirds) come from faulty specs, so let diversity start at the spec stage. Versions can even have different capability, e.g. one simpler, less accurate but acceptable and less error-prone.</li><li><b>Diverse programming languages</b> – assembly is more bug-prone than high-level languages; different languages bring different libraries and compilers with uncorrelated bugs.</li><li><b>Diverse tools and compilers</b> – “notational diversity”; tools themselves can be faulty.</li><li><b>Cognitively diverse teams</b> – people who reason differently.</li><li><b>Diverse hardware and OS</b> – each version on a different processor type and OS.</li></ul>
+<h3>Other issues</h3>
+<ul><li><b>Back-to-back testing:</b> feed the same input to all versions and compare outputs to find bugs that don’t coincide. You can also compare <b>intermediate variables</b> for better visibility into hidden defects, but forcing every version to produce them reduces diversity.</li><li><b>Cost:</b> software is expensive and N versions cost more. One study: each extra version adds <b>25% to 134%</b> of the single-version cost, plus management overhead.</li><li><b>One great version vs many?</b> With a fixed time budget, is it better to polish one version or build N? Reliability modelling is not advanced enough to say.</li></ul></section>
+
+<section id="s7" class="r"><h2>7. Recovery block – one runs, the others wait as backups</h2>
+<p>Also uses multiple versions, but <b>only one runs at a time</b>. If it fails, switch to a backup. Pieces: a <b>primary</b>, <b>secondaries</b> (backups) and an <b>acceptance test</b>.</p>
+<svg viewBox="0 0 520 190" width="520" role="img" aria-label="Recovery block flow"><rect class="b" x="10" y="10" width="110" height="30"/><text x="65" y="30" text-anchor="middle">Primary</text><rect class="b" x="170" y="10" width="130" height="30"/><text x="235" y="30" text-anchor="middle">Acceptance test</text><rect class="b" x="10" y="70" width="110" height="30"/><text x="65" y="90" text-anchor="middle">Secondary 1</text><rect class="b" x="170" y="70" width="130" height="30"/><text x="235" y="90" text-anchor="middle">Acceptance test</text><rect class="b" x="10" y="130" width="110" height="30"/><text x="65" y="150" text-anchor="middle">Secondary 2</text><rect class="b" x="170" y="130" width="130" height="30"/><text x="235" y="150" text-anchor="middle">Acceptance test</text><path class="l" d="M120 25h50M120 85h50M120 145h50M235 40v15H65V70M235 100v15H65V130M235 160v18"/><path class="l" d="M300 25h60M300 85h60M300 145h60"/><text x="365" y="29" >Pass: done</text><text x="240" y="56" font-size="11">Fail: roll back, try next</text><text x="240" y="186">Fail: give up, take corrective action</text></svg>
+<p><b>Steps:</b> run the primary → test the output → if OK, accept. If not, <b>roll back</b> (restore the system to how it was before the primary started) and run secondary 1. Repeat through the secondaries. If all fail, the recovery block has failed and the system must take corrective action.</p>
+<p><b>Success depends on:</b> (a) how often versions fail on the <i>same</i> inputs (correlated bugs), (b) the quality of the acceptance test.</p>
+<h3>Success probability (versions fail independently)</h3>
+<div class="w"><table><tr><td><code>E</code></td><td>output of a version is wrong</td></tr><tr><td><code>T</code></td><td>test reports the output is wrong</td></tr><tr><td><code>f</code> = P(E)</td><td>failure probability of one version</td></tr><tr><td><code>s</code> = P(T|E)</td><td>test sensitivity</td></tr><tr><td><code>σ</code> = P(E|T)</td><td>test specificity</td></tr><tr><td><code>n</code></td><td>number of versions (primary + secondaries)</td></tr></table></div>
+<p>The scheme succeeds at stage i if the test <b>rejected</b> stages 1 to i−1 and at stage i the output is correct <b>and</b> passes:</p>
+<span class="f">P(success at stage i) = [P(T)]^(i−1) · P(Ē ∩ T̄)<br>P(T) = s·f/σ,  P(Ē ∩ T̄) = (1−f) − (1−σ)·s·f/σ<br>Total = Σ (i=1..n) [sf/σ]^(i−1) · [(1−f) − (1−σ)sf/σ] = (1 − (sf/σ)ⁿ)/(1 − sf/σ) · [(1−f) − (1−σ)sf/σ]   …(1)</span>
+<div class="k"><b>What the graph shows</b> (n = 3, s and σ = 0.85 or 0.95): success probability drops as f grows. <b>Sensitivity matters more than specificity</b>: the two s = 0.85 curves are much lower than the s = 0.95 curves, whatever σ is.</div>
+<h3>Distributed recovery blocks</h3>
+<p>Two nodes hold identical copies of primary and secondary. <b>Node 1 runs the primary while node 2 runs the secondary at the same time.</b> If node 1 fails its acceptance test (or a watchdog timer expires with no output), node 2’s output is used. Then the <b>roles swap</b>: node 2’s copy becomes the primary and node 1’s the backup, until that one fails, and they swap back.</p>
+<p><b>Advantage:</b> no waiting for rollback and then a secondary run, since execution overlaps. This saves time, ideal for <b>real-time systems</b> with tight deadlines.</p></section>
+
+<section id="s8" class="g"><h2>8. Preconditions, postconditions and assertions</h2>
+<p>These are acceptance tests built into code that catch errors <b>before they spread</b>. The programmer decides what corrective action to take.</p>
+<ul><li><b>Precondition:</b> must be true <i>when a method is called</i>. Example: a square root method for real numbers needs a non-negative input.</li><li><b>Postcondition:</b> must be true <i>when the method returns</i>. Example: a natural log method given X returns Y, so e<sup>Y</sup> = X.</li><li><b>Assertion:</b> a generalisation; a condition that must be true at the point where it is written.</li></ul>
+<div class="ex"><b>Example:</b> the total of node degrees in an undirected graph must be even. Assert that after computing it; if odd, an error occurred, and the usual response is to notify the user or take other action.</div>
+<div class="k"><b>Contract idea:</b> the caller promises the preconditions hold. The method promises the postconditions hold. If the caller breaks its promise, no correct result is guaranteed.</div></section>
+
+<section id="s9" class="g"><h2>9. Exception handling</h2>
+<p>An <b>exception</b> is a signal that something needing attention happened (e.g. an assertion failed due to a hardware or software fault). Control jumps to an <b>exception handler</b>, a routine that responds. Good handling greatly improves fault tolerance, which is why much real code is exception handling.</p>
+<div class="ex"><b>Example:</b> y = a × b overflows, so the result is wrong. Signal an exception and react.</div>
+<h3>Uses of exceptions</h3>
+<ul><li><b>Domain error:</b> illegal input. sqrt(Y) with Y = −1 for real numbers (fine for complex numbers).</li>
+<li><b>Range error:</b> output or operation is wrong: hitting end-of-file too early; result fails an embedded acceptance test; printing a too-long line; arithmetic overflow or underflow.</li>
+<li><b>Out-of-the-ordinary event</b> (rare but normal): e.g. the last item of a file was just read, so notify the caller nothing more is available.</li>
+<li><b>Timing failure:</b> a deadline is missed; the handler may switch to a backup routine.</li></ul>
+<h3>What we want from an exception system</h3>
+<ul><li>Easy to use and <b>modular</b>, separate from normal code (mixing makes code hard to read and debug).</li><li>Little <b>overhead</b> in normal running, since exceptions are rare.</li><li>Must not leave the <b>system state inconsistent</b>.</li></ul>
+<h3>Basics</h3>
+<ul><li>An exception is <b>thrown / raised / signalled</b>. Some distinguish <i>raising</i> (notify within the same module) from <i>signalling</i> (notify propagates to another module).</li><li><b>Internal</b> exception: handled in the same module. <b>External</b>: propagates elsewhere (e.g. an interface exception when a module is called against its interface rules).</li></ul>
+<h3>Propagation</h3>
+<svg viewBox="0 0 520 120" width="520" role="img" aria-label="Exception propagation"><rect class="b" x="30" y="10" width="170" height="100"/><text x="115" y="30" text-anchor="middle">Module A</text><text x="115" y="95" text-anchor="middle">has handler for c</text><rect class="b" x="310" y="10" width="170" height="100"/><text x="395" y="30" text-anchor="middle">Module B</text><text x="395" y="95" text-anchor="middle">no handler for c</text><path class="l" d="M200 45L310 45M310 75L200 75"/><text x="205" y="40" font-size="11">1 A calls B</text><text x="318" y="68" font-size="11">2 exception c!</text><text x="205" y="92" font-size="11">3 A handles it</text></svg>
+<p>A calls B; B hits exception c but has no handler, so it sends it back to A, which handles it. If no handler is found anywhere, execution is <b>terminated</b>.</p>
+<h3>Exception-terminate (ET) vs exception-resume (ER)</h3>
+<div class="w"><table><tr><th></th><th>Terminate (ET)</th><th>Resume (ER)</th></tr><tr><td>What happens</td><td>Module M stops, handler runs, control returns to M’s caller</td><td>Handler tries to patch the problem and returns control to M, which carries on</td></tr><tr><td>Difficulty</td><td>Much simpler</td><td>Harder</td></tr></table></div>
+<p><b>With ET</b>, B restores its state to what it was when called, signals, and ends. A only sees two outcomes: B succeeded, or B failed with state unchanged. <b>With ER</b>, A may see: (1) no exception; (2) exception handled and B resumed and finished; (3) handler sent control elsewhere. Then control returns to A.</p>
+<h3>What to do after handling</h3>
+<ul><li><b>Domain error:</b> call again with corrected operands; if impossible, abandon the computation.</li><li><b>Range error:</b> substitute an acceptable value and resume.</li><li><b>Out-of-the-ordinary:</b> programmer decides case by case.</li><li><b>Timing failure:</b> for iterative routines, use the latest value, e.g. the best result found so far in an optimum search.</li></ul>
+<p><b>Language support:</b> older languages have little; C++ and Java have extensive support. In Java you can define exceptions for conditions (e.g. reactor temperature over a limit) that must be caught by a handler that raises an alarm or prints output.</p></section>
+
+<section id="s10" class="m"><h2>10. Software reliability models</h2>
+<p><b>Defect/bug:</b> mistake in code, exists from when it is written. <b>Error:</b> the program deviating from its requirements because of a bug; it only occurs while running or testing. <b>Software reliability</b> = probability of error-free operation in a given environment for a given time. This needs the <b>error rate</b> λ (errors per unit time). Models predict the error rate from the number of bugs, to decide <b>how long to test and fix</b> until the predicted error rate falls below a chosen threshold.</p>
+<p><b>Shared assumptions:</b> unknown number of bugs at the start; during testing some bugs cause errors; each error’s bug is fixed instantly without adding new bugs (bug count drops by one). Models differ in how they describe λ(t).</p>
+<h3>Jelinski–Moranda (JM) model</h3>
+<ul><li>Fixed, finite N(0) bugs at start; N(t) remain at time t.</li><li>Errors follow a <b>non-homogeneous Poisson process</b> (random events whose rate can change over time).</li><li><b>λ(t) = c·N(t)</b> (c constant), so the rate is proportional to remaining bugs. It is a <b>step function</b>: starts at λ₀ = cN(0), drops by c at each fix, constant between errors.</li><li>Time between errors is exponentially distributed. <b>R(t) = e<sup>−λ₀t</sup></b>; after an error at time τ: <b>R(t|τ) = e<sup>−λ(τ)t</sup></b> (the chance the next t time units are error-free).</li></ul>
+<div class="k"><b>Meaning:</b> the longer you run and fix, the lower the error rate and the higher the reliability. <b>Weakness:</b> it assumes all bugs matter equally (same c). In truth some bugs trigger often, and rarely exercised ones are the hardest to catch in testing.</div>
+<h3>Littlewood–Verrall (LV) model</h3>
+<ul><li>Also fixed finite N(0) bugs, but uses <b>M(t) = N(0) − N(t)</b>, the bugs found and fixed by time t.</li><li>Errors follow a non-homogeneous Poisson process, but λ(t) is itself a <b>random variable with a Gamma distribution</b> (parameters α and ψ, where ψ increases with M(t)).</li><li>Expected error rate = α/ψ(M(t)). It falls as more bugs are fixed.</li><li><b>R(t) = (1 + t/ψ(0))<sup>−α</sup></b>; <b>R(t|τ) = (1 + t/ψ(M(τ)))<sup>−α</sup></b>.</li></ul>
+<h3>Musa–Okumoto (MO) model</h3>
+<ul><li>Assumes an <b>infinite or very large</b> number of bugs. λ₀ = initial error rate, c = constant, μ(t) = expected errors in [0, t].</li><li><b>λ(t) = λ₀ e<sup>−cμ(t)</sup></b>. Idea: easy bugs go first; the rest are harder to trigger or hidden, so the rate for an undiscovered bug drops exponentially.</li><li>Solving dμ/dt = λ₀e<sup>−cμ</sup> gives <b>μ(t) = ln(λ₀ct + 1)/c</b> and <b>λ(t) = λ₀/(λ₀ct + 1)</b>.</li><li><b>R(t) = (1 + λ₀ct)<sup>−1/c</sup></b>; <b>R(t|τ) = (1 + λ₀ct/(1 + λ₀cτ))<sup>−1/c</sup></b>.</li></ul>
+<div class="k"><b>Graph takeaway:</b> the error rate falls very slowly, so getting it low enough takes a <b>lot of testing</b>.</div></section>
+
+<section id="s11" class="o"><h2>11. Fault-tolerant Remote Procedure Calls (RPC)</h2>
+<p>An <b>RPC</b> lets one process call a procedure running on another processor. It is widely used in distributed computing.</p>
+<h3>Primary–backup approach</h3>
+<p>Each process has a <b>primary</b> and a <b>backup</b> on separate nodes. Calls go to both, but normally only the primary runs them; if it fails, the backup takes over and finishes.</p>
+<ul><li><b>Retryable RPC:</b> safe to run many times, e.g. reading a database. Easy to support.</li><li><b>Non-retryable RPC:</b> must run <b>exactly once</b>, e.g. adding to a bank balance. The primary <b>checkpoints</b> (saves its progress) on the backup so the work is not repeated.</li></ul>
+<h3>The circus approach</h3>
+<p>Client and server processes are each <b>replicated</b>; a replica set is a <b>troupe</b> (circus metaphor). Four client copies make identical calls to four server copies.</p>
+<svg viewBox="0 0 520 130" width="520" role="img" aria-label="Circus approach"><rect class="b" x="30" y="10" width="140" height="110" rx="10" stroke-dasharray="6 4"/><text x="100" y="28" text-anchor="middle">Client troupe</text><rect class="x" x="65" y="42" width="70" height="14"/><rect class="x" x="65" y="64" width="70" height="14"/><rect class="x" x="65" y="86" width="70" height="14"/><rect class="b" x="350" y="10" width="140" height="110" rx="10" stroke-dasharray="6 4"/><text x="420" y="28" text-anchor="middle">Server troupe</text><rect class="x" x="385" y="42" width="70" height="14"/><rect class="x" x="385" y="64" width="70" height="14"/><rect class="x" x="385" y="86" width="70" height="14"/><path class="l" d="M170 55H350M170 85H350"/><text x="260" y="48" text-anchor="middle">calls (numbered)</text><text x="260" y="105" text-anchor="middle">replies (numbered)</text></svg>
+<ul><li>Every call has a unique <b>sequence number</b>; replies too.</li><li>A server waits for identical calls from all client copies (or a timeout), then runs the RPC and sends results to every client.</li><li>A client may wait for identical replies from all servers (with a timeout so it doesn’t wait forever for a dead server), or just <b>take the first reply</b>.</li></ul>
+<h3>Extra complication: order of calls</h3>
+<p>If several client troupes call the same server troupe at once, <b>every server must handle calls in the same order</b>. Two ways:</p>
+<ul><li><b>Optimistic:</b> let everything run, then check whether order was kept. If yes accept; if not, <b>abort and retry</b>. Very slow if order is often broken.</li><li><b>Pessimistic:</b> built-in steps keep the order. A server that is ready sends <code>ready_to_commit</code> to every member of the client troupe and waits for all acknowledgments before committing. A client waits for <code>ready_to_commit</code> from every server before acknowledging. Only after all acknowledgments does the server commit.</li></ul>
+<div class="ex"><b>Why it works (example):</b> clients C1, C2 send calls ρ1, ρ2 to servers S1, S2. S1 wants to commit ρ1 first; S2 wants ρ2 first. C1 members wait to hear from both S1 and S2 but never hear from S2; C2 members never hear from S1. Result: <b>deadlock</b> (everyone waits on everyone). Deadlock-detection algorithms notice it, the operations are aborted before commit and retried. So wrong ordering is turned into a detectable deadlock.</div></section>
+<p style="text-align:center;color:var(--mut)">End of Unit 4 guide</p>
+</main><script>
+if (window.self === window.top) {
+  var b = document.createElement('a');
+  b.href = '../index.html';
+  b.className = 'hub-floating-btn';
+  b.innerHTML = '← Back to Study Portal';
+  b.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;background:#0969da;color:#ffffff;font-family:system-ui,-apple-system,sans-serif;font-size:13px;font-weight:700;padding:10px 18px;border-radius:99px;box-shadow:0 4px 14px rgba(0,0,0,0.35);text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s ease;cursor:pointer;';
+  b.onmouseenter = function(){ b.style.transform='translateY(-2px)'; b.style.boxShadow='0 6px 20px rgba(9,105,218,0.5)'; };
+  b.onmouseleave = function(){ b.style.transform='none'; b.style.boxShadow='0 4px 14px rgba(0,0,0,0.35)'; };
+  document.body.appendChild(b);
+}
+</script>
+</body></html>
